@@ -1,0 +1,30 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="BaseTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+       <!-- <item name="android:buttonStyle">@style/btnStyle</item>
+        <item name="android:textViewStyle">@style/tvStyle</item>
+        <item name="android:editTextStyle">@style/etStyle</item>-->
+    </style>
+
+
+    <style name="headerActionIconStyle">
+        <item name="android:layout_marginRight">0dp</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginBottom">0dp</item>
+
+
+        <item name="android:paddingLeft">@dimen/_5sdp</item>
+        <item name="android:paddingRight">@dimen/_5sdp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+
+
+        <item name="android:textSize">@dimen/_27sdp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+
+</resources>

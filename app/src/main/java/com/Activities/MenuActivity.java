@@ -1,6 +1,5 @@
 package com.Activities;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -13,16 +12,13 @@ import android.graphics.PorterDuff;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Gravity;
@@ -30,8 +26,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -39,39 +33,29 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.Adapters.SideNavigationMenuAdapter;
-import com.Alarm_Receiver_Text_File;
-//import com.AlertBadgeEnum;
-import com.AlertBadgeEnum;
-import com.DatabaseHelper;
 import com.Alarm_Receiver;
+import com.Alarm_Receiver_Text_File;
+import com.DatabaseHelper;
 import com.Fragments.FragmentActions;
-//import com.Fragments.FragmentCalls;
-import com.Fragments.FragmentClientReports;
 import com.Fragments.FragmentCustomer;
 import com.Fragments.FragmentMenu;
 import com.Fragments.FragmentMenuOffline;
-import com.Fragments.FragmentMessage;
 import com.Fragments.FragmentMessageDetails;
 import com.Fragments.FragmentMidCalls;
-import com.Fragments.FragmentOrders;
 import com.GPSTracker;
 import com.Helper;
 import com.model.Model;
-import com.nex3z.notificationbadge.NotificationBadge;
-//import com.google.zxing.integration.android.IntentIntegrator;
-//import com.google.zxing.integration.android.IntentResult;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Dictionary;
-import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+//import com.AlertBadgeEnum;
+//import com.Fragments.FragmentCalls;
+//import com.google.zxing.integration.android.IntentIntegrator;
+//import com.google.zxing.integration.android.IntentResult;
 
 public class MenuActivity extends FragmentActivity implements LocationListener {
     EditText myEditText5;
@@ -435,14 +419,11 @@ public class MenuActivity extends FragmentActivity implements LocationListener {
 
         try {
             if (db.getValueByKey("BACKGROUND").equals("1")) {
-                Intent alarm = new Intent(MenuActivity.this, Alarm_Receiver.class);
-                boolean alarmRunning = (PendingIntent.getBroadcast(MenuActivity.this, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
-                if (alarmRunning == false) {
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarm, 0);
-                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    // TODO: 05/09/2016  just note the time is every 5 minutes
-                    alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 240000, pendingIntent);
-                }
+                runService_Alarm_Receiver();
+
+            }else {
+                stopService_Alarm_Receiver();
+
             }
         } catch (Exception ex) {
             helper.LogPrintExStackTrace(ex);
@@ -474,7 +455,7 @@ public class MenuActivity extends FragmentActivity implements LocationListener {
         }
     }
     private void initilize() {
-            runBackgroundTask();
+            //runBackgroundTask();
             runFileTextTask();
             runGPSTask();
     }
@@ -487,6 +468,24 @@ public class MenuActivity extends FragmentActivity implements LocationListener {
         alarmManager.cancel(sender);
     }
 
+    private void stopService_Alarm_Receiver() {
+        Intent intent = new Intent(getApplicationContext(), Alarm_Receiver.class);
+        PendingIntent sender = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(sender);
+    }
+
+    private void runService_Alarm_Receiver() {
+        Intent alarm = new Intent(MenuActivity.this, Alarm_Receiver.class);
+        boolean alarmRunning = (PendingIntent.getBroadcast(MenuActivity.this, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
+        if (alarmRunning == false) {
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarm, 0);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            // TODO: 05/09/2016  just note the time is every 5 minutes
+            alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);
+        }
+    }
+
     private void startService_text() {
         try {
             Intent alarm = new Intent(getApplicationContext(), Alarm_Receiver_Text_File.class);
@@ -495,7 +494,7 @@ public class MenuActivity extends FragmentActivity implements LocationListener {
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarm, 0);
                 AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 // TODO: just note the time is every 5 minutes
-                alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 240000, pendingIntent);
+                alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60000, pendingIntent);
             }
         } catch (Exception e) {
             helper.LogPrintExStackTrace(e);
@@ -522,7 +521,7 @@ public class MenuActivity extends FragmentActivity implements LocationListener {
                         //Toast.makeText(getApplicationContext(), s_latitude + ":" + s_longtitude, Toast.LENGTH_LONG).show();
                     } else {
                         Log.e("myTag", ":");
-                        Toast.makeText(getApplicationContext(), "no long or lat", Toast.LENGTH_LONG).show();
+                       // Toast.makeText(getApplicationContext(), "no long or lat", Toast.LENGTH_LONG).show();
                     }
                 }
             });
@@ -621,6 +620,7 @@ public class MenuActivity extends FragmentActivity implements LocationListener {
     protected void onDestroy() {
         super.onDestroy();
         mHandler.removeCallbacks(mHandlerTask);
+        stopService_Alarm_Receiver();
         Log.e("myTag", "menu activity destroy");
     }
 

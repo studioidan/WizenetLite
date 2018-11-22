@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="@dimen/_7sdp">
+
+        <RelativeLayout
+            android:id="@+id/startHolder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:visibility="visible">
+
+            <com.studioidan.popapp.views.IconView
+                android:id="@+id/rowIconStart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:paddingEnd="@dimen/_10sdp"
+                android:paddingRight="@dimen/_10sdp"
+                android:textSize="@dimen/_24sdp" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/startHolder"
+            android:layout_toLeftOf="@+id/endHolder"
+            android:layout_toRightOf="@+id/startHolder"
+            android:layout_toStartOf="@+id/endHolder"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvRowTitle"
+                style="@style/tvStyle.Dark.M"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Title" />
+
+            <TextView
+                android:id="@+id/tvRowSubTitle"
+                style="@style/tvStyle.Dark.S"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sub Title"
+                android:textColor="@color/night" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/endHolder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <com.studioidan.popapp.views.IconView
+                android:id="@+id/rowIconEndOne"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/_8sdp"
+                android:textSize="@dimen/_25sdp" />
+
+            <com.studioidan.popapp.views.IconView
+                android:id="@+id/rowIconEndTwo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/_8sdp"
+                android:textSize="@dimen/_25sdp" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/widgetHolder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone">
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/rowViewSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</LinearLayout>

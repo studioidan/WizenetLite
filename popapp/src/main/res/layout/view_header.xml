@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:minHeight="@dimen/_45sdp"
+    android:orientation="horizontal"
+    android:padding="@dimen/_4sdp">
+
+    <com.studioidan.popapp.views.IconView
+        android:id="@+id/hamburgerIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_27sdp"
+        app:icon_code="\uf197"
+        app:type="material_icons" />
+
+    <RelativeLayout
+        android:id="@+id/headerBackHolder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone">
+
+        <com.studioidan.popapp.views.IconView
+            android:id="@+id/iconMenuBackArrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:paddingEnd="@dimen/_3sdp"
+            android:paddingRight="@dimen/_3sdp"
+            android:paddingStart="@dimen/_3sdp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_27sdp"
+            app:icon_code="\uf2fa"
+            app:type="material_icons" />
+
+        <TextView
+            android:id="@+id/tvHeaderBackText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/iconMenuBackArrow"
+            android:layout_toRightOf="@+id/iconMenuBackArrow"
+            android:gravity="center_vertical"
+            android:text="@string/Back"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_17sdp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/headerBackHolder"
+        android:layout_toRightOf="@+id/headerBackHolder"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <com.studioidan.popapp.views.IconView
+            android:id="@+id/headerActionOne"
+            style="@style/headerActionIconStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <com.studioidan.popapp.views.IconView
+            android:id="@+id/headerActionTwo"
+            style="@style/headerActionIconStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <com.studioidan.popapp.views.IconView
+            android:id="@+id/headerActionThree"
+            style="@style/headerActionIconStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvHeaderTitle"
+            style="@style/tvStyle.Dark.M"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            tools:text="title" />
+
+        <TextView
+            android:id="@+id/tvHeaderSubTitle"
+            style="@style/tvStyle.Dark.S"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            tools:text="sub title" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

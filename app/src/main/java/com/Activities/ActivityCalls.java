@@ -1,6 +1,5 @@
 package com.Activities;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
@@ -10,63 +9,55 @@ import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.Adapters.CallsAdapter;
 import com.Classes.Call;
-import com.Classes.CallStatus;
 import com.Classes.Call_offline;
 import com.DatabaseHelper;
 import com.Helper;
-import com.Adapters.CallsAdapter;
 import com.Icon_Manager;
 import com.model.Model;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class ActivityCalls extends FragmentActivity {
 
-    Helper helper ;
+    Helper helper;
     Context ctx;
-TextView lblcount;
+    TextView lblcount;
     DatabaseHelper db;
     ListView myList;
     LocationManager manager = null;
     boolean result = false;
     private EditText mSearchEdt;
     CallsAdapter callsAdapter; //to refresh the list
-    ArrayList<Call> data2 = new ArrayList<Call>() ;
+    ArrayList<Call> data2 = new ArrayList<Call>();
     private TextWatcher mSearchTw;
-    private CheckBox chk_calls_today,chk_calls_work;
-    private TextView lblopencall,lblpriority,lblcalltype;
+    private CheckBox chk_calls_today, chk_calls_work;
+    private TextView lblopencall, lblpriority, lblcalltype;
     String ss = "";
     Icon_Manager icon_manager;
     String s = "";
     Bundle extras;
     String condition = "";
+
+    boolean first = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,10 +70,10 @@ TextView lblcount;
         //call DB class
         db = DatabaseHelper.getInstance(getApplicationContext());
         //this class for general
-        helper= new Helper();
+        helper = new Helper();
 
         //varibles defenitions
-        lblopencall = (TextView)   findViewById(R.id.lblopencall);
+        lblopencall = (TextView) findViewById(R.id.lblopencall);
         chk_calls_today = (CheckBox) findViewById(R.id.chk_calls_today);
         chk_calls_work = (CheckBox) findViewById(R.id.chk_calls_work);
         mSearchEdt = (EditText) findViewById(R.id.mSearchEdt);
@@ -100,51 +91,51 @@ TextView lblcount;
         }, 2500);
         //-------------------------------------
         //spinner = dropdown
-        final Spinner spinner =(Spinner) findViewById(R.id.spinner);
-        String[] items = {"מס' קריאה ↑","מס' קריאה ↓" ,"פתיחת קריאה ↑","פתיחת קריאה ↓","עדיפות ↑","עדיפות ↓","עיר ↑","עיר ↓","חברה ↑","חברה ↓","מס סריאלי ↑","מס סריאלי ↓","שיבוץ ↑","שיבוץ ↓"};
+        final Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        String[] items = {"מס' קריאה ↑", "מס' קריאה ↓", "פתיחת קריאה ↑", "פתיחת קריאה ↓", "עדיפות ↑", "עדיפות ↓", "עיר ↑", "עיר ↓", "חברה ↑", "חברה ↓", "מס סריאלי ↑", "מס סריאלי ↓", "שיבוץ ↑", "שיבוץ ↓"};
         spinner.setAdapter(new SpinnerAdapter(this, R.layout.simple_spinner_item, items));
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                 //Log.e("mytag",(String) parent.getItemAtPosition(position));
-                String s=(String) parent.getItemAtPosition(position);
-                if (s.equals("מס' קריאה ↑")){
-                    getFilteredList(condition+"CallID asc");
-                }else if(s.equals("מס' קריאה ↓")){
-                    getFilteredList(condition+"CallID desc");
-                }else if(s.equals("פתיחת קריאה ↓")){
-                    getFilteredList(condition+"CreateDate desc");
-                }else if(s.equals("פתיחת קריאה ↑")){
-                    getFilteredList(condition+"CreateDate asc");
-                }else if(s.equals("עדיפות ↑")){
-                    getFilteredList(condition+"OriginName asc");
-                }else if(s.equals("עדיפות ↓")){
-                    getFilteredList(condition+"OriginName desc");
-                }else if(s.equals("עיר ↑")){
-                    getFilteredList(condition+"Ccity asc");
-                }else if(s.equals("עיר ↓")){
-                    getFilteredList(condition+"Ccity desc");
-                }else if(s.equals("חברה ↑")){
-                    getFilteredList(condition+"Ccompany asc");
-                }else if(s.equals("חברה ↓")){
-                    getFilteredList(condition+"Ccompany desc");
-                }else if(s.equals("מס סריאלי ↑")){
-                    getFilteredList(condition+"internalSN asc");
-                }else if(s.equals("מס סריאלי ↓")){
-                    getFilteredList(condition+"internalSN desc");
-                }else if(s.equals("שיבוץ ↑")){
-                    getFilteredList(condition+"callStartTime asc");
-                }else if(s.equals("שיבוץ ↓")){
-                    getFilteredList(condition+"callStartTime desc");
+                String s = (String) parent.getItemAtPosition(position);
+                if (s.equals("מס' קריאה ↑")) {
+                    getFilteredList(condition + "CallID asc");
+                } else if (s.equals("מס' קריאה ↓")) {
+                    getFilteredList(condition + "CallID desc");
+                } else if (s.equals("פתיחת קריאה ↓")) {
+                    getFilteredList(condition + "CreateDate desc");
+                } else if (s.equals("פתיחת קריאה ↑")) {
+                    getFilteredList(condition + "CreateDate asc");
+                } else if (s.equals("עדיפות ↑")) {
+                    getFilteredList(condition + "OriginName asc");
+                } else if (s.equals("עדיפות ↓")) {
+                    getFilteredList(condition + "OriginName desc");
+                } else if (s.equals("עיר ↑")) {
+                    getFilteredList(condition + "Ccity asc");
+                } else if (s.equals("עיר ↓")) {
+                    getFilteredList(condition + "Ccity desc");
+                } else if (s.equals("חברה ↑")) {
+                    getFilteredList(condition + "Ccompany asc");
+                } else if (s.equals("חברה ↓")) {
+                    getFilteredList(condition + "Ccompany desc");
+                } else if (s.equals("מס סריאלי ↑")) {
+                    getFilteredList(condition + "internalSN asc");
+                } else if (s.equals("מס סריאלי ↓")) {
+                    getFilteredList(condition + "internalSN desc");
+                } else if (s.equals("שיבוץ ↑")) {
+                    getFilteredList(condition + "callStartTime asc");
+                } else if (s.equals("שיבוץ ↓")) {
+                    getFilteredList(condition + "callStartTime desc");
 
                 }
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-
 
 
         //setTypeFace - set the icon for label.
@@ -159,24 +150,25 @@ TextView lblcount;
                 b.putInt("callid", 0);
                 b.putInt("cid", 0);
                 b.putInt("technicianid", Integer.valueOf(db.getValueByKey("CID")));
-                Log.e("mytag","cid="+db.getValueByKey("CID"));
-                b.putString("action","mycalls");
+                Log.e("mytag", "cid=" + db.getValueByKey("CID"));
+                b.putString("action", "mycalls");
                 intent.putExtras(b);
                 startActivity(intent);
             }
         });
 
 
-        mSearchTw=new TextWatcher() {
+        mSearchTw = new TextWatcher() {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (callsAdapter == null || callsAdapter.getFilter() == null) return;
                 callsAdapter.getFilter().filter(s);
             }
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count,
-                int after) {
+                                          int after) {
             }
 
             @Override
@@ -188,7 +180,8 @@ TextView lblcount;
         setlblopencall();
         setChkWork();
     }
-    private void setlblopencall(){
+
+    private void setlblopencall() {
         lblopencall.setTypeface(icon_manager.get_Icons("fonts/ionicons.ttf", this));
         lblopencall.setTextSize(30);
         lblopencall.setOnClickListener(new View.OnClickListener() {
@@ -207,16 +200,17 @@ TextView lblcount;
         });
     }
 
-   private void setChkShibutz(){
-       chk_calls_today.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
+    private void setChkShibutz() {
+        chk_calls_today.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-               change();
-           }
-       });
-   }
-    private void setChkWork(){
+                change();
+            }
+        });
+    }
+
+    private void setChkWork() {
         chk_calls_work.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -228,45 +222,46 @@ TextView lblcount;
 //region notinuse
     //endregion
 
-    private void init(){
+    private void init() {
         data2.clear();
-        for (Call c : getCallsList("")){
-            Log.e("mytag",c.toString());
+        for (Call c : getCallsList("")) {
+            Log.e("mytag", c.toString());
             data2.add(c);
         }
         lblcount.setText(" נמצאו " + String.valueOf(data2.size()) + " קריאות ");
 
         myList = (ListView) findViewById(R.id.calls_list);
-        callsAdapter=new CallsAdapter(data2,getBaseContext());
+        callsAdapter = new CallsAdapter(data2, getBaseContext());
         myList.setAdapter(callsAdapter);
     }
 
-    public class SpinnerAdapter extends ArrayAdapter<String>
-    {
+    public class SpinnerAdapter extends ArrayAdapter<String> {
         String[] objects;
-        public SpinnerAdapter(Context context, int textViewResourceId, String[] objects)
-        {
+
+        public SpinnerAdapter(Context context, int textViewResourceId, String[] objects) {
             super(context, textViewResourceId, objects);
-            this.objects=objects;
+            this.objects = objects;
         }
+
         @Override
-        public View getDropDownView(int position, View convertView, ViewGroup parent)
-        {
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
             return getCustomView(position, convertView, parent);
         }
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             return getCustomView(position, convertView, parent);
         }
-        public View getCustomView(final int position, View convertView, ViewGroup parent)
-        {
-            LayoutInflater inflater=getLayoutInflater();
-            View row=inflater.inflate(R.layout.simple_spinner_item, parent, false);
-            final TextView label=(TextView)row.findViewById(R.id.tv_spinnervalue);
+
+        public View getCustomView(final int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = getLayoutInflater();
+            View row = inflater.inflate(R.layout.simple_spinner_item, parent, false);
+            final TextView label = (TextView) row.findViewById(R.id.tv_spinnervalue);
             label.setText(objects[position]);
             return row;
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -284,24 +279,40 @@ TextView lblcount;
     protected void onResume() {
         super.onResume();
         Bundle extras = getIntent().getExtras();
-        try{
-            ss = (extras != null)? extras.getString("choose") : "";
-            Log.e("mytag"," myss :" + ss.toString());
-        }catch(Exception ex){
-           // Log.e("mytag"," asdasd :" + ex.getMessage());
+        try {
+            ss = (extras != null) ? extras.getString("choose") : "";
+            Log.e("mytag", " myss :" + ss.toString());
+        } catch (Exception ex) {
+            // Log.e("mytag"," asdasd :" + ex.getMessage());
         }
-        try{
-            if (ss.contains("total")){
+        try {
+            Log.e("mytag", "1");
+            if (ss.contains("total")) {
                 condition = "  order by ";
-            }else if(ss.contains("open")){
+            } else if (ss.contains("open")) {
                 condition = " and CAST(sla AS INTEGER) >= 0  order by callid";
-            }else if(ss.contains("sla")){
+            } else if (ss.contains("sla")) {
                 condition = " and CAST(sla AS INTEGER) < 0 order by callid";
-            }else{
-                condition = " order by  " ;
             }
-        }catch(Exception ex){
-            Log.e("mytag"," asdasd :" + ex.getMessage());
+            // else if(ss.contains("status")){
+            //     //condition =  "and statusid = 2 order by  " ;
+//
+            //     String callidsExsist = "";
+            //     callidsExsist=(extras != null)? extras.getString("callidsExsist") : "";
+            //     if (callidsExsist != "")
+            //     {
+            //         condition = " and callid not in (" + callidsExsist + ") order by  ";
+            //     }else
+            //     {
+            //         condition = " order by  " ;
+            //     }
+//
+            // }
+            else {
+                condition = " order by  ";
+            }
+        } catch (Exception ex) {
+            Log.e("mytag", " asdasd :" + ex.getMessage());
         }
         //Log.e("mytag","condition: " + condition);
         ArrayList<Call_offline> arr_Call_offline = new ArrayList<>();
@@ -310,86 +321,116 @@ TextView lblcount;
         init();
         //check if there's any calls_offline and send them to wizenet if network works.
         //
-        sendCallsOffline(ctx,arr_Call_offline);
+        sendCallsOffline(ctx, arr_Call_offline);
 
     }
-    private void sendCallsOffline(final Context ctx1,ArrayList<Call_offline> arr_Call_offline){
-                    if (helper.isNetworkAvailable(ctx)){
-                        Log.e("mytag","size: " + arr_Call_offline.size());
-                        if (arr_Call_offline.size()>0){
-                            Model.getInstance().Async_Wz_Send_Call_Offline_Listener(helper.getMacAddr(getApplicationContext()), DatabaseHelper.getInstance(ctx).getJsonResults().toString(), new Model.Wz_Send_Call_Offline_Listener() {
-                                @Override
-                                public void onResult(String str) {
-                                    if (str.contains("0")){
-                                        DatabaseHelper.getInstance(ctx1).deleteAllCall_offline();
-                                        //change();
-                                    }
-                                    Log.e("mytag","return:" +str);
-                                }
-                            });
-                        }else{
-                            change();
+
+    private void sendCallsOffline(final Context ctx1, ArrayList<Call_offline> arr_Call_offline) {
+        if (helper.isNetworkAvailable(ctx)) {
+            Log.e("mytag", "size: " + arr_Call_offline.size());
+            if (arr_Call_offline.size() > 0) {
+                Model.getInstance().Async_Wz_Send_Call_Offline_Listener(helper.getMacAddr(getApplicationContext()), DatabaseHelper.getInstance(ctx).getJsonResults().toString(), new Model.Wz_Send_Call_Offline_Listener() {
+                    @Override
+                    public void onResult(String str) {
+                        if (str.contains("0")) {
+                            DatabaseHelper.getInstance(ctx1).deleteAllCall_offline();
+                            //change();
+                        }
+                        Log.e("mytag", "return:" + str);
+                    }
+                });
+            } else {
+                change();
             }
         }
     }
-    private ArrayList<Call_offline> initOnline(){
+
+    private ArrayList<Call_offline> initOnline() {
         ArrayList<Call_offline> arr_Call_offline = new ArrayList<>();
-        try{
+        try {
             arr_Call_offline = new ArrayList<Call_offline>(DatabaseHelper.getInstance(ctx).getCall_offline());
-            for (Call_offline co:arr_Call_offline) {
-                Log.e("mytag","Call_offline: " + co.toString());
+            for (Call_offline co : arr_Call_offline) {
+                Log.e("mytag", "Call_offline: " + co.toString());
             }
-            if (arr_Call_offline.size() > 0 ){
-                Log.e("mytag","json: " + DatabaseHelper.getInstance(ctx).getJsonResults());
+            if (arr_Call_offline.size() > 0) {
+                Log.e("mytag", "json: " + DatabaseHelper.getInstance(ctx).getJsonResults());
 
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             helper.LogPrintExStackTrace(e);
-            Log.e("mytag","11:" +e.getMessage());
+            Log.e("mytag", "11:" + e.getMessage());
         }
         return arr_Call_offline;
     }
-    public  void change(){
+
+    public void change() {
         //first check if internet avilable.
-        if (helper.isNetworkAvailable(ctx)){
+        if (helper.isNetworkAvailable(ctx)) {
             //
-            Model.getInstance().Async_Wz_Calls_List_Listener(getApplicationContext(),helper.getMacAddr(getApplicationContext()), -2, new Model.Wz_Calls_List_Listener() {
+            Model.getInstance().Async_Wz_Calls_List_Listener(getApplicationContext(), helper.getMacAddr(getApplicationContext()), -2, new Model.Wz_Calls_List_Listener() {
                 @Override
                 public void onResult(String str) {
-                    Log.e("mytag","ret calls from ws:"+ str);
-                    ArrayList<Call> arrlistofOptions = (ss != null)? new ArrayList<Call>(getCallsList(setCondition(ss))): new ArrayList<Call>(getCallsList(""));
+                    Log.e("mytag", "ret calls from ws:" + str);
+                    ArrayList<Call> arrlistofOptions = (ss != null) ? new ArrayList<Call>(getCallsList(setCondition(ss))) : new ArrayList<Call>(getCallsList(""));
                     data2.clear();
                     data2.addAll(arrlistofOptions);
-                    callsAdapter=new CallsAdapter(data2,getBaseContext());
+                    callsAdapter = new CallsAdapter(data2, getBaseContext());
                     myList = (ListView) findViewById(R.id.calls_list);
                     myList.setAdapter(callsAdapter);
                     callsAdapter.notifyDataSetChanged();
                     lblcount.setText(" נמצאו " + String.valueOf(data2.size()) + " קריאות ");
                 }
             });
-        }else{
-            Toast.makeText(getBaseContext(),"אינטרנט לא זמין", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getBaseContext(), "אינטרנט לא זמין", Toast.LENGTH_SHORT).show();
         }
     }
-    private  String setCondition(String ss1){
+
+    private String setCondition(String ss1) {
         String ret = "";
-        if (ss1.contains("total")){
+        Log.e("mytag", "2");
+        Log.e("mytag", " myss1 :" + ss1.toString());
+        if (ss1.contains("total")) {
             ret = "  order by callid";
-        }else if(ss1.contains("open")){
+        } else if (ss1.contains("open")) {
             ret = " and CAST(sla AS INTEGER) >=0 order by callid";
-        }else if(ss1.contains("sla")){
+        } else if (ss1.contains("sla")) {
             ret = " and  CAST(sla AS INTEGER) < 0  order by callid";
-        }else{
-            ret = "   " ;
+        } else if (ss1.contains("status") && first) {
+            //ret = " and statusid = 2 order by callid";
+            Log.e("mytag", "3");
+            try {
+                Bundle extras1 = getIntent().getExtras();
+                String callidsExsist = "";
+                callidsExsist = (extras1 != null) ? extras1.getString("callidsExsist") : "";
+                Log.e("mytag", " callidsExsist :" + callidsExsist);
+                if (callidsExsist != "") {
+                    ret = " and callid not in (" + callidsExsist + ") order by callid ";
+                } else {
+                    ret = " order by  callid";
+                }
+                Log.e("mytag", " ret :" + ret);
+
+                first = false;
+            } catch (Exception e) {
+                Log.e("mytag", "ss1.contains(status) " + e.getMessage());
+                e.printStackTrace();
+                helper.LogPrintExStackTrace(e);
+            }
+
+
+        } else {
+            ret = "   ";
         }
         return ret;
     }
-    public void getFilteredList(String orderby){
+
+    public void getFilteredList(String orderby) {
 
         ArrayList<Call> arrlistofOptions = new ArrayList<Call>(getCallsList(orderby));
         data2.clear();
         data2.addAll(arrlistofOptions);
-        callsAdapter=new CallsAdapter(data2,getBaseContext());
+        callsAdapter = new CallsAdapter(data2, getBaseContext());
         myList = (ListView) findViewById(R.id.calls_list);
         myList.setAdapter(callsAdapter);
         callsAdapter.notifyDataSetChanged();
@@ -411,26 +452,26 @@ TextView lblcount;
         return (super.onOptionsItemSelected(item));
     }
 
-    private List<Call> getCallsList(String sortby){
+    private List<Call> getCallsList(String sortby) {
         //Log.e("mytag","step 1");
         JSONObject j = null;
         int length = 0;
 
-        List<Call> calls = new ArrayList<Call>() ;
+        List<Call> calls = new ArrayList<Call>();
         try {
             if (chk_calls_today.isChecked() == true) {
                 String date = helper.getDate("yyyy-MM-dd");
                 calls = DatabaseHelper.getInstance(getApplicationContext()).getCalls("and callStartTime like '%" + date + "%' " + sortby);
-            }else if (chk_calls_work.isChecked() == true){
+            } else if (chk_calls_work.isChecked() == true) {
                 String callsInWork = DatabaseHelper.getInstance(getBaseContext()).getCallsInWork();
                 calls = DatabaseHelper.getInstance(getApplicationContext()).getCalls("and callid in (" + callsInWork + ")");
-            }else{
-                calls= DatabaseHelper.getInstance(getApplicationContext()).getCalls(sortby);
+            } else {
+                calls = DatabaseHelper.getInstance(getApplicationContext()).getCalls(sortby);
             }
             length = calls.size();
-            Log.e("mytag","calls.size: " +length);
+            Log.e("mytag", "calls.size: " + length);
         } catch (Exception e) {
-            Log.e("mytag","sdf " +e.getMessage());
+            Log.e("mytag", "sdf " + e.getMessage());
             e.printStackTrace();
             helper.LogPrintExStackTrace(e);
         }

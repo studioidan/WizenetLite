@@ -56,7 +56,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FragmentMenu extends android.support.v4.app.Fragment {
+public class FragmentMenu extends BaseFragment {
     TextView tv_username;
     CheckBox cb;
     Button btn2, mapid;
@@ -110,11 +110,9 @@ public class FragmentMenu extends android.support.v4.app.Fragment {
                 setNumber(this.getCallsListLength());
 
 
-
         //Top menu bar options image.
         ImageView menuBarOptionsImg = (ImageView) v.findViewById(R.id.menu_bar_options);
         menu_bar_welcome_txt = (TextView) v.findViewById(R.id.menu_bar_welcome_txt);
-
 
 
         //Side navigation menu options image.
@@ -264,7 +262,7 @@ public class FragmentMenu extends android.support.v4.app.Fragment {
 //                fragmentTransaction2.addToBackStack("xyz");
 //                fragmentTransaction2.hide(FragmentMenu.this);
 //                fragmentTransaction2.add(R.id.container, fragment2);
-                fragmentTransaction2.replace(R.id.container,fragment2,"CPFragment");
+                fragmentTransaction2.replace(R.id.container, fragment2, "CPFragment");
                 fragmentTransaction2.addToBackStack("CPFragment");
                 fragmentTransaction2.commit();
                 //((MenuActivity)getActivity()).initialIcons();
@@ -333,7 +331,7 @@ public class FragmentMenu extends android.support.v4.app.Fragment {
                         ft.replace(R.id.container, frag, "FragmentMidCalls");
                         ft.addToBackStack("FragmentMidCalls");
                         ft.commit();
-                       // getActivity().findViewById(R.id.top_action_bar).setVisibility(View.VISIBLE);
+                        // getActivity().findViewById(R.id.top_action_bar).setVisibility(View.VISIBLE);
 
                     } else {
                         Intent intent = new Intent(getActivity(), ActivityCalls.class);
@@ -423,14 +421,14 @@ public class FragmentMenu extends android.support.v4.app.Fragment {
         Model.getInstance().Wz_Call_Statuses_Listener(helper.getMacAddr(getContext()), new Model.Wz_Call_Statuses_Listener() {
             @Override
             public void onResult(String str) {
-                Log.e("mytag","write call statuses");
+                Log.e("mytag", "write call statuses");
             }
         });
     }
 
     private int getCustomerListLength() {
         Ccustomer[] ccustomers;//= new Ccustomer[5];
-        try{
+        try {
             Helper helper = new Helper();
             File_ f = new File_();
             //myString = f.readFromFileInternal(getContext(),"customers.txt");
@@ -445,15 +443,15 @@ public class FragmentMenu extends android.support.v4.app.Fragment {
                 length = jarray.length();
             } catch (JSONException e) {
                 e.printStackTrace();
-                length = 0 ;
+                length = 0;
             }
-            if (length == 0){
+            if (length == 0) {
                 return 0;
             }
             ccustomers = new Ccustomer[length];
             ccustomers = helper.getCustomersFromJson2(myString);
             return ccustomers.length;
-        }catch (Exception e){
+        } catch (Exception e) {
             return 0;
         }
 
@@ -722,17 +720,17 @@ public class FragmentMenu extends android.support.v4.app.Fragment {
 
         if (helper.isNetworkAvailable(context)) {
             //Log.e("mytag","isNetworkAvailable");
-            try{
+            try {
                 Model.getInstance().Async_User_Details_Listener(helper.getMacAddr(getContext()), new Model.User_Details_Listener() {
                     @Override
                     public void onResult(String str) {
                         menu_bar_welcome_txt.setText(" שלום " + str);
-                        if (str.contains("[]")){
+                        if (str.contains("[]")) {
                             ((MenuActivity) getActivity()).finish();
                         }
                     }
                 });
-            }catch (Exception e){
+            } catch (Exception e) {
                 helper.LogPrintExStackTrace(e);
             }
 

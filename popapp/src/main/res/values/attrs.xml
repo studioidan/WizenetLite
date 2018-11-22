@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="IconView">
+        <attr name="icon_code" format="string" />
+        <attr name="type" format="enum">
+            <enum name="font_awesome" value="0" />
+            <enum name="material_icons" value="1" />
+            <enum name="ico_font" value="2" />
+        </attr>
+        <attr name="isIcon" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="BaseFontView">
+        <attr name="fontName" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="RowView">
+        <attr name="row_title" format="string" />
+        <attr name="row_sub_title" format="string" />
+        <attr name="left_icon" format="reference" />
+        <attr name="right_icon_one" format="reference" />
+        <attr name="right_icon_two" format="reference" />
+
+        <attr name="show_right_arrow" format="boolean" />
+        <attr name="row_bottom_margin" format="dimension" />
+
+        <attr name="row_mode" format="enum">
+            <enum name="mode_none" value="0" />
+            <enum name="mode_switch" value="1" />
+        </attr>
+    </declare-styleable>
+
+
+    <declare-styleable name="SuperLayout">
+        <attr name="slStrokeColor" format="color" />
+        <attr name="slBackgroundColor" format="color" />
+        <attr name="slStrokeWidth" format="reference" />
+        <attr name="slCornerRadiusTopLeft" format="reference" />
+        <attr name="slCornerRadiusTopRight" format="reference" />
+        <attr name="slCornerRadiusBottomRight" format="reference" />
+        <attr name="slCornerRadiusBottomLeft" format="reference" />
+        <attr name="slCornerRadiusAll" format="reference" />
+    </declare-styleable>
+
+</resources>

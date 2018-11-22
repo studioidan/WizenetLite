@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "511581465795",
+    "firebase_url": "https://wizenet-90945.firebaseio.com",
+    "project_id": "wizenet-90945",
+    "storage_bucket": "wizenet-90945.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:511581465795:android:5dd0fa4cc61a427b",
+        "android_client_info": {
+          "package_name": "com.wizenetlite"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "511581465795-vrefsnpieii4j3hcvgsrr4vn9q7ran43.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyPaTsFpeosXE7nrnH3EC9SoxuvH4FcHk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -9,14 +9,25 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.Classes.*;
+import com.Classes.Call;
+import com.Classes.CallStatus;
+import com.Classes.Call_offline;
+import com.Classes.Calltime;
+import com.Classes.Ccustomer;
+import com.Classes.ControlPanel;
+import com.Classes.IS_Action;
+import com.Classes.IS_ActionTime;
+import com.Classes.Lead;
+import com.Classes.Message;
+import com.Classes.Order;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.ksoap2.HeaderProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     static Constants constants ;
@@ -66,7 +77,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static DatabaseHelper getInstance(Context ctx) {
         constants = new Constants();
         if (mInstance == null) {
-            mInstance = new DatabaseHelper(ctx.getApplicationContext());
+            //try{
+            mInstance = new DatabaseHelper(ctx);
+           // }catch (Exception ex){
+              //  Log.e("mytag_getInstance",ex.getMessage());
+            //}
             mCtx = ctx;
         }
         return mInstance;
@@ -249,7 +264,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         }catch (Exception e){
             Helper h = new Helper();
-            Log.e("mytag",e.getMessage());
+            Log.e("mytag_isTableExists",e.getMessage());
             h.LogPrintExStackTrace(e);
         }
         return false;
@@ -339,7 +354,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             flag = true;
         }catch (Exception e){
 
-            Log.e("mytag",e.getMessage());
+            Log.e("mytag_createColumnTo",e.getMessage());
             h.LogPrintExStackTrace(e);
         }
         return flag;
@@ -1297,6 +1312,8 @@ public void updateSpecificValueInTable2(String table,String primarykey,String pr
             selectQuery+=  sortby + "";
             //selectQuery+= "  order by " + sortby + "";
         }
+        Log.e("mytag","dbname: " + this.getDatabaseName());
+
         SQLiteDatabase db = this.getReadableDatabase();
         Log.e("mytag","sql: " +selectQuery);
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -2441,10 +2458,10 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
 
     //if isEmpty
     public boolean verification(String _username) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        int count = -1;
         Cursor c = null;
         try {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int count = -1;
             String query = "SELECT COUNT(*) FROM "
                     + TABLE_CONTROL_PANEL + " WHERE " + KEY + " = ?";
             c = db.rawQuery(query, new String[] {_username});
@@ -2452,6 +2469,8 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
                 count = c.getInt(0);
             }
             return count > 0;
+        }catch (Exception e){
+            return true;
         }
         finally {
             if (c != null) {
@@ -2531,12 +2550,12 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
     }
 
     public String getValueByKey(String key) {
-
+        try{
         SQLiteDatabase db = this.getReadableDatabase();
         ControlPanel cp = new ControlPanel();
         String query = "SELECT  * FROM " + TABLE_CONTROL_PANEL + " WHERE "
                 + KEY + " = '" + key+"'";
-        try{
+
             Cursor c = db.rawQuery(query, null);
 
             if (c != null)
@@ -2554,12 +2573,13 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
                 h.LogPrintExStackTrace(e);
                 //e.printStackTrace();
             }
+            db.close();
         }catch(Exception e){
             Log.e("mytag",e.getMessage());
             Log.e("mytag",e.getStackTrace().toString());
         }
 
-        db.close();
+
         return "";
     }
 

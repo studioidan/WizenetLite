@@ -4,52 +4,54 @@ public class IS_Action {
 
     int actionID;
     int taskID;
-    String  actionDate;
+    String actionDate;
     String actionStartDate;
     String actionDue;
     String actionDesc;
-   String comments;
-   String priorityID;
-    int  statusID;
+    String comments;
+    String priorityID;
+    int statusID;
     String reminderID;
     int ownerID;
     int userID;
-   String WorkHours;
-   String WorkEstHours;
+    String WorkHours;
+    String WorkEstHours;
     String Create;
     String LastUpdate;
     String actionLink;
     int depID;
-   String actionRef;
-   String userCfname;
-   String userClname;
-   String userCemail;
+    String actionRef;
+    String userCfname;
+    String userClname;
+    String userCemail;
     int userCtypeID;
-   String ownerCfname;
-   String ownerClname;
-   String ownerCemail;
+    String ownerCfname;
+    String ownerClname;
+    String ownerCemail;
     int ownerCtypeID;
     int projectID;
-   String statusName;
-   String PriorityName;
-   String actionType;
-   String actionSdate;
-   String actionEdate;
-   String WorkHoursM;
-   String WorkEstHoursM;
-   String actionPrice;
-   String statusColor;
-   String taskSummery;
-   String projectSummery;
-   String projectType;
-   String actionNum;
-   String actionFrom;
-   String actionDays;
+    String statusName;
+    String PriorityName;
+    String actionType;
+    String actionSdate;
+    String actionEdate;
+    String WorkHoursM;
+    String WorkEstHoursM;
+    String actionPrice;
+    String statusColor;
+    String taskSummery;
+    String projectSummery;
+    String projectType;
+    String actionNum;
+    String actionFrom;
+    String actionDays;
     int ParentActionID;
-   String remindertime;
-   String Expr1;
-   String projectDesc;
-    public IS_Action(){}
+    String remindertime;
+    String Expr1;
+    String projectDesc;
+
+    public IS_Action() {
+    }
 
     public int getActionID() {
         return actionID;
@@ -426,22 +428,24 @@ public class IS_Action {
     public void setProjectDesc(String projectDesc) {
         this.projectDesc = projectDesc;
     }
-    public IS_Action(int actionID,int statusID,String statusName ,String Expr1){
+
+    public IS_Action(int actionID, int statusID, String statusName, String Expr1) {
         this.actionID = actionID;
         this.statusID = statusID;
         this.statusName = statusName;
         this.Expr1 = Expr1;
     }
+
     public IS_Action(
             int actionID,
             int taskID,
-            String  actionDate,
+            String actionDate,
             String actionStartDate,
             String actionDue,
             String actionDesc,
             String comments,
             String priorityID,
-            int  statusID,
+            int statusID,
             String reminderID,
             int ownerID,
             int userID,
@@ -479,60 +483,63 @@ public class IS_Action {
             int ParentActionID,
             String remindertime,
             String Expr1,
-            String projectDesc){
-                this.actionID =actionID;
-                this.taskID=taskID;
-                this.actionDate=actionDate;
-                this.actionStartDate=actionStartDate;
-                this.actionDue=actionDue;
-                this.actionDesc=actionDesc;
-                this.comments=comments;
-                this.priorityID=priorityID;
-                this.statusID=statusID;
-                this.reminderID=reminderID;
-                this.ownerID=ownerID;
-                this.userID=userID;
-                this.WorkHours=WorkHours;
-                this.WorkEstHours=WorkEstHours;
-                this.Create=Create;
-                this.LastUpdate=LastUpdate;
-                this.actionLink=actionLink;
-                this.depID=depID;
-                this.actionRef=actionRef;
-                this.userCfname=userCfname;
-                this.userClname=userClname;
-                this.userCemail=userCemail;
-                this.userCtypeID=userCtypeID;
-                this.ownerCfname=ownerCfname;
-                this.ownerClname=ownerClname;
-                this.ownerCemail=ownerCemail;
-                this.ownerCtypeID=ownerCtypeID;
-                this.projectID=projectID;
-                this.statusName=statusName;
-                this.PriorityName=PriorityName;
-                this.actionType=actionType;
-                this.actionSdate=actionSdate;
-                this.actionEdate=actionEdate;
-                this.WorkHoursM=WorkHoursM;
-                this.WorkEstHoursM=WorkEstHoursM;
-                this.actionPrice=actionPrice;
-                this.statusColor=statusColor;
-                this.taskSummery=taskSummery;
-                this.projectSummery=projectSummery;
-                this.projectType=projectType;
-                this.actionNum=actionNum;
-                this.actionFrom=actionFrom;
-                this.actionDays=actionDays;
-                this.ParentActionID=ParentActionID;
-                this.remindertime=remindertime;
-                this.Expr1=Expr1;
-                this.projectDesc=projectDesc;};
+            String projectDesc) {
+        this.actionID = actionID;
+        this.taskID = taskID;
+        this.actionDate = actionDate;
+        this.actionStartDate = actionStartDate;
+        this.actionDue = actionDue;
+        this.actionDesc = actionDesc;
+        this.comments = comments;
+        this.priorityID = priorityID;
+        this.statusID = statusID;
+        this.reminderID = reminderID;
+        this.ownerID = ownerID;
+        this.userID = userID;
+        this.WorkHours = WorkHours;
+        this.WorkEstHours = WorkEstHours;
+        this.Create = Create;
+        this.LastUpdate = LastUpdate;
+        this.actionLink = actionLink;
+        this.depID = depID;
+        this.actionRef = actionRef;
+        this.userCfname = userCfname;
+        this.userClname = userClname;
+        this.userCemail = userCemail;
+        this.userCtypeID = userCtypeID;
+        this.ownerCfname = ownerCfname;
+        this.ownerClname = ownerClname;
+        this.ownerCemail = ownerCemail;
+        this.ownerCtypeID = ownerCtypeID;
+        this.projectID = projectID;
+        this.statusName = statusName;
+        this.PriorityName = PriorityName;
+        this.actionType = actionType;
+        this.actionSdate = actionSdate;
+        this.actionEdate = actionEdate;
+        this.WorkHoursM = WorkHoursM;
+        this.WorkEstHoursM = WorkEstHoursM;
+        this.actionPrice = actionPrice;
+        this.statusColor = statusColor;
+        this.taskSummery = taskSummery;
+        this.projectSummery = projectSummery;
+        this.projectType = projectType;
+        this.actionNum = actionNum;
+        this.actionFrom = actionFrom;
+        this.actionDays = actionDays;
+        this.ParentActionID = ParentActionID;
+        this.remindertime = remindertime;
+        this.Expr1 = Expr1;
+        this.projectDesc = projectDesc;
+    }
+
+    ;
 
 
     @Override
     public String toString() {
-        return "ACTIONID:"+this.getActionID()+ " \nstatusName:"+this.getStatusName()+ " \nstatusID:"+this.getStatusID()+ " \nExpr1:"+this.getExpr1() ;
-                //this.cphone+ "\n,ccell:"+ this.ccell + "\n,ccompany:"+ this.ccompany +"]" ;
+        return "ACTIONID:" + this.getActionID() + " \nstatusName:" + this.getStatusName() + " \nstatusID:" + this.getStatusID() + " \nExpr1:" + this.getExpr1();
+        //this.cphone+ "\n,ccell:"+ this.ccell + "\n,ccompany:"+ this.ccompany +"]" ;
     }
 
 

@@ -1,28 +1,16 @@
 package com;
 
-import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.AlertDialog;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.SystemClock;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.util.Pair;
@@ -33,87 +21,86 @@ import com.Activities.R;
 import com.Classes.Ccustomer;
 import com.Classes.IS_Action;
 import com.Classes.Order;
-import com.Fragments.*;
-
+import com.Fragments.ControlPanelFragment;
+import com.Fragments.FragmentActionChangeStatus;
+import com.Fragments.FragmentAutoSMS;
+import com.Fragments.FragmentCreateAction;
+import com.Fragments.FragmentCustomer;
+import com.Fragments.FragmentLoginReport;
+import com.Fragments.FragmentMenuOffline;
+import com.Fragments.FragmentMessage;
+import com.Fragments.FragmentOrders;
+import com.Fragments.FragmentSecret;
+import com.Fragments.FragmentTools;
 import com.model.Model;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.NetworkInterface;
-import java.sql.Time;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 
-
 import static com.Activities.MainActivity.ctx;
-import static java.security.AccessController.getContext;
 
 public class Helper {
     String jsonTimes = "";
+
     public Helper() {
     }
 
 
-    public void addInitialfirst(Context ctx){
+    public void addInitialfirst(Context ctx) {
 
-        DatabaseHelper.getInstance(ctx).addControlPanel("IS_BUSY_OPTION","ללא");
-        DatabaseHelper.getInstance(ctx).addControlPanel("Cfname","");
-        DatabaseHelper.getInstance(ctx).addControlPanel("AUTO_LOGIN","0");
-        DatabaseHelper.getInstance(ctx).addControlPanel("CID","");
-        DatabaseHelper.getInstance(ctx).addControlPanel("CtypeID","");
-        DatabaseHelper.getInstance(ctx).addControlPanel("CtypeName","");
-        DatabaseHelper.getInstance(ctx).addControlPanel("dropHTTP","http://");
-        DatabaseHelper.getInstance(ctx).addControlPanel("username","");
-        DatabaseHelper.getInstance(ctx).addControlPanel("BACKGROUND","1");
-        DatabaseHelper.getInstance(ctx).addControlPanel("GPS","0");
-        DatabaseHelper.getInstance(ctx).addControlPanel("URL","");// url.getText().toString());
-        DatabaseHelper.getInstance(ctx).addControlPanel("CLIENT_SYNC_PRODUCTS","0");
-        DatabaseHelper.getInstance(ctx).addControlPanel("APPS_CALLS_SUMMARY","1");
-        DatabaseHelper.getInstance(ctx).addControlPanel("IS_BUSY","0");
-        DatabaseHelper.getInstance(ctx).addControlPanel("BUSY_MESSAGE","ללא");
+        DatabaseHelper.getInstance(ctx).addControlPanel("IS_BUSY_OPTION", "ללא");
+        DatabaseHelper.getInstance(ctx).addControlPanel("Cfname", "");
+        DatabaseHelper.getInstance(ctx).addControlPanel("AUTO_LOGIN", "0");
+        DatabaseHelper.getInstance(ctx).addControlPanel("CID", "");
+        DatabaseHelper.getInstance(ctx).addControlPanel("CtypeID", "");
+        DatabaseHelper.getInstance(ctx).addControlPanel("CtypeName", "");
+        DatabaseHelper.getInstance(ctx).addControlPanel("dropHTTP", "http://");
+        DatabaseHelper.getInstance(ctx).addControlPanel("username", "");
+        DatabaseHelper.getInstance(ctx).addControlPanel("BACKGROUND", "1");
+        DatabaseHelper.getInstance(ctx).addControlPanel("GPS", "0");
+        DatabaseHelper.getInstance(ctx).addControlPanel("URL", "");// url.getText().toString());
+        DatabaseHelper.getInstance(ctx).addControlPanel("CLIENT_SYNC_PRODUCTS", "0");
+        DatabaseHelper.getInstance(ctx).addControlPanel("APPS_CALLS_SUMMARY", "1");
+        DatabaseHelper.getInstance(ctx).addControlPanel("IS_BUSY", "0");
+        DatabaseHelper.getInstance(ctx).addControlPanel("BUSY_MESSAGE", "ללא");
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Calendar c_week = Calendar.getInstance();
         c_week.add(Calendar.DAY_OF_YEAR, 7);
         String formatted = df.format(c_week.getTime());
 
-        DatabaseHelper.getInstance(ctx).addControlPanel("PRODUCTS_UPDATE",formatted);
-        DatabaseHelper.getInstance(ctx).addControlPanel("CLIENTS_PRODUCTS_UPDATE",formatted);
+        DatabaseHelper.getInstance(ctx).addControlPanel("PRODUCTS_UPDATE", formatted);
+        DatabaseHelper.getInstance(ctx).addControlPanel("CLIENTS_PRODUCTS_UPDATE", formatted);
 
-        Toast.makeText(ctx,"url does not exists", Toast.LENGTH_SHORT).show();
+        Toast.makeText(ctx, "url does not exists", Toast.LENGTH_SHORT).show();
 //        File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/wizenet/");
 //        if (!dir.exists()) {
 //            dir.mkdir();
 //        }
     }
-    public  long getDateDiff(String oldDate, String newDate) { //now - new date - old the old one
-        Helper h = new Helper();
+
+    public static long getDateDiff(String oldDate, String newDate) { //now - new date - old the old one
+        // Helper h = new Helper();
         long ret = 0;
         try {
-            Log.e("mytag"," dateOld: " +oldDate.toString()+ " dateNew: " +newDate.toString()+" mins: ");
-            long dateNew =  Long.valueOf(newDate);
+            Log.e("mytag", " dateOld: " + oldDate.toString() + " dateNew: " + newDate.toString() + " mins: ");
+            long dateNew = Long.valueOf(newDate);
             long dateOld = Long.valueOf(oldDate);
             long diff = dateNew - dateOld;
             long seconds = diff / 1000;
@@ -124,27 +111,28 @@ public class Helper {
             //Log.e("mytag"," dateOld: " +oldDate.toString()+ " dateNew: " +newDate.toString()+" mins: "+minutes);
             return minutes;
         } catch (Exception e) {
-            h.LogPrintExStackTrace(e);
+            // h.LogPrintExStackTrace(e);
             //e.printStackTrace();
         }
         return ret;
     }
-    public void sendAsyncActionsTime(final Context context){
 
-        jsonTimes = String.valueOf(DatabaseHelper.getInstance(context).getJsonResultsFromTable("IS_ActionsTime"," where 1=1 and ActionEnd IS NOT NULL AND ActionEnd <> ''"));
-        Log.e("mytag","jsonTimes: " + jsonTimes);
-        if (!(jsonTimes.contains("[]"))){
+    public void sendAsyncActionsTime(final Context context) {
+
+        jsonTimes = String.valueOf(DatabaseHelper.getInstance(context).getJsonResultsFromTable("IS_ActionsTime", " where 1=1 and ActionEnd IS NOT NULL AND ActionEnd <> ''"));
+        Log.e("mytag", "jsonTimes: " + jsonTimes);
+        if (!(jsonTimes.contains("[]"))) {
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
                     Model.getInstance().Async_Wz_createISActionTime(getMacAddr(context), jsonTimes, new Model.Wz_createISActionTime_Listener() {
                         @Override
                         public void onResult(String str) {
-                            if (str.contains("0")){
-                                boolean flag = DatabaseHelper.getInstance(context).delete_Table_Rows("IS_ActionsTime"," where 1=1 and ActionEnd IS NOT NULL AND ActionEnd <> ''");
-                                if (flag == true){
-                                    Log.e("mytag","is_actionTime deleted from db");
-                                    Log.e("mytag","is_actionsTime: " + str);
+                            if (str.contains("0")) {
+                                boolean flag = DatabaseHelper.getInstance(context).delete_Table_Rows("IS_ActionsTime", " where 1=1 and ActionEnd IS NOT NULL AND ActionEnd <> ''");
+                                if (flag == true) {
+                                    Log.e("mytag", "is_actionTime deleted from db");
+                                    Log.e("mytag", "is_actionsTime: " + str);
                                     //Toast.makeText(context, "is_actionsTime: " + str, Toast.LENGTH_LONG).show();
                                 }
                             }
@@ -156,8 +144,9 @@ public class Helper {
         }
 
     }
-    public boolean writeCtypeIDandSons(final Context ctx){
-        try{
+
+    public boolean writeCtypeIDandSons(final Context ctx) {
+        try {
             Model.getInstance().Async_Wz_getCtypeIDandSons_Listener(getMacAddr(ctx), new Model.Wz_getCtypeIDandSons_Listener() {
                 @Override
                 public void onResult(String str) {
@@ -166,13 +155,13 @@ public class Helper {
 
                     File_ f = new File_();
                     try {
-                        if (str.contains("#")){
-                            ctypeids = str.substring(22,str.indexOf("#"));
-                            sons = str.substring(str.indexOf("#")+1,str.length()-1).trim();
+                        if (str.contains("#")) {
+                            ctypeids = str.substring(22, str.indexOf("#"));
+                            sons = str.substring(str.indexOf("#") + 1, str.length() - 1).trim();
                             JSONArray jsonArr = new JSONArray(ctypeids);
                             JSONArray jsonArr2 = new JSONArray(sons);
-                            f.writeTextToFileExternal(ctx,"ctype.txt",ctypeids);
-                            f.writeTextToFileExternal(ctx,"sons.txt",sons);
+                            f.writeTextToFileExternal(ctx, "ctype.txt", ctypeids);
+                            f.writeTextToFileExternal(ctx, "sons.txt", sons);
                         }
                     } catch (JSONException e) {
                         LogPrintExStackTrace(e);
@@ -180,24 +169,25 @@ public class Helper {
                     }
                 }
             });
-        }catch(Exception e){
+        } catch (Exception e) {
             Toast.makeText(ctx, "שגיאה בwriteCtypeIDandSons", Toast.LENGTH_LONG).show();
         }
         return true;
     }
-    public boolean writeIS_Statuses(final Context ctx){
-        if (isNetworkAvailable(ctx)){
-            try{
+
+    public boolean writeIS_Statuses(final Context ctx) {
+        if (isNetworkAvailable(ctx)) {
+            try {
                 Model.getInstance().Async_Wz_getIS_StatusList(getMacAddr(ctx), new Model.Wz_getIS_StatusList_Listener() {
                     @Override
                     public void onResult(String str) {
                         File_ f = new File_();
                         String myJsonArray = str;
-                        myJsonArray = myJsonArray.substring(21,str.length()-1);
-                        f.writeTextToFileExternal(ctx,"is_status.txt",myJsonArray);
+                        myJsonArray = myJsonArray.substring(21, str.length() - 1);
+                        f.writeTextToFileExternal(ctx, "is_status.txt", myJsonArray);
                     }
                 });
-            }catch (Exception e){
+            } catch (Exception e) {
                 Toast.makeText(ctx, "שגיאה ", Toast.LENGTH_LONG).show();
 
                 LogPrintExStackTrace(e);
@@ -205,8 +195,9 @@ public class Helper {
         }
         return true;
     }
-    public String getDate(String format){
-       String ret = "";
+
+    public String getDate(String format) {
+        String ret = "";
         DateFormat df = new SimpleDateFormat(format);
         Calendar c_week = Calendar.getInstance();
         //c_week.add(Calendar.DAY_OF_YEAR, 7);
@@ -214,9 +205,11 @@ public class Helper {
         ret = formatted;
         return ret;
     }
+
     public boolean isNumeric1(String s) {
         return s.matches("[-+]?\\d*\\.?\\d+");
     }
+
     public boolean isNumeric(String s) {
         int len = s.length();
         for (int i = 0; i < len; ++i) {
@@ -227,15 +220,16 @@ public class Helper {
 
         return true;
     }
-    public void transferJsonCallTime(final Context ctx){
-        Helper h = new Helper();
-        try{
 
-            if (h.isNetworkAvailable(ctx)){
+    public void transferJsonCallTime(final Context ctx) {
+        Helper h = new Helper();
+        try {
+
+            if (h.isNetworkAvailable(ctx)) {
                 String countUnClosed = "";
                 countUnClosed = DatabaseHelper.getInstance(ctx).getScalarByCountQuery("SELECT count(*) from Calltime where ctq='-2'");
                 int unclosed = 1;
-                if (isNumeric(countUnClosed.trim())){
+                if (isNumeric(countUnClosed.trim())) {
                     unclosed = Integer.valueOf(countUnClosed.trim());
                 }
                 int rowCount = 0;
@@ -243,42 +237,41 @@ public class Helper {
                 JSONArray jsonArray = (DatabaseHelper.getInstance(ctx).getJsonResultsFromTable("Calltime"));
                 rowCount = jsonArray.length();
                 //Log.e("mytag","countUnClosed:" + countUnClosed +" , rowCount:" +rowCount );
-                if(rowCount > 0 && unclosed==0){
+                if (rowCount > 0 && unclosed == 0) {
                     String jsonString = "";
                     jsonString = String.valueOf(DatabaseHelper.getInstance(ctx).getJsonResultsFromTable("Calltime"));
-                    Toast.makeText(ctx, "משדר", Toast.LENGTH_LONG).show();
-                    try{
+                    //Toast.makeText(ctx, "משדר", Toast.LENGTH_LONG).show();
+                    try {
                         Model.getInstance().Async_Wz_Call_setTime_Offline_Listener(getMacAddr(ctx), jsonString, new Model.Wz_Call_setTime_Offline_Listener() {
                             @Override
                             public void onResult(String str) {
                                 // Toast.makeText(ctx,"response:"+ str, Toast.LENGTH_LONG).show();
 
                                 //Toast.makeText(ctx,"response:"+ str, Toast.LENGTH_LONG).show();
-                                if (str.toLowerCase().contains("java.net")){
+                                if (str.toLowerCase().contains("java.net")) {
                                     Toast.makeText(ctx, "שידור לא הצליח, נא נסה שנית", Toast.LENGTH_SHORT).show();
-                                }else{
-                                    Toast.makeText(ctx,"נשלח בהצלחה", Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(ctx, "נשלח בהצלחה", Toast.LENGTH_LONG).show();
                                     DatabaseHelper.getInstance(ctx).delete_call_time();
                                 }
                             }
                         });
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         h.LogPrintExStackTrace(e);
                     }
-                }else{
-                    Toast.makeText(ctx, "rowCount:" + rowCount + " countUnClosed:"+countUnClosed, Toast.LENGTH_LONG).show();
+                } else {
+                    Log.e("mytag", "rowCount:" + rowCount + " countUnClosed:" + countUnClosed);
                 }
-            }else{
+            } else {
                 Toast.makeText(ctx, "internet invalid, cannot send calltime rows.", Toast.LENGTH_LONG).show();
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             h.LogPrintExStackTrace(e);
             Toast.makeText(ctx, e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
 
     }
-
 
 
     public boolean isJSONValid(String test) {
@@ -295,7 +288,8 @@ public class Helper {
         }
         return true;
     }
-    public Pair<String, String> getJsonKeyValue (String jsonstr,String ws_name) {
+
+    public Pair<String, String> getJsonKeyValue(String jsonstr, String ws_name) {
 
         JSONObject j = null;
         String Status = null;
@@ -308,7 +302,6 @@ public class Helper {
             Msg = jarray.getJSONObject(0).getString("Msg");
 
 
-
             //myStr=(jarray.getJSONObject(0).getString("Cfname"));//.concat(" ");//1 or 0
             //myStr.concat(jarray.getJSONObject(0).getString("Clname"));//
 
@@ -318,15 +311,16 @@ public class Helper {
         return new Pair<>(Status, Msg);
     }
 
-    public String getcurrentDateString(){
+    public String getcurrentDateString() {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd  HH:mm");
         String sdt = df.format(new Date(System.currentTimeMillis()));
         return sdt;
     }
 
-    public  final String DEMOURL = "http://main.wizenet.co.il/webservices/freelance.asmx";//default
+    public final String DEMOURL = "http://main.wizenet.co.il/webservices/freelance.asmx";//default
+
     //region sync all products with conditions
-    public void ALLProductsSync (final Context ctx){
+    public void ALLProductsSync(final Context ctx) {
         if (isNetworkAvailable(ctx)) {
             final File_ f = new File_();
 
@@ -349,7 +343,7 @@ public class Helper {
 //                        }
 //                    }
                     //else{Log.e("myTag", "deleted file productss");}
-                    Log.e("myTag","str:" + str);
+                    Log.e("myTag", "str:" + str);
                 }
             });
         } else {
@@ -359,18 +353,18 @@ public class Helper {
         }
     }
 
-    public boolean writeProductsItems(){
+    public boolean writeProductsItems() {
         Log.e("myTag", "arrived here");
         DatabaseHelper db = DatabaseHelper.getInstance(ctx);
         if (db.mgnet_items_isEmpty("all")) {
             try {
                 File_ f = new File_();
-                String strJson ="";
+                String strJson = "";
                 strJson += "{Orders:";
-                strJson += f.readFromFileExternal(ctx,"productss.txt");
+                strJson += f.readFromFileExternal(ctx, "productss.txt");
                 strJson += "}";
 
-                Log.e("mytag","*strJson*: " + strJson);
+                Log.e("mytag", "*strJson*: " + strJson);
                 //strJson = strJson.replace("PRODUCTS_ITEMS_LISTResponse", "");
                 //strJson = strJson.replace("PRODUCTS_ITEMS_LISTResult=", "Orders:");
                 JSONObject j = null;
@@ -394,7 +388,7 @@ public class Helper {
                                 e.getString("Pname"),
                                 e.getString("Pmakat"),
                                 e.getString("Pprice"),
-                                e.getString("Poprice"),"all");
+                                e.getString("Poprice"), "all");
 
                     } catch (JSONException e1) {
                         e1.printStackTrace();
@@ -428,16 +422,16 @@ public class Helper {
 //        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 //        alarmManager.cancel(sender);
 //    }
-    public void startService_sync_products(Context ctx){
-        try{
+    public void startService_sync_products(Context ctx) {
+        try {
 
-        }catch(Exception ex){
+        } catch (Exception ex) {
 
         }
         Intent alarm = new Intent(ctx, Alarm_Receiver_sync_client_products.class);
         boolean alarmRunning = (PendingIntent.getBroadcast(ctx, 0, alarm, PendingIntent.FLAG_NO_CREATE) != null);
-        if(alarmRunning == false) {
-            Log.e("mytag","Alarm is running.");
+        if (alarmRunning == false) {
+            Log.e("mytag", "Alarm is running.");
             PendingIntent pendingIntent = PendingIntent.getBroadcast(ctx, 0, alarm, 0);
             AlarmManager alarmManager = (AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE);
 
@@ -449,16 +443,16 @@ public class Helper {
     //
     // this function call the web service and then write it into text file each cid have been sent.
     //*/
-    public void CLIENTProductsSync (final Context ctx,final String cid){
+    public void CLIENTProductsSync(final Context ctx, final String cid) {
 
         if (isNetworkAvailable(ctx)) {
             final File_ f = new File_();
-            Model.getInstance().Async_Get_mgnet_client_items_Listener(getMacAddr(ctx),cid, new Model.get_mgnet_client_items_Listener() {
+            Model.getInstance().Async_Get_mgnet_client_items_Listener(getMacAddr(ctx), cid, new Model.get_mgnet_client_items_Listener() {
                 @Override
                 public void onResult(String str) {
 
                     //writeTextToSpecificFile("client_products","pl_" + cid +".txt", str);
-                    f.writeTextToFileWithSubDirectory(ctx,"client_products","pl_" + cid +".txt", str);
+                    f.writeTextToFileWithSubDirectory(ctx, "client_products", "pl_" + cid + ".txt", str);
                     Log.e("myTag", str);
                 }
             });
@@ -473,7 +467,7 @@ public class Helper {
         // determine the profile directory
         File profileDirectory = new File(c.getFilesDir(), profileName);
         File file = c.getFileStreamPath("wizenet");
-        Log.e("mytag","exist?:"+ String.valueOf(file.exists()));
+        Log.e("mytag", "exist?:" + String.valueOf(file.exists()));
         // creates the directory if not present yet
         profileDirectory.mkdir();
 
@@ -481,46 +475,44 @@ public class Helper {
     }
 
 
-    public void wrtieFileOnInternalStorage(Context mcoContext,String sFileName, String sBody){
-        File file = new File(mcoContext.getFilesDir(),"mydir");
-        if(!file.exists()){
+    public void wrtieFileOnInternalStorage(Context mcoContext, String sFileName, String sBody) {
+        File file = new File(mcoContext.getFilesDir(), "mydir");
+        if (!file.exists()) {
             file.mkdir();
         }
 
-        try{
+        try {
             File gpxfile = new File(file, sFileName);
             FileWriter writer = new FileWriter(gpxfile);
             writer.append(sBody);
             writer.flush();
             writer.close();
-            Log.e("mytag"," success!~ ");
+            Log.e("mytag", " success!~ ");
 
-        }catch (Exception e){
-            Log.e("mytag"," sdfsdfsdfd"+ e.getMessage());
+        } catch (Exception e) {
+            Log.e("mytag", " sdfsdfsdfd" + e.getMessage());
             e.printStackTrace();
 
         }
     }
 
 
-
-
-
     /**
      * //this function get all cid string array from the json file
+     *
      * @return
      */
-    public List<String> getCIDSlist(){
+    public List<String> getCIDSlist() {
         List<String> ret = new ArrayList<String>();
         String strJson = "";
         File_ f = new File_();
-        strJson = f.readFromFileExternal(ctx,"customers.txt");
+        strJson = f.readFromFileExternal(ctx, "customers.txt");
         //strJson = readTextFromFileCustomers();
         JSONObject j = null;
         JSONArray jarray = null;
         try {
             j = new JSONObject(strJson);
-            jarray= j.getJSONArray("Customers");
+            jarray = j.getJSONArray("Customers");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -542,19 +534,20 @@ public class Helper {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return  ret;
+        return ret;
     }
-    public String getCusernamelist(){
+
+    public String getCusernamelist() {
         String ret = "";
         String strJson = "";
         File_ f = new File_();
-        strJson = f.readFromFileExternal(ctx,"customers.txt");
+        strJson = f.readFromFileExternal(ctx, "customers.txt");
         //strJson = readTextFromFileCustomers();
         JSONObject j = null;
         JSONArray jarray = null;
         try {
             j = new JSONObject(strJson);
-            jarray= j.getJSONArray("Wz_Clients_List");
+            jarray = j.getJSONArray("Wz_Clients_List");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -577,17 +570,17 @@ public class Helper {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return  ret;
+        return ret;
     }
 
-    public List<Order> getClientOrderList(String strInputCID,Context c){
+    public List<Order> getClientOrderList(String strInputCID, Context c) {
         File_ f = new File_();
         List<Order> responseList = new ArrayList<>();
         String strJson = "";
         //strJson = helper.readTextFromFile3("client_products/pl_"+ strInputCID +".txt");
         strJson += "{Orders:";
-        strJson +=  f.readFromFileWithSubDirectory(c,"client_products","pl_"+ strInputCID +".txt");
-        strJson +="}";
+        strJson += f.readFromFileWithSubDirectory(c, "client_products", "pl_" + strInputCID + ".txt");
+        strJson += "}";
 
         //strJson=strJson.replace("PRODUCTS_ITEMS_LISTResponse","");
         //strJson=strJson.replace("PRODUCTS_ITEMS_LISTResult=","Orders:");
@@ -597,10 +590,10 @@ public class Helper {
         jarray = null;
         try {
             j = new JSONObject(strJson);
-            jarray= j.getJSONArray("Orders");
+            jarray = j.getJSONArray("Orders");
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
         for (int i = 0; i < jarray.length(); i++) {
             final JSONObject e;
@@ -617,7 +610,7 @@ public class Helper {
 
             } catch (JSONException e1) {
                 e1.printStackTrace();
-                Log.e("MYTAG",e1.getMessage());
+                Log.e("MYTAG", e1.getMessage());
             }
 
         }
@@ -628,21 +621,22 @@ public class Helper {
      * in wizenet app we create order, the order are have send to the web service,
      * the two functions below loop over the order file (json building) and send each of them to webservice
      * if web service say that he got successfully , remove the file, it's not necessary anymore.
+     *
      * @param ctx
      */
     //region SendOrderToWizenet
     public void SendOrderToWizenet(Context ctx) {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd  HH:mm");
         String sdt = df.format(new Date(System.currentTimeMillis()));
-        Log.e("MYTAG","chk: "+sdt);
+        Log.e("MYTAG", "chk: " + sdt);
         String isNetwork = "";
-        if (isNetworkAvailable(ctx)){
+        if (isNetworkAvailable(ctx)) {
             //String path = Environment.getExternalStorageDirectory().getPath()+"/wizenet/offline/";
             File myDirectory = null;//new File(path);
             File_ f = new File_();
-            myDirectory = f.retSubDir(ctx,"offline");
-            traverse(myDirectory,ctx);
-        }else{
+            myDirectory = f.retSubDir(ctx, "offline");
+            traverse(myDirectory, ctx);
+        } else {
             isNetwork = " nop Network";
         }
         //writeTextToFileORDER(sdt + isNetwork);
@@ -650,10 +644,11 @@ public class Helper {
 
     /**
      * loop over directory files and create order for each one of them, and then delete the file if success.
+     *
      * @param dir
      * @param ctx
      */
-    public void traverse (File dir, final Context ctx) {
+    public void traverse(File dir, final Context ctx) {
         File_ f = new File_();
         if (dir.exists()) {
             File[] files = dir.listFiles();
@@ -665,12 +660,12 @@ public class Helper {
                 } else {
                     String fileContect = "";
                     //fileContect = readTextFromFile(file);
-                    fileContect = f.readFromCurrentFileExternal(ctx,file);
+                    fileContect = f.readFromCurrentFileExternal(ctx, file);
                     Model.getInstance().Async_CREATE_OFFLINE_Listener(getMacAddr(ctx).toString(), fileContect, new Model.CREATE_OFFLINE_Listener() {
                         @Override
                         public void onResult(String str) {
                             Toast.makeText(ctx, str + " Order has been created", Toast.LENGTH_LONG).show();
-                            Log.e("MYTAG",str + " Order has been created");
+                            Log.e("MYTAG", str + " Order has been created");
                         }
                     });
                     // do something here with the file
@@ -679,8 +674,6 @@ public class Helper {
         }
     }
     //endregion
-
-
 
 
 //    public boolean writeTextToClientDirectory(String subDirectory,String fileandsuffix,String input){
@@ -770,18 +763,18 @@ public class Helper {
 //        return true;
 //    }
 
-    public boolean writeTextToFile2(String myurlParameter){
+    public boolean writeTextToFile2(String myurlParameter) {
 
         // get the path to sdcard
         String myUrl;
-        if(myurlParameter.length()>0){
+        if (myurlParameter.length() > 0) {
             myUrl = myurlParameter;
-        }else{
+        } else {
             myUrl = null;//DEMOURL;
         }
 
         try {
-            File myFile = new File(Environment.getExternalStorageDirectory().getPath()+"/wizenet/customers.txt");
+            File myFile = new File(Environment.getExternalStorageDirectory().getPath() + "/wizenet/customers.txt");
             myFile.createNewFile();
             FileOutputStream fOut = new FileOutputStream(myFile);
             OutputStreamWriter myOutWriter =
@@ -795,19 +788,18 @@ public class Helper {
         }
         return true;
     }
-    public void deleteProductsFiles () {
-        try{
-            File dir = new File(Environment.getExternalStorageDirectory()+"/wizenet/client_products");
-            if (dir.isDirectory())
-            {
+
+    public void deleteProductsFiles() {
+        try {
+            File dir = new File(Environment.getExternalStorageDirectory() + "/wizenet/client_products");
+            if (dir.isDirectory()) {
                 String[] children = dir.list();
-                for (int i = 0; i < children.length; i++)
-                {
+                for (int i = 0; i < children.length; i++) {
                     new File(dir, children[i]).delete();
                 }
             }
-        }catch(Exception ex){
-            Log.e("MYTAG","failed to delete");
+        } catch (Exception ex) {
+            Log.e("MYTAG", "failed to delete");
         }
     }
     //###################################
@@ -820,38 +812,35 @@ public class Helper {
      */
     public void deleteAllFiles() {
         File_ f = new File_();
-        try{
+        try {
 
-            File dir = f.retSubDir(ctx,"client_products");//= new File(Environment.getExternalStorageDirectory()+"/wizenet/client_products");
-            if (dir.isDirectory())
-            {
+            File dir = f.retSubDir(ctx, "client_products");//= new File(Environment.getExternalStorageDirectory()+"/wizenet/client_products");
+            if (dir.isDirectory()) {
                 String[] children = dir.list();
-                for (int i = 0; i < children.length; i++)
-                {
+                for (int i = 0; i < children.length; i++) {
                     new File(dir, children[i]).delete();
                 }
             }
-        }catch(Exception ex){
-            Log.e("MYTAG","failed to delete");
+        } catch (Exception ex) {
+            Log.e("MYTAG", "failed to delete");
         }
-        try{
+        try {
             //File myFile =
-            f.deleteFileExternal(ctx,"productss.txt");//new File(Environment.getExternalStorageDirectory().getPath()+"/wizenet/productss.txt");
+            f.deleteFileExternal(ctx, "productss.txt");//new File(Environment.getExternalStorageDirectory().getPath()+"/wizenet/productss.txt");
             //if(myFile.exists())
             //myFile.delete();
-        }catch(Exception e){
+        } catch (Exception e) {
 
         }
-        try{
-            f.deleteFileExternal(ctx,"customers.txt");
+        try {
+            f.deleteFileExternal(ctx, "customers.txt");
             //File myFile = new File(Environment.getExternalStorageDirectory().getPath()+"/wizenet/customers.txt");
             //if(myFile.exists())
             //    myFile.delete();
-        }catch(Exception e){
+        } catch (Exception e) {
 
         }
     }
-
 
 
     //Android 6.0 : Access to mac address from WifiManager forbidden
@@ -860,8 +849,6 @@ public class Helper {
 
 
 //region get mac address functions
-
-
 
 
     //@RequiresApi(api = Build.VERSION_CODES.GINGERBREAD)
@@ -883,9 +870,9 @@ public class Helper {
     //        return device_id;
     //    }
     //}
-    public  String[] extractLinks(String text) {
+    public String[] extractLinks(String text) {
         List<String> links = new ArrayList<String>();
-        try{
+        try {
 
             Matcher m = Patterns.WEB_URL.matcher(text);
             while (m.find()) {
@@ -895,56 +882,58 @@ public class Helper {
             }
 
             return links.toArray(new String[links.size()]);
-        }catch(Exception e){
+        } catch (Exception e) {
             return new String[]{""};
         }
 
     }
-        public static String getMacAddr(Context ctx1) {
-            String device_id = "";
-            try{
-                TelephonyManager tm = (TelephonyManager) ctx1.getSystemService(Context.TELEPHONY_SERVICE);
-                device_id = tm.getDeviceId();
-                if (!(device_id.trim() == "")){
-                    return device_id;
-                }else{
-                    device_id = getGUID();
-                    return device_id;
-                }
-            }catch(Exception e){
-                Helper h = new Helper();
-                h.LogPrintExStackTrace(e);
+
+    public static String getMacAddr(Context ctx1) {
+        String device_id = "";
+        try {
+            TelephonyManager tm = (TelephonyManager) ctx1.getSystemService(Context.TELEPHONY_SERVICE);
+            device_id = tm.getDeviceId();
+            if (!(device_id.trim() == "")) {
+                return device_id;
+            } else {
                 device_id = getGUID();
                 return device_id;
             }
-            //try{
-            //    TelephonyManager tm = (TelephonyManager) ctx1.getSystemService(Context.TELEPHONY_SERVICE);
-            //    String device_id = tm.getDeviceId();
-            //    return device_id;
-            //}catch(Exception e){
-            //    Helper h = new Helper();
-            //    h.LogPrintExStackTrace(e);
-            //    return "";
-            //}
+        } catch (Exception e) {
+            Helper h = new Helper();
+            h.LogPrintExStackTrace(e);
+            device_id = getGUID();
+            return device_id;
         }
-        private static String getGUID(){
-            String device_id = "";
-            try{
-                File_ f= new File_();
-                if (f.isFileExist("guid.txt") == true){
-                    device_id = f.readFromFileExternal(ctx,"guid.txt");
-                    return device_id;
-                }else{
-                    UUID uuid = UUID.randomUUID();
-                    String uuidInString = uuid.toString();
-                    f.writeTextToFileExternal(ctx,"guid.txt",uuidInString);
-                    device_id = f.readFromFileExternal(ctx,"guid.txt");
-                    return device_id;
-                }
-            }catch (Exception e){
-                return "";
+        //try{
+        //    TelephonyManager tm = (TelephonyManager) ctx1.getSystemService(Context.TELEPHONY_SERVICE);
+        //    String device_id = tm.getDeviceId();
+        //    return device_id;
+        //}catch(Exception e){
+        //    Helper h = new Helper();
+        //    h.LogPrintExStackTrace(e);
+        //    return "";
+        //}
+    }
+
+    private static String getGUID() {
+        String device_id = "";
+        try {
+            File_ f = new File_();
+            if (f.isFileExist("guid.txt") == true) {
+                device_id = f.readFromFileExternal(ctx, "guid.txt");
+                return device_id;
+            } else {
+                UUID uuid = UUID.randomUUID();
+                String uuidInString = uuid.toString();
+                f.writeTextToFileExternal(ctx, "guid.txt", uuidInString);
+                device_id = f.readFromFileExternal(ctx, "guid.txt");
+                return device_id;
             }
+        } catch (Exception e) {
+            return "";
         }
+    }
 //        try {
 //            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
 //            for (NetworkInterface nif : all) {
@@ -970,21 +959,19 @@ public class Helper {
 //        return "02:00:00:00:00:00";
 
 
-
 //endregion
 
 
-
-
-    public void goToOfflineMenuFragment(Context context){
-        android.support.v4.app.FragmentManager fm = ((FragmentActivity)context).getSupportFragmentManager();
+    public void goToOfflineMenuFragment(Context context) {
+        android.support.v4.app.FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
         FragmentMenuOffline frag = new FragmentMenuOffline();
-        ft.replace(R.id.container,frag,"FragmentMenuOffline");
+        ft.replace(R.id.container, frag, "FragmentMenuOffline");
         //tv.setVisibility(TextView.GONE);
         ft.addToBackStack("FragmentMenuOffline");
         ft.commit();
     }
+
     public boolean isNetworkAvailable(Context mContext) {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -997,11 +984,12 @@ public class Helper {
 
     /**
      * iterate over json file (text file) and extract the json to an objects
+     *
      * @param json
      * @return
      */
     //region get customers objects from json file
-    public Ccustomer[] getCustomersFromJson2(String json){
+    public Ccustomer[] getCustomersFromJson2(String json) {
         Ccustomer[] customersList = new Ccustomer[0];
         JSONObject j = null;
         try {
@@ -1088,7 +1076,8 @@ public class Helper {
         }
         return customersList;
     }
-    public Ccustomer[] getWizenetClientsFromJson(String json){
+
+    public Ccustomer[] getWizenetClientsFromJson(String json) {
         Ccustomer[] customersList = new Ccustomer[0];
         JSONObject j = null;
         try {
@@ -1174,16 +1163,17 @@ public class Helper {
         }
         return customersList;
     }
-    public Ccustomer[] getWizenetClientsFromJsonForLocations(Context ctx){
+
+    public Ccustomer[] getWizenetClientsFromJsonForLocations(Context ctx) {
 
         File_ f = new File_();
         String myString = "";
         myString = f.readFromFileExternal(ctx, "wzClients.txt");
         Json_ _j = new Json_();
-        if (_j.isJSONValid(myString)){
-            Toast.makeText(ctx,"string is valid", Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(ctx,"string is not valid", Toast.LENGTH_SHORT).show();
+        if (_j.isJSONValid(myString)) {
+            Toast.makeText(ctx, "string is valid", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(ctx, "string is not valid", Toast.LENGTH_SHORT).show();
             return null;
         }
         Ccustomer[] customersList = new Ccustomer[0];
@@ -1192,7 +1182,7 @@ public class Helper {
             j = new JSONObject(myString);
             //get the array [...] in json
             JSONArray jarray = j.getJSONArray("Wz_ret_ClientsAddressesByActions");
-            Log.e("mytag","jarray :" +jarray.toString());
+            Log.e("mytag", "jarray :" + jarray.toString());
             customersList = new Ccustomer[jarray.length()];
             //customersList = new Ccustomer[jarray.length()];
 
@@ -1220,114 +1210,110 @@ public class Helper {
 
     //endregion
 
-    public void goToLoginReportFragment(Context context){
+    public void goToLoginReportFragment(Context context) {
 
-        android.support.v4.app.FragmentManager fm = ((FragmentActivity)context).getSupportFragmentManager();
+        android.support.v4.app.FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
         FragmentLoginReport frag = new FragmentLoginReport();
-        ft.replace(R.id.container,frag,"FragmentLoginReport");
+        ft.replace(R.id.container, frag, "FragmentLoginReport");
         //tv.setVisibility(TextView.GONE);
         ft.addToBackStack("FragmentLoginReport");
         ft.commit();
     }
-    public void goToFragmentSecret(Context context){
 
-        android.support.v4.app.FragmentManager fm = ((FragmentActivity)context).getSupportFragmentManager();
+    public void goToFragmentSecret(Context context) {
+
+        android.support.v4.app.FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
         FragmentSecret frag = new FragmentSecret();
-        ft.replace(R.id.container,frag,"FragmentSecret");
+        ft.replace(R.id.container, frag, "FragmentSecret");
         //tv.setVisibility(TextView.GONE);
         ft.addToBackStack("FragmentSecret");
         ft.commit();
     }
-    public void goToFragmentCreateAction(Context context){
 
-        android.support.v4.app.FragmentManager fm = ((FragmentActivity)context).getSupportFragmentManager();
+    public void goToFragmentCreateAction(Context context) {
+
+        android.support.v4.app.FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
         FragmentCreateAction frag = new FragmentCreateAction();
-        ft.replace(R.id.container,frag,"FragmentCreateAction");
+        ft.replace(R.id.container, frag, "FragmentCreateAction");
         //tv.setVisibility(TextView.GONE);
         ft.addToBackStack("FragmentCreateAction");
         ft.commit();
     }
 
-    public void goToFragmentAutoSMS(Context context){
+    public void goToFragmentAutoSMS(Context context) {
 
-        android.support.v4.app.FragmentManager fm = ((FragmentActivity)context).getSupportFragmentManager();
+        android.support.v4.app.FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
         FragmentAutoSMS frag = new FragmentAutoSMS();
-        ft.replace(R.id.container,frag,"FragmentAutoSMS");
+        ft.replace(R.id.container, frag, "FragmentAutoSMS");
         //tv.setVisibility(TextView.GONE);
         ft.addToBackStack("FragmentAutoSMS");
         ft.commit();
     }
-    public void goTocustomers(Context context){
 
-        android.support.v4.app.FragmentManager fm = ((FragmentActivity)context).getSupportFragmentManager();
+    public void goTocustomers(Context context) {
+
+        android.support.v4.app.FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
         FragmentCustomer frag = new FragmentCustomer();
-        ft.replace(R.id.container,frag,"FragmentCustomer");
+        ft.replace(R.id.container, frag, "FragmentCustomer");
         ft.addToBackStack("FragmentCustomer");
         ft.commit();
 
     }
-    public void goToCPFragment(Context context){
+
+    public void goToCPFragment(Context context) {
 
         //mydb.getInstance(getApplicationContext());
         ControlPanelFragment controlPanelFragment = new ControlPanelFragment();
-        android.support.v4.app.FragmentTransaction fragmentTransaction = ((FragmentActivity)context).getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.container,controlPanelFragment,"CPFragment");
+        android.support.v4.app.FragmentTransaction fragmentTransaction = ((FragmentActivity) context).getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.container, controlPanelFragment, "CPFragment");
         fragmentTransaction.addToBackStack("CPFragment");
         //tv.setVisibility(TextView.GONE);
         fragmentTransaction.commit();
 
     }
-    public void goToChangeStatusAction(String actionid,Context c){
+
+    public void goToChangeStatusAction(String actionid, Context c) {
 
         FragmentActionChangeStatus fr = new FragmentActionChangeStatus();
-        android.support.v4.app.FragmentManager fm = ((FragmentActivity)c).getSupportFragmentManager();
+        android.support.v4.app.FragmentManager fm = ((FragmentActivity) c).getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
         Bundle bundle = new Bundle();
 
-        bundle.putString("actionid",actionid);
+        bundle.putString("actionid", actionid);
         fr.setArguments(bundle);
-        ft.replace(R.id.container,fr,"FragmentActionChangeStatus");
+        ft.replace(R.id.container, fr, "FragmentActionChangeStatus");
         ft.addToBackStack("FragmentActionChangeStatus");
         ft.commit();
 
 
     }
 
-    public void goToMenuFragment(Context context){
-        android.support.v4.app.FragmentManager fm = ((FragmentActivity)context).getSupportFragmentManager();
-        android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-        FragmentMenu frag = new FragmentMenu();
-        ft.replace(R.id.container,frag,"FragmentMenu");
-        //tv.setVisibility(TextView.GONE);
-        ft.addToBackStack("FragmentMenu");
-        ft.commit();
-    }
-
-    public void goToToolsFragment(Context context){
-        android.support.v4.app.FragmentManager fm = ((FragmentActivity)context).getSupportFragmentManager();
+    public void goToToolsFragment(Context context) {
+        android.support.v4.app.FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
         FragmentTools frag = new FragmentTools();
-        ft.replace(R.id.container,frag,"FragmentTools");
+        ft.replace(R.id.container, frag, "FragmentTools");
         //tv.setVisibility(TextView.GONE);
         ft.addToBackStack("FragmentTools");
         ft.commit();
     }
-    public void sendChangedActionsToWizenet(Context c){
+
+    public void sendChangedActionsToWizenet(Context c) {
         String countChanged = "";
         countChanged = DatabaseHelper.getInstance(c).getScalarByCountQuery("SELECT count(actionID) from IS_Actions where Expr1='0' ");
-        if (Integer.valueOf(countChanged) > 0){
+        if (Integer.valueOf(countChanged) > 0) {
             List<IS_Action> actions = new ArrayList<IS_Action>();
             actions = DatabaseHelper.getInstance(c).getISActions(" and  Expr1='0' ");
-            for(IS_Action is :actions){
+            for (IS_Action is : actions) {
                 Model.getInstance().Async_Wz_Update_Action_Field_Listener(getMacAddr(c), (String.valueOf(is.getActionID())), "statusID", "" + String.valueOf(is.getStatusID()) + "", new Model.Wz_Update_Action_Field_Listener() {
                     @Override
                     public void onResult(String str) {
-                        Log.e("mytag","status changed");
+                        Log.e("mytag", "status changed");
                     }
                 });
             }
@@ -1369,29 +1355,35 @@ public class Helper {
 //        ft.commit();
 //    }
 
-    public void goToOrdersFragment(Context context){
-        android.support.v4.app.FragmentManager fm = ((FragmentActivity)context).getSupportFragmentManager();
+    public void goToOrdersFragment(Context context) {
+        android.support.v4.app.FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
         FragmentOrders frag = new FragmentOrders();
-        ft.replace(R.id.container,frag,"FragmentOrders");
+        ft.replace(R.id.container, frag, "FragmentOrders");
         //tv.setVisibility(TextView.GONE);
         ft.addToBackStack("FragmentOrders");
         ft.commit();
     }
-    public void goToMessagesFragment(Context context){
-        android.support.v4.app.FragmentManager fm = ((FragmentActivity)context).getSupportFragmentManager();
+
+    public void goToMessagesFragment(Context context) {
+        android.support.v4.app.FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
         FragmentMessage frag = new FragmentMessage();
-        ft.replace(R.id.container,frag,"FragmentMessage");
+        ft.replace(R.id.container, frag, "FragmentMessage");
         //tv.setVisibility(TextView.GONE);
         ft.addToBackStack("FragmentMessage");
         ft.commit();
     }
-    public void LogPrintExStackTrace(Exception e){
-        Log.e("mytag",e.getMessage());
-        Log.e("mytag",toString(e.getStackTrace()));
+
+    public void LogPrintExStackTrace(Exception e) {
+        Log.e("mytag", e.getMessage());
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        String stacktrace = sw.toString();
+        Log.e("mytag", stacktrace);
     }
-    public  String toString(StackTraceElement[] stackTraceElements) {
+
+    public String toString(StackTraceElement[] stackTraceElements) {
         if (stackTraceElements == null)
             return "";
         StringBuilder stringBuilder = new StringBuilder();

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="btnStyle">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/_18sdp</item>
+        <item name="android:padding">@dimen/_5sdp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_height">@dimen/_40sdp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_margin">@dimen/_3sdp</item>
+        <item name="android:background">@drawable/selector_primary_btn</item>
+
+    </style>
+
+    <style name="btnStyle.stroke">
+        <item name="android:background">@drawable/selector_btn_stroke</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+</resources>

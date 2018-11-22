@@ -1,13 +1,22 @@
 package com.Activities;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.text.Editable;
+import android.support.v4.content.ContextCompat;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.CookieManager;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -22,18 +32,18 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.Adapters.CallsAdapter;
 import com.Classes.Call;
 import com.DatabaseHelper;
 import com.Helper;
-import com.Adapters.CallsAdapter;
-import com.model.Model;
 
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,7 +51,7 @@ import java.util.List;
 
 public class ActivityWebView extends FragmentActivity {
 
-    Helper helper ;
+    Helper helper;
     Context ctx;
 
     DatabaseHelper db;
@@ -50,8 +60,79 @@ public class ActivityWebView extends FragmentActivity {
     boolean result = false;
     private EditText mSearchEdt;
     CallsAdapter callsAdapter; //to refresh the list
-    ArrayList<Call> data2 = new ArrayList<Call>() ;
+    ArrayList<Call> data2 = new ArrayList<Call>();
     private TextWatcher mSearchTw;
+    private ValueCallback<Uri> mUploadMessage;
+    private ValueCallback<Uri[]> mUploadMessageandroid5;
+    private final static int FILECHOOSER_RESULTCODE = 1;
+
+   /* @Override
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    Intent intent) {
+        if (requestCode == FILECHOOSER_RESULTCODE) {
+            if (null == mUploadMessage) return;
+            Uri result = intent == null || resultCode != RESULT_OK ? null
+                    : intent.getData();
+            mUploadMessage.onReceiveValue(result);
+            mUploadMessage = null;
+        }
+    }*/
+
+
+    private String mCM;
+    private ValueCallback mUM;
+    private ValueCallback<Uri[]> mUMA;
+    private final static int FCR = 1;
+
+    //select whether you want to upload multiple files (set 'true' for yes)
+    private boolean multiple_files = false;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (Build.VERSION.SDK_INT >= 21) {
+            Uri[] results = null;
+            //checking if response is positive
+            if (resultCode == Activity.RESULT_OK) {
+                if (requestCode == FCR) {
+                    if (null == mUMA) {
+                        return;
+                    }
+                    if (intent == null || intent.getData() == null) {
+                        if (mCM != null) {
+                            results = new Uri[]{Uri.parse(mCM)};
+                        }
+                    } else {
+                        String dataString = intent.getDataString();
+                        if (dataString != null) {
+                            results = new Uri[]{Uri.parse(dataString)};
+                        } else {
+                            if (multiple_files) {
+                                if (intent.getClipData() != null) {
+                                    final int numSelectedFiles = intent.getClipData().getItemCount();
+                                    results = new Uri[numSelectedFiles];
+                                    for (int i = 0; i < numSelectedFiles; i++) {
+                                        results[i] = intent.getClipData().getItemAt(i).getUri();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            mUMA.onReceiveValue(results);
+            mUMA = null;
+        } else {
+            if (requestCode == FCR) {
+                if (null == mUM) return;
+                Uri result = intent == null || resultCode != RESULT_OK ? null : intent.getData();
+                mUM.onReceiveValue(result);
+                mUM = null;
+            }
+        }
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,16 +145,16 @@ public class ActivityWebView extends FragmentActivity {
         String action = "";
         String specialurl = "";
         Bundle b = getIntent().getExtras();
-        if(b != null){
+        if (b != null) {
             callid = b.getInt("callid");
             cid = b.getInt("cid");
             technicianid = b.getInt("technicianid");
             action = b.getString("action");
-            try{
-                specialurl =b.getString("specialurl");
-                Log.e("mytag","special url: "+specialurl);
-            }catch (Exception e){
-                Log.e("mytag","special url ex: " + e.getMessage());
+            try {
+                specialurl = b.getString("specialurl");
+                Log.e("mytag", "special url: " + specialurl);
+            } catch (Exception e) {
+                Log.e("mytag", "special url ex: " + e.getMessage());
             }
 
         }
@@ -99,14 +180,21 @@ public class ActivityWebView extends FragmentActivity {
         });
 
 
-
-
-
-        final WebView  mWebview  = new WebView(this);
+        final WebView mWebview = new WebView(this);
         final Activity activity = this;
         mWebview.getSettings().setJavaScriptEnabled(true); // enable javascript
-        mWebview.setWebChromeClient(new WebChromeClient());
+        mWebview.getSettings().setAllowFileAccess(true);
+        mWebview.getSettings().setAllowContentAccess(true);
+        mWebview.getSettings().setAllowFileAccessFromFileURLs(true);
 
+        if (Build.VERSION.SDK_INT >= 21) {
+            mWebview.getSettings().setMixedContentMode(0);
+            mWebview.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            mWebview.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else {
+            mWebview.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
 
         mWebview.setWebViewClient(new WebViewClient() {
             @SuppressWarnings("deprecation")
@@ -114,120 +202,275 @@ public class ActivityWebView extends FragmentActivity {
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 Toast.makeText(activity, description, Toast.LENGTH_SHORT).show();
             }
+
             @TargetApi(android.os.Build.VERSION_CODES.M)
             @Override
             public void onReceivedError(WebView view, WebResourceRequest req, WebResourceError rerr) {
                 // Redirect to deprecated method, so you can use it in all SDK versions
                 onReceivedError(view, rerr.getErrorCode(), rerr.getDescription().toString(), req.getUrl().toString());
             }
+
         });
+
+        try {
+
+            mWebview.setWebChromeClient(new WebChromeClient() {
+                //The undocumented magic method override
+                //Eclipse will swear at you if you try to put @Override here
+
+
+                public void openFileChooser(ValueCallback<Uri> uploadMsg) {
+                    // ActivityWebView.this.showAttachmentDialog(uploadMsg);
+                    // Log.e("mytag", uploadMsg.toString());
+
+                    mUM = uploadMsg;
+                    Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                    i.addCategory(Intent.CATEGORY_OPENABLE);
+                    i.setType("*/*");
+                    if (multiple_files && Build.VERSION.SDK_INT >= 18) {
+                        i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                    }
+                    startActivityForResult(Intent.createChooser(i, "File Chooser"), FCR);
+
+                }
+
+                // For Android > 3.x
+                public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
+                    ActivityWebView.this.showAttachmentDialog(uploadMsg);
+                    Log.e("mytag", uploadMsg.toString());
+                }
+
+                // For Android > 4.1
+                public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
+                    ActivityWebView.this.showAttachmentDialog(uploadMsg);
+                    Log.e("mytag", uploadMsg.toString());
+                }
+
+                public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, WebChromeClient.FileChooserParams fileChooserParams) {
+                    ///ActivityWebView.this.showAttachmentDialog(filePathCallback.onReceiveValue());
+                    //openFileChooserImplForAndroid5(filePathCallback);
+
+                    // ActivityWebView.this.mUploadMessageandroid5 = filePathCallback;
+
+                    // Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                    // i.addCategory(Intent.CATEGORY_OPENABLE);
+                    // i.setType("*/*");
+
+                    //Intent fileIntent= fileChooserParams.createIntent();
+                    // fileIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                    // fileIntent.setType("*/*");
+                    // ActivityWebView.this.startActivityForResult(fileIntent,FILECHOOSER_RESULTCODE);
+                    //ActivityWebView.this.startActivityForResult(Intent.createChooser(fileintent, "Choose type of attachment"), FILECHOOSER_RESULTCODE);
+
+
+                    Log.e("mytag", "step4");
+
+                    String[] perms = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
+
+                    //checking for storage permission to write images for upload
+                    if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(ActivityWebView.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(ActivityWebView.this, perms, FCR);
+
+                        //checking for WRITE_EXTERNAL_STORAGE permission
+                    } else if (ContextCompat.checkSelfPermission(ActivityWebView.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(ActivityWebView.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, FCR);
+
+                        //checking for CAMERA permissions
+                    } else if (ContextCompat.checkSelfPermission(ActivityWebView.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(ActivityWebView.this, new String[]{Manifest.permission.CAMERA}, FCR);
+                    }
+                    if (mUMA != null) {
+                        mUMA.onReceiveValue(null);
+                    }
+                    mUMA = filePathCallback;
+                    Intent takePictureIntent = null;
+                    takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    if (takePictureIntent.resolveActivity(ActivityWebView.this.getPackageManager()) != null) {
+                        File photoFile = null;
+                        try {
+                            photoFile = createImageFile();
+                            takePictureIntent.putExtra("PhotoPath", mCM);
+                        } catch (Exception ex) {
+                            Log.e("ok", "Image file creation failed", ex);
+                        }
+                        if (photoFile != null) {
+                            mCM = "file:" + photoFile.getAbsolutePath();
+                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                        } else {
+                            takePictureIntent = null;
+                        }
+                    }
+                    Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                    contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                    contentSelectionIntent.setType("*/*");
+                    if (multiple_files) {
+                        contentSelectionIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                    }
+                    Intent[] intentArray;
+                    if (takePictureIntent != null) {
+                        intentArray = new Intent[]{takePictureIntent};
+                    } else {
+                        intentArray = new Intent[0];
+                    }
+
+                    Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
+                    chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
+                    chooserIntent.putExtra(Intent.EXTRA_TITLE, "File Chooser");
+                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
+                    startActivityForResult(chooserIntent, FCR);
+                    return true;
+                }
+            });
+
+        } catch (Exception e) {
+            Log.e("mytag", e.getMessage() + " " + e.getStackTrace().toString());
+        }
+
         String url = "";
-        switch(action) {
+        switch (action) {
             case "dynamic":
                 url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
-                        +"/IN.aspx?url="+ specialurl.replace(DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL"),"")
-                        +"&MACAddress=" + helper.getMacAddr(ctx);
+                        + "/IN.aspx?url=" + specialurl.replace(DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL"), "")
+                        + "&MACAddress=" + helper.getMacAddr(ctx);
                 //Toast.makeText(activity, url, Toast.LENGTH_SHORT).show();
-                Log.e("mytag","url: " + url);
+                Log.e("mytag", "url: " + url);
                 break;
             case "calltimedetails":
                 url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
-                        +"/IN.aspx?url="
+                        + "/IN.aspx?url="
                         + "/iframe.aspx?control=modulesServices/reportcalltimebytech_details&OdateFrom=" + getCurrentTimeStamp() + "&OdateTo=" + getCurrentTimeStamp() + "&techListDashboard=" + technicianid + "&CID=-1&strstatus=-999"
                         //+ "/iframe.aspx?control=modulesServices/dashboard_report&action=totalCloseCallsToday&techctypeid=&calltypeidnot=&calltype=&ClientCtypeID=&techid=" + technicianid + ""
-                        +"&MACAddress=" + helper.getMacAddr(ctx);
-                Log.e("mytag","url: " + url);
+                        + "&MACAddress=" + helper.getMacAddr(ctx);
+                Log.e("mytag", "url: " + url);
                 break;
             case "dashboard":
                 url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
-                        +"/IN.aspx?url="
+                        + "/IN.aspx?url="
                         + "/iframe.aspx?control=modulesServices/dashboard_report&action=totalCloseCallsToday&techctypeid=&calltypeidnot=&calltype=&ClientCtypeID=&techid=" + technicianid + ""
-                        +"&MACAddress=" + helper.getMacAddr(ctx);
-                Log.e("mytag","url: " + url);
+                        + "&MACAddress=" + helper.getMacAddr(ctx);
+                Log.e("mytag", "url: " + url);
                 break;
             case "calltime":
                 url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
-                        +"/IN.aspx?url="
+                        + "/IN.aspx?url="
                         + "/iframe.aspx?control=/modulesServices/CallRepHistory&CallID=" + String.valueOf(callid) + "&class=tdCallRepHistory&mobile=True"
-                        +"&MACAddress=" + helper.getMacAddr(ctx);
-                Log.e("mytag","url: " + url);
+                        + "&MACAddress=" + helper.getMacAddr(ctx);
+                Log.e("mytag", "url: " + url);
                 break;
             case "callparts":
                 url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
-                        +"/IN.aspx?url="
+                        + "/IN.aspx?url="
                         + "/iframe.aspx?control=modulesServices%2fCallParts&CallID=" + String.valueOf(callid) + "&type=customer&val=" + String.valueOf(cid) + ""
-                        +"&MACAddress=" + helper.getMacAddr(ctx);
-                Log.e("mytag","url: " + url);
+                        + "&MACAddress=" + helper.getMacAddr(ctx);
+                Log.e("mytag", "url: " + url);
                 break;
-            case "mycalls" :
+            case "mycalls":
                 url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
-                        +"/IN.aspx?url="
+                        + "/IN.aspx?url="
                         + "/mobile/control.aspx?control=modulesService/myCalls"
-                        +"&MACAddress=" + helper.getMacAddr(ctx);
-                Log.e("mytag","url: " + url);
+                        + "&MACAddress=" + helper.getMacAddr(ctx);
+                Log.e("mytag", "url: " + url);
                 break;
-            case "callfiles" :
+            case "callfiles":
                 url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
-                        +"/IN.aspx?url="
+                        + "/IN.aspx?url="
                         + "/iframe.aspx?control=/modulesServices/CallsFiles&CallID=" + String.valueOf(callid) + "&class=CallsFiles_appCell&mobile=True"
-                        +"&MACAddress=" + helper.getMacAddr(ctx);
-                Log.e("mytag","url: " + url);
+                        + "&MACAddress=" + helper.getMacAddr(ctx);
+                Log.e("mytag", "url: " + url);
                 break;
-            case "history" :
+            case "history":
                 url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
-                        +"/IN.aspx?url="
+                        + "/IN.aspx?url="
                         + "/iframe.aspx?control=/modulesservices/callhistoryAll&CallID=" + String.valueOf(callid) + "&CID=" + String.valueOf(cid) + "&class=AppCelltable&mobile=True"
-                        +"&MACAddress=" + helper.getMacAddr(ctx);
-                Log.e("mytag","url: " + url);
+                        + "&MACAddress=" + helper.getMacAddr(ctx);
+                Log.e("mytag", "url: " + url);
                 break;
-            case "customercase" :
+            case "customercase":
                 url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
-                        +"/IN.aspx?url="
-                        +"/iframe.aspx?control=modules/tableextrafields&table=calls&pk=callid&pkvalue=" + String.valueOf(callid) + ""
+                        + "/IN.aspx?url="
+                        + "/iframe.aspx?control=modules/tableextrafields&table=calls&pk=callid&pkvalue=" + String.valueOf(callid) + ""
                         //+ "/iframe.aspx?control=modules/TableExtraFields&table=clients&pk=cid&pkvalue=" + String.valueOf(cid) + "&mobile=True"
-                        +"&MACAddress=" + helper.getMacAddr(ctx);
-                Log.e("mytag","url: " + url);
+                        + "&MACAddress=" + helper.getMacAddr(ctx);
+                Log.e("mytag", "url: " + url);
                 break;
-            case "goToUserHistory" :
+            case "goToUserHistory":
                 url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
-                        +"/IN.aspx?url="
+                        + "/IN.aspx?url="
                         + "/iframe.aspx?control=/modulesProjects/UsersTimeReport"
                         //+ "/mobile/control.aspx?control=/modulesProjects/UsersTimeReport"
-                        +"&MACAddress=" + helper.getMacAddr(ctx);
-                Log.e("mytag","url: " + url);
+                        + "&MACAddress=" + helper.getMacAddr(ctx);
+                Log.e("mytag", "url: " + url);
                 break;
-            case "masofon" :
+            case "masofon":
                 url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
-                        +"/IN.aspx?url="
+                        + "/IN.aspx?url="
                         + "/AppMasofon/masofon?1=1"
-                        +"&MACAddress=" + helper.getMacAddr(ctx);
-                Log.e("mytag","url: " + url);
+                        + "&MACAddress=" + helper.getMacAddr(ctx);
+                Log.e("mytag", "url: " + url);
                 break;
+            case "callsign":
 
+                // String url = "";//DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL") + "/modulesSign/sign.aspx?callID=" + String.valueOf(call.getCallID());
+//            url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
+//                    +"/IN.aspx?url="
+//                    + "/modulesSign/sign.aspx?callID=" + String.valueOf(call.getCallID())
+//                    +"&MACAddress=" + helper.getMacAddr(getBaseContext());
+//            Log.e("mytag",url);
+//            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+//            startActivity(browserIntent);
+
+                url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
+                        + "/IN.aspx?url="
+                        + "/modulesSign/sign.aspx?callID=" + String.valueOf(callid)
+                        + "&MACAddress=" + helper.getMacAddr(ctx);
+                Log.e("mytag", "url: " + url);
+                break;
             default:
                 //setContentView(R.layout.default);
         }
-        Log.e("mytag","technicianid:" + technicianid);
+        Log.e("mytag", "technicianid:" + technicianid);
         String cookieString = "CID=" + technicianid + "; path=/";
         String cookieString2 = "CtypeID=" + DatabaseHelper.getInstance(getBaseContext()).getValueByKey("CtypeID") + "; path=/";
 
         CookieManager.getInstance().setCookie(url, cookieString);
         CookieManager.getInstance().setCookie(url, cookieString2);
 
-        mWebview .loadUrl(url);//"http://www.google.com");
-        setContentView(mWebview );
 
+        mWebview.loadUrl(url);//"http://www.google.com");
+
+        setContentView(mWebview);
 
     }
+
+    //creating new image file here
+    private File createImageFile() throws IOException {
+        @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "img_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        return File.createTempFile(imageFileName, ".jpg", storageDir);
+    }
+
+    private void showAttachmentDialog(ValueCallback<Uri> uploadMsg) {
+        this.mUploadMessage = uploadMsg;
+
+        Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        i.setType("*/*");
+
+        this.startActivityForResult(Intent.createChooser(i, "Choose type of attachment"), FILECHOOSER_RESULTCODE);
+    }
+
     public String getCurrentTimeStamp() {
         return new SimpleDateFormat("dd/MM/yyyy").format(new Date());
     }
-    public void initList(){
+
+    public void initList() {
         data2.clear();
-        for (Call c : getCallsList()){
+        for (Call c : getCallsList()) {
             data2.add(c);
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -262,13 +505,14 @@ public class ActivityWebView extends FragmentActivity {
         }
         return (super.onOptionsItemSelected(item));
     }
-    private List<Call> getCallsList(){
+
+    private List<Call> getCallsList() {
         JSONObject j = null;
         int length = 0;
 
-        List<Call> calls = new ArrayList<Call>() ;
+        List<Call> calls = new ArrayList<Call>();
         try {
-            calls= DatabaseHelper.getInstance(this).getCalls("");
+            calls = DatabaseHelper.getInstance(this).getCalls("");
             length = calls.size();
         } catch (Exception e) {
             e.printStackTrace();

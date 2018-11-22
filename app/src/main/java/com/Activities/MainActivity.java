@@ -1,5 +1,6 @@
 package com.Activities;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -7,7 +8,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -31,7 +31,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.Classes.CallStatus;
 import com.DatabaseHelper;
 import com.File_;
 import com.Helper;
@@ -46,9 +45,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends Activity {
+    public static final String TAG = "Main Activity";
 
-
-
+    private static final int REQUEST_PERMISSION_MULTIPLE = 300;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     //public final String DEMOURL = "http://main.wizenet.co.il/webservices/freelance.asmx";//default
@@ -70,13 +69,16 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.e("mytag", "MainActivity onCreate");
         setContentView(R.layout.activity_main);
         this.context = this;
         ctx = this;
+
+        permissionCheck();
         TextView btnupdateversion = (TextView) findViewById(R.id.btnupdateversion);
-        btnupdateversion.setPaintFlags(btnupdateversion.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
+        btnupdateversion.setPaintFlags(btnupdateversion.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         TextView btndownloadversion = (TextView) findViewById(R.id.btndownloadversion);
-        btndownloadversion.setPaintFlags(btndownloadversion.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
+        btndownloadversion.setPaintFlags(btndownloadversion.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         btnupdateversion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,43 +92,43 @@ public class MainActivity extends Activity {
                 Boolean isISActionsTimeEsixts = DatabaseHelper.getInstance(ctx).isTableExists("IS_ActionsTime") ? true : false;
                 Boolean isLeadsEsixts = DatabaseHelper.getInstance(ctx).isTableExists("Leads") ? true : false;
 
-                DatabaseHelper.getInstance(ctx).createColumnTo("Ccustomers","");
+                DatabaseHelper.getInstance(ctx).createColumnTo("Ccustomers", "");
                 //DatabaseHelper.getInstance(ctx).getTableColumns(); // (show table columns)
                 //--------- add tables -------------
                 if (!isCallOfllineEsixts)
-                    DatabaseHelper.getInstance(ctx).createColumnToCalls_Offline("",isCallOfllineEsixts);
+                    DatabaseHelper.getInstance(ctx).createColumnToCalls_Offline("", isCallOfllineEsixts);
                 if (!isCallsEsixts)
-                    DatabaseHelper.getInstance(ctx).createColumnToCalls("",isCallsEsixts);
+                    DatabaseHelper.getInstance(ctx).createColumnToCalls("", isCallsEsixts);
                 if (!isCalltimeEsixts)
-                    DatabaseHelper.getInstance(ctx).createColumnToCalltime("",isCalltimeEsixts);
+                    DatabaseHelper.getInstance(ctx).createColumnToCalltime("", isCalltimeEsixts);
                 if (!isISActionsEsixts)
-                    DatabaseHelper.getInstance(ctx).createColumnToISActions("",isISActionsEsixts);
+                    DatabaseHelper.getInstance(ctx).createColumnToISActions("", isISActionsEsixts);
                 if (!isISActionsTimeEsixts)
-                    DatabaseHelper.getInstance(ctx).createColumnToISActionsTime("",isISActionsTimeEsixts);
+                    DatabaseHelper.getInstance(ctx).createColumnToISActionsTime("", isISActionsTimeEsixts);
                 if (!isLeadsEsixts)
-                    DatabaseHelper.getInstance(ctx).createColumnToLeads("",isLeadsEsixts);
-                if (!isControlPanelEsixts){
-                    DatabaseHelper.getInstance(ctx).createColumnToCP("",isControlPanelEsixts);
+                    DatabaseHelper.getInstance(ctx).createColumnToLeads("", isLeadsEsixts);
+                if (!isControlPanelEsixts) {
+                    DatabaseHelper.getInstance(ctx).createColumnToCP("", isControlPanelEsixts);
                     helper.addInitialfirst(ctx);
                 }
                 //---------- add columns ----------
-                Toast.makeText(getBaseContext(),"עודכן בהצלחה", Toast.LENGTH_SHORT).show();
-                Log.e("mytag", String.valueOf(DatabaseHelper.getInstance(ctx).columnExistsInTable("mgnet_calls","sla")));
+                Toast.makeText(getBaseContext(), "עודכן בהצלחה", Toast.LENGTH_SHORT).show();
+                Log.e("mytag", String.valueOf(DatabaseHelper.getInstance(ctx).columnExistsInTable("mgnet_calls", "sla")));
                 //-----------add new column in mgnet_calls if not exist
                 boolean isSlaColAdded = false;
-                isSlaColAdded = addColumnToTable("mgnet_calls","sla",isCallsEsixts);
-                if (isSlaColAdded == true){
-                    Log.e("mytag","isSlaColAdded success");
-                }else{
-                    Log.e("mytag","isSlaColAdded already in");
+                isSlaColAdded = addColumnToTable("mgnet_calls", "sla", isCallsEsixts);
+                if (isSlaColAdded == true) {
+                    Log.e("mytag", "isSlaColAdded success");
+                } else {
+                    Log.e("mytag", "isSlaColAdded already in");
                 }
                 //--column --ReminderID--- createColumnToISActions
                 boolean isReminderIDColAdded = false;
-                isReminderIDColAdded = addColumnToTable("IS_Actions","reminderID",isISActionsEsixts);
-                if (isReminderIDColAdded == true){
-                    Log.e("mytag","isReminderIDColAdded success");
-                }else{
-                    Log.e("mytag","isReminderIDColAdded already in");
+                isReminderIDColAdded = addColumnToTable("IS_Actions", "reminderID", isISActionsEsixts);
+                if (isReminderIDColAdded == true) {
+                    Log.e("mytag", "isReminderIDColAdded success");
+                } else {
+                    Log.e("mytag", "isReminderIDColAdded already in");
                 }
                 // midCall ----- SUMMERY CALLS page.
                 //boolean isAppsColAdded = DatabaseHelper.getInstance(getApplicationContext()).checkIfKeyExistsCP("APPS_CALLS_SUMMARY");
@@ -138,32 +140,28 @@ public class MainActivity extends Activity {
                 //}
                 helper.addInitialfirst(ctx);
                 //updateNewFieldsInControlPanel();
-
-
-
             }
         });
+
         btndownloadversion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String url =
-                         "http://main.wizenet.co.il/data/wizenet.apk";
+                        "http://main.wizenet.co.il/data/wizenet.apk";
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 startActivity(browserIntent);
             }
         });
 
-
-
         boolean flag = isNetworkAvailable(context);
         File_ f = new File_();
         f.createWizenetDir(getApplicationContext());
-        url = (EditText) findViewById(R.id.edittext) ;
-        txt_enter_code= (EditText) findViewById(R.id.txt_enter_code) ;
+        url = (EditText) findViewById(R.id.edittext);
+        txt_enter_code = (EditText) findViewById(R.id.txt_enter_code);
         helper = new Helper();
 
-         dynamicSpinner = (Spinner) findViewById(R.id.spinner);
-        String[] items = new String[] { "http://", "https://" };
+        dynamicSpinner = (Spinner) findViewById(R.id.spinner);
+        String[] items = new String[]{"http://", "https://"};
         String s = "";
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, items);
         dynamicSpinner.setAdapter(adapter);
@@ -174,7 +172,7 @@ public class MainActivity extends Activity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
-                httpDropSelected =(String) parent.getItemAtPosition(position);
+                httpDropSelected = (String) parent.getItemAtPosition(position);
 
                 Log.v("item", (String) parent.getItemAtPosition(position));
             }
@@ -186,42 +184,39 @@ public class MainActivity extends Activity {
         });
         //http://
 
-
-
 //        if (!f.isSubDirectoryExist(context,"client_products") == true){
 //            f.createSubDirectory(context,"client_products");
 //        }
 
-        File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/wizenet/");
-        if (!dir.exists()) {
-            dir.mkdir();
-        }
-        File dir1 = new File(Environment.getExternalStorageDirectory().getPath() + "/wizenet/client_products/");
-        if (!dir1.exists()) {
-            dir1.mkdir();
-        }
-        if(!DatabaseHelper.getInstance(getApplicationContext()).verification("URL")) {
-            helper.addInitialfirst(this.context );
-        }else{
-            url.setText(DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL").replace("https://","").replace("http://",""));
-            //Toast.makeText(getBaseContext(),"url is exists", Toast.LENGTH_SHORT).show();
-        }
-        //if file does not exist
+        doFileOperations();
 
+        try {
+            if (!DatabaseHelper.getInstance(getApplicationContext()).verification("URL")) {
+                helper.addInitialfirst(this.context);
+            } else {
+                url.setText(DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL").replace("https://", "").replace("http://", ""));
+                //Toast.makeText(getBaseContext(),"url is exists", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            url.setText(DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL").replace("https://", "").replace("http://", ""));
+            Log.e("mytag", e.getMessage());
+        }
+
+        //if file does not exist
 
 
         button = (Button) findViewById(R.id.continuebutton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String urlString = httpDropSelected+url.getText().toString().trim().toLowerCase();
+                String urlString = httpDropSelected + url.getText().toString().trim().toLowerCase();
                 //check if is the same url, if isn't, do not auto login
-                if (!DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL").equals(urlString)){
-                    DatabaseHelper.getInstance(getApplicationContext()).updateValue("AUTO_LOGIN","0");
+                if (!DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL").equals(urlString)) {
+                    DatabaseHelper.getInstance(getApplicationContext()).updateValue("AUTO_LOGIN", "0");
                 }
 
-                DatabaseHelper.getInstance(getApplicationContext()).updateValue("dropHTTP",httpDropSelected);
-                DatabaseHelper.getInstance(getApplicationContext()).updateValue("URL",urlString);
+                DatabaseHelper.getInstance(getApplicationContext()).updateValue("dropHTTP", httpDropSelected);
+                DatabaseHelper.getInstance(getApplicationContext()).updateValue("URL", urlString);
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
             }
@@ -242,20 +237,20 @@ public class MainActivity extends Activity {
                             JSONArray jarray = j.getJSONArray("Wz_getUrl");
                             String url = jarray.getJSONObject(0).getString("Status");
 
-                            if (url.contains("https")){
-                                DatabaseHelper.getInstance(getApplicationContext()).updateValue("dropHTTP","https://");
-                            }else{
-                                DatabaseHelper.getInstance(getApplicationContext()).updateValue("dropHTTP","http://");
+                            if (url.contains("https")) {
+                                DatabaseHelper.getInstance(getApplicationContext()).updateValue("dropHTTP", "https://");
+                            } else {
+                                DatabaseHelper.getInstance(getApplicationContext()).updateValue("dropHTTP", "http://");
                             }
 
-                            Toast.makeText(getApplicationContext(),"url: " + url, Toast.LENGTH_LONG).show();
-                            if (url.length()>5){
-                                DatabaseHelper.getInstance(getApplicationContext()).updateValue("AUTO_LOGIN","0");
-                                DatabaseHelper.getInstance(getApplicationContext()).updateValue("URL",url);
+                            Toast.makeText(getApplicationContext(), "url: " + url, Toast.LENGTH_LONG).show();
+                            if (url.length() > 5) {
+                                DatabaseHelper.getInstance(getApplicationContext()).updateValue("AUTO_LOGIN", "0");
+                                DatabaseHelper.getInstance(getApplicationContext()).updateValue("URL", url);
                                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                                 startActivity(intent);
-                            }else{
-                                Toast.makeText(getApplicationContext(),"an error has occurred", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "an error has occurred", Toast.LENGTH_LONG).show();
                             }
 
 
@@ -271,18 +266,18 @@ public class MainActivity extends Activity {
         });
 
 
-        if(!DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL").equals("")){
+        if (!DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL").equals("")) {
             //Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
 
-            if (flag){
-                Toast.makeText(getApplicationContext(),"internet valid", Toast.LENGTH_LONG).show();
+            if (flag) {
+                Toast.makeText(getApplicationContext(), "internet valid", Toast.LENGTH_LONG).show();
                 //Intent intent = new Intent(getApplicationContext(), MenuOfflineActivity.class);
 
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
 
-            }else{
-                Toast.makeText(getApplicationContext(),"internet invalid", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "internet invalid", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
                 startActivity(intent);
             }
@@ -290,39 +285,88 @@ public class MainActivity extends Activity {
 
         }
     }
-    private void updateNewFieldsInControlPanel(){
-        if (DatabaseHelper.getInstance(ctx).checkIfKeyExistsCP("IS_BUSY")){
-        }else{
-            DatabaseHelper.getInstance(ctx).addControlPanel("IS_BUSY","0");Log.e("mytag","IS_BUSY does not exists");
+
+    private void doFileOperations() {
+        File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/wizenet/");
+        if (!dir.exists()) {
+            dir.mkdir();
         }
-        if (DatabaseHelper.getInstance(ctx).checkIfKeyExistsCP("IS_BUSY_OPTION")){
-        }else{
-            DatabaseHelper.getInstance(ctx).addControlPanel("IS_BUSY_OPTION","ללא");Log.e("mytag","IS_BUSY does not exists,added!");
-        }
-        if (DatabaseHelper.getInstance(ctx).checkIfKeyExistsCP("CtypeName")){
-        }else{
-            DatabaseHelper.getInstance(ctx).addControlPanel("CtypeName","");Log.e("mytag","CtypeName does not exists,added!");
+        File dir1 = new File(Environment.getExternalStorageDirectory().getPath() + "/wizenet/client_products/");
+        if (!dir1.exists()) {
+            dir1.mkdir();
         }
     }
-    private boolean addColumnToTable(String table,String column,boolean isTableExist){
+
+    private boolean permissionCheck() {
+        int storagePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int readPhoneStatePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
+        int gpsPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        int sms = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
+
+        List<String> listPermissionsNeeded = new ArrayList<String>();
+
+        if (storagePermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+
+        if (readPhoneStatePermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.READ_PHONE_STATE);
+        }
+
+        if (gpsPermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (sms != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.SEND_SMS);
+        }
+
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(MainActivity.this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_PERMISSION_MULTIPLE);
+            return false;
+        }
+
+        doFileOperations();
+        return true;
+    }
+
+    private void updateNewFieldsInControlPanel() {
+        if (DatabaseHelper.getInstance(ctx).checkIfKeyExistsCP("IS_BUSY")) {
+        } else {
+            DatabaseHelper.getInstance(ctx).addControlPanel("IS_BUSY", "0");
+            Log.e("mytag", "IS_BUSY does not exists");
+        }
+        if (DatabaseHelper.getInstance(ctx).checkIfKeyExistsCP("IS_BUSY_OPTION")) {
+        } else {
+            DatabaseHelper.getInstance(ctx).addControlPanel("IS_BUSY_OPTION", "ללא");
+            Log.e("mytag", "IS_BUSY does not exists,added!");
+        }
+        if (DatabaseHelper.getInstance(ctx).checkIfKeyExistsCP("CtypeName")) {
+        } else {
+            DatabaseHelper.getInstance(ctx).addControlPanel("CtypeName", "");
+            Log.e("mytag", "CtypeName does not exists,added!");
+        }
+    }
+
+    private boolean addColumnToTable(String table, String column, boolean isTableExist) {
         boolean flag = false;
-        if (!DatabaseHelper.getInstance(ctx).columnExistsInTable(table,column)){
-            if (table == "mgnet_calls"){
-                flag = DatabaseHelper.getInstance(ctx).createColumnToCalls(column,isTableExist);
-            }else if(table == "ControlPanel"){
-                flag = DatabaseHelper.getInstance(ctx).createColumnToCP(column,isTableExist);
+        if (!DatabaseHelper.getInstance(ctx).columnExistsInTable(table, column)) {
+            if (table == "mgnet_calls") {
+                flag = DatabaseHelper.getInstance(ctx).createColumnToCalls(column, isTableExist);
+            } else if (table == "ControlPanel") {
+                flag = DatabaseHelper.getInstance(ctx).createColumnToCP(column, isTableExist);
             }
 
-            Log.e("mytag","" + column + " exists?: "+ flag);
-            if (flag == true){
-                Log.e("mytag","success add " + column + "");
-            }else{Log.e("mytag","failed");}
+            Log.e("mytag", "" + column + " exists?: " + flag);
+            if (flag == true) {
+                Log.e("mytag", "success add " + column + "");
+            } else {
+                Log.e("mytag", "failed");
+            }
             //Log.e("mytag","");//DatabaseHelper.getInstance(ctx).getJsonResultsStatuses().toString()
 
-    }
+        }
         return flag;
     }
-
 
 
     protected void checkPermissionForReadWriteStorage() {
@@ -339,7 +383,7 @@ public class MainActivity extends Activity {
                 Toast.makeText((Activity) getApplicationContext(), "Please provide  permission for reading images from gallery.", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package",  getApplicationContext().getPackageName(), null);
+                Uri uri = Uri.fromParts("package", getApplicationContext().getPackageName(), null);
                 intent.setData(uri);
                 getApplicationContext().startActivity(intent);
             } else {
@@ -351,6 +395,18 @@ public class MainActivity extends Activity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if (requestCode == REQUEST_PERMISSION_MULTIPLE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "Permission was granted!");
+                doFileOperations();
+            } else {
+                Log.e(TAG, "Permission was not granted!");
+                Toast.makeText(MainActivity.this, "Permission must be granted", Toast.LENGTH_SHORT).show();
+                MainActivity.this.finish();
+            }
+        }
+
         switch (requestCode) {
             case 2:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -359,11 +415,12 @@ public class MainActivity extends Activity {
 
                 }
                 break;
+
         }
     }
 
     public boolean isNetworkAvailable(Context context) {
-        ConnectivityManager connectivity =(ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         if (connectivity == null) {
             return false;
@@ -379,13 +436,14 @@ public class MainActivity extends Activity {
         }
         return false;
     }
+
     @Override
     protected void onResume() {
         super.onResume();
         Log.e("mytag", "MainActivity onResume");
-        url.setText(DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL").replace("https://","").replace("http://",""));
+        url.setText(DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL").replace("https://", "").replace("http://", ""));
 
-        String[] items = new String[] { "http://", "https://" };
+        String[] items = new String[]{"http://", "https://"};
         String s = "";
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, items);
         dynamicSpinner.setAdapter(adapter);
@@ -396,7 +454,7 @@ public class MainActivity extends Activity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
-                httpDropSelected =(String) parent.getItemAtPosition(position);
+                httpDropSelected = (String) parent.getItemAtPosition(position);
 
                 Log.v("item", (String) parent.getItemAtPosition(position));
             }
@@ -414,14 +472,12 @@ public class MainActivity extends Activity {
         Log.e("MainActivity", "onPause");
         //LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         //Toast.makeText(this, "MainActivity destroyed...", Toast.LENGTH_LONG).show();
     }
-
-
-
 
 
     @Override
@@ -430,8 +486,10 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
+
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) { switch(item.getItemId()) {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
 //        case R.id.add:
 //            //add the function to perform here
 //            return(true);
@@ -441,10 +499,9 @@ public class MainActivity extends Activity {
 //        case R.id.about:
 //            //add the function to perform here
 //            return(true);
+        }
+        return (super.onOptionsItemSelected(item));
     }
-        return(super.onOptionsItemSelected(item));
-    }
-
 
 
 }

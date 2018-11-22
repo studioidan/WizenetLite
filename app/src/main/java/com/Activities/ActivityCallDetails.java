@@ -1,18 +1,9 @@
 package com.Activities;
 
-import com.Classes.Call_offline;
-import com.Classes.Calltime;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
-import com.model.*;
-
 import android.Manifest;
-import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,23 +12,15 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
@@ -45,32 +28,34 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.Classes.Call;
 import com.Classes.CallStatus;
+import com.Classes.Call_offline;
+import com.Classes.Calltime;
 import com.DatabaseHelper;
 import com.GPSTracker;
 import com.Helper;
 import com.Icon_Manager;
-import com.Adapters.CallsAdapter;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.model.Model;
+import com.uk.U;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-  //ffgd
+
+//ffgd
 public class ActivityCallDetails extends FragmentActivity {
 
     //Testing
@@ -91,6 +76,12 @@ public class ActivityCallDetails extends FragmentActivity {
     EditText txt_internalsn;
     LocationManager manager;
     GPSTracker gps;
+
+
+    //VIEWS
+    private TextView tvMakat, tvName;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,8 +92,8 @@ public class ActivityCallDetails extends FragmentActivity {
             Toast.makeText(getApplicationContext(), "gps לא מופעל", Toast.LENGTH_LONG).show();
         }
         //if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            //Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            //startActivity(intent);
+        //Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        //startActivity(intent);
         //}
 
 //        ActionBar actionBar = getActionBar();
@@ -158,7 +149,6 @@ public class ActivityCallDetails extends FragmentActivity {
         txtccity = (TextView) findViewById(R.id.txt_ccity);
 
 
-
         txttechanswer = (EditText) findViewById(R.id.txttechanswer);
         parts = (TextView) findViewById(R.id.parts);
         //Toast.makeText(getApplication(),"getCallTypeName : " +call.getCallTypeName().trim(), Toast.LENGTH_LONG).show();
@@ -167,11 +157,20 @@ public class ActivityCallDetails extends FragmentActivity {
         txtsubject.setText(call.getSubject().trim());
         txtorigin.setText(isContainNull(call.getOriginName().trim()));
         txtpriority.setText(isContainNull(call.getPriorityID().trim()));
-        if (call.getPriorityID().toLowerCase().contains("h")){
+        if (call.getPriorityID().toLowerCase().contains("h")) {
             txtpriority.setTextColor(Color.parseColor("#FF0000"));
             txtpriority.setTypeface(txtpriority.getTypeface(), Typeface.BOLD);
 
         }
+
+        tvMakat = findViewById(R.id.tvMakat);
+        tvMakat.setText("מקט: " + call.getPmakat());
+        tvMakat.setVisibility(U.isEmpty(call.getPmakat()) ? View.GONE : View.VISIBLE);
+
+        tvName = findViewById(R.id.tvName);
+        tvName.setText("תיאור: " + call.getPname());
+        tvName.setVisibility(U.isEmpty(call.getPname()) ? View.GONE : View.VISIBLE);
+
         //LinearLayout layout_comment = (LinearLayout) findViewById(R.id.layout_comment);
         TextView calltime = (TextView) findViewById(R.id.calltime);
         LinearLayout layout_internalsn = (LinearLayout) findViewById(R.id.layout_internalsn);
@@ -196,7 +195,7 @@ public class ActivityCallDetails extends FragmentActivity {
 
         txtcreatedate.setText(call.getCreateDate().trim());
         txtcallstarttime.setText(call.getCallStartTime().trim());
-        txtccity.setText(isContainNull(call.getCcity().trim())+ " " + isContainNull(call.getCaddress().trim()));
+        txtccity.setText(isContainNull(call.getCcity().trim()) + " " + isContainNull(call.getCaddress().trim()));
         txtcalltypename.setText(isContainNull(call.getCallTypeName().trim()));
 
         id1 = (TextView) findViewById(R.id.id1);
@@ -278,7 +277,7 @@ public class ActivityCallDetails extends FragmentActivity {
         if ((call.getCallStartTime() + "-" + call.getCallEndTime()).equals("null-null")) {
             assigmentlayout.setVisibility(View.GONE);
         } else {
-            txtcallstarttime.setText(call.getCallStartTime().substring(0,16) + " - " + call.getCallEndTime().substring(11,16));
+            txtcallstarttime.setText(call.getCallStartTime().substring(0, 16) + " - " + call.getCallEndTime().substring(11, 16));
             txtcallstarttime.setTextColor(Color.parseColor("#E94E1B"));
         }
 
@@ -382,13 +381,13 @@ public class ActivityCallDetails extends FragmentActivity {
         sign.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               goToSign();
+                goToSign();
             }
         });
         location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-             goToWaze();
+                goToWaze();
             }
         });
         txtccity.setOnClickListener(new View.OnClickListener() {
@@ -401,14 +400,14 @@ public class ActivityCallDetails extends FragmentActivity {
         btnupdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (statusID == -1){
+                if (statusID == -1) {
                     Async(Integer.valueOf(callid), "stop", "", "");
                 }
-                DatabaseHelper.getInstance(getApplicationContext()).updateSpecificValueInTable2("mgnet_calls","CallID",String.valueOf(callid),"statusID","'" +String.valueOf(statusID) + "'");
-                DatabaseHelper.getInstance(getApplicationContext()).updateSpecificValueInTable2("mgnet_calls","CallID",String.valueOf(callid),"statusName","'" +statusName + "'");
-                DatabaseHelper.getInstance(getApplicationContext()).updateSpecificValueInTable2("mgnet_calls","CallID",String.valueOf(callid),"internalSN","'" +txt_internalsn.getText().toString() + "'");
+                DatabaseHelper.getInstance(getApplicationContext()).updateSpecificValueInTable2("mgnet_calls", "CallID", String.valueOf(callid), "statusID", "'" + String.valueOf(statusID) + "'");
+                DatabaseHelper.getInstance(getApplicationContext()).updateSpecificValueInTable2("mgnet_calls", "CallID", String.valueOf(callid), "statusName", "'" + statusName + "'");
+                DatabaseHelper.getInstance(getApplicationContext()).updateSpecificValueInTable2("mgnet_calls", "CallID", String.valueOf(callid), "internalSN", "'" + txt_internalsn.getText().toString() + "'");
 
-                if (helper.isNetworkAvailable(getApplicationContext())){
+                if (helper.isNetworkAvailable(getApplicationContext())) {
                     Model.getInstance().Async_Wz_Update_Call_Field_Listener(helper.getMacAddr(getApplicationContext()), (callid), "internalSN", "'" + txt_internalsn.getText().toString() + "'", new Model.Wz_Update_Call_Field_Listener() {
                         @Override
                         public void onResult(String str) {
@@ -416,32 +415,32 @@ public class ActivityCallDetails extends FragmentActivity {
                         }
                     });
                     Model.getInstance().Async_Wz_Call_Update_Listener(helper.getMacAddr(getApplicationContext()), Integer.valueOf(callid), statusID,
-                        txttechanswer.getText().toString(), new Model.Wz_Call_Update_Listener() {
-                            @Override
-                            public void onResult(String str) {
-                                try {
-                                    JSONObject j = null;
-                                    j = new JSONObject(str);
-                                    Log.e("MYTAG",str);
-                                    //get the array [...] in json
-                                    JSONArray jarray = j.getJSONArray("Wz_Call_Update");
-                                    String status = jarray.getJSONObject(0).getString("Status");
-                                    if (status.equals("0")){
-                                        //Toast.makeText(getApplicationContext(),"successfully updated", Toast.LENGTH_LONG).show();
-                                        //finish();
-                                        //txttechanswer.setText("");
-                                    }else{
-                                        Toast.makeText(getApplicationContext(),"Error", Toast.LENGTH_LONG).show();
+                            txttechanswer.getText().toString(), new Model.Wz_Call_Update_Listener() {
+                                @Override
+                                public void onResult(String str) {
+                                    try {
+                                        JSONObject j = null;
+                                        j = new JSONObject(str);
+                                        Log.e("MYTAG", str);
+                                        //get the array [...] in json
+                                        JSONArray jarray = j.getJSONArray("Wz_Call_Update");
+                                        String status = jarray.getJSONObject(0).getString("Status");
+                                        if (status.equals("0")) {
+                                            //Toast.makeText(getApplicationContext(),"successfully updated", Toast.LENGTH_LONG).show();
+                                            //finish();
+                                            //txttechanswer.setText("");
+                                        } else {
+                                            Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
+                                        }
+                                    } catch (JSONException e1) {
+                                        e1.printStackTrace();
                                     }
-                                } catch (JSONException e1) {
-                                    e1.printStackTrace();
                                 }
-                            }
-                        });
-                    Toast.makeText(getApplicationContext(),"successfully updated", Toast.LENGTH_LONG).show();
+                            });
+                    Toast.makeText(getApplicationContext(), "successfully updated", Toast.LENGTH_LONG).show();
                     finish();
-                }else{
-                    Call_offline co = new Call_offline(Integer.valueOf(callid),statusID,txt_internalsn.getText().toString(),txttechanswer.getText().toString());
+                } else {
+                    Call_offline co = new Call_offline(Integer.valueOf(callid), statusID, txt_internalsn.getText().toString(), txttechanswer.getText().toString());
                     DatabaseHelper.getInstance(getApplicationContext()).add_call_offline(co);
                     //DatabaseHelper.getInstance(getApplicationContext()).updateSpecificValueInTable2("mgnet_calls","CallID",String.valueOf(callid),"offline","'1'");
                     Toast.makeText(getApplicationContext(), "internet invalid", Toast.LENGTH_LONG).show();
@@ -449,7 +448,7 @@ public class ActivityCallDetails extends FragmentActivity {
                 }
             }
         });
-        final Activity  activity = this;
+        final Activity activity = this;
         TextView sign1 = (TextView) findViewById(R.id.sign1);
         sign1.setTypeface(icon_manager.get_Icons("fonts/ionicons.ttf", this));
         sign1.setTextSize(30);
@@ -473,7 +472,7 @@ public class ActivityCallDetails extends FragmentActivity {
 
     }
 
-    private void rideChange(String callid){
+    private void rideChange(String callid) {
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             //Toast.makeText(getApplicationContext(), "gps לא מופעל", Toast.LENGTH_LONG).show();
         }
@@ -496,76 +495,80 @@ public class ActivityCallDetails extends FragmentActivity {
             //Toast.makeText(getApplicationContext(), "ride", Toast.LENGTH_LONG).show();
         }
     }
-      private void workChange(String callid){
-          if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-              //Toast.makeText(getApplicationContext(), "gps לא מופעל", Toast.LENGTH_LONG).show();
-          }
-          if (id2.getCurrentTextColor() == Color.parseColor("#E94E1B") == true) {
-              Toast.makeText(getApplicationContext(), "הינך במצב עבודה", Toast.LENGTH_LONG).show();
-          } else {
-              //draw color immediately
-              id2.setTextColor(Color.parseColor("#E94E1B"));
-              String s_longtitude = "";
-              String s_latitude = "";
-              try {
-                  gps.getLocation();
-                  s_longtitude = Double.toString(gps.getLongitude());
-                  s_latitude = Double.toString(gps.getLatitude());
-                  //Toast.makeText(getActivity(),"s_longtitude:"+s_longtitude+"\ns_latitude:"+s_latitude, Toast.LENGTH_LONG).show();
-              } catch (Exception e) {
-                  Toast.makeText(getApplicationContext(), "ex:" + e.getMessage(), Toast.LENGTH_LONG).show();
-              }
-              Async(Integer.valueOf(callid), "work", s_latitude, s_longtitude);
-              //Toast.makeText(getApplicationContext(), "work", Toast.LENGTH_LONG).show();
-          }
-      }
-      private void stopChange(String callid){
-          if (id1.getCurrentTextColor() == Color.parseColor("#E94E1B") == true &&
-                  id2.getCurrentTextColor() == Color.parseColor("#E94E1B") == true ) {
-              //draw color immediately
-              //id1.setTextColor(Color.parseColor("black"));
-              //id2.setTextColor(Color.parseColor("black"));
-              Async(Integer.valueOf(callid), "stop", "", "");
-              //Toast.makeText(getApplicationContext(), "stop", Toast.LENGTH_LONG).show();
-          }else{
-              Toast.makeText(getApplicationContext(), "אינך יכול לעצור במצב זה", Toast.LENGTH_LONG).show();
-          }
-      }
-      private void getCurrState(String callid){
-          int count = Integer.parseInt(DatabaseHelper.getInstance(getApplicationContext()).getScalarByCountQuery("select count(*) from Calltime where callid=" + callid + ""));
-          int countFinishOffline = Integer.parseInt(DatabaseHelper.getInstance(getApplicationContext()).getScalarByCountQuery("select count(*) from Calltime where callid=" + callid + " and ctq <> '-2'"));
-          try{
-              //if (helper.isNetworkAvailable(getApplicationContext())==true){
-                  //helper.transferJsonCallTime(getApplicationContext());
-                  //getStateAsync(callid);
-              //}else{
-                  getStateLocal(callid);
-              //}
-          }catch(Exception e){
-              helper.LogPrintExStackTrace(e);
-          }
 
-      }
-      private void getStateLocal(String callid){
-          //Call call2 = new Call();
-          //call2 = db.getCallDetailsByCallID(Integer.valueOf(callid));
+    private void workChange(String callid) {
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            //Toast.makeText(getApplicationContext(), "gps לא מופעל", Toast.LENGTH_LONG).show();
+        }
+        if (id2.getCurrentTextColor() == Color.parseColor("#E94E1B") == true) {
+            Toast.makeText(getApplicationContext(), "הינך במצב עבודה", Toast.LENGTH_LONG).show();
+        } else {
+            //draw color immediately
+            id2.setTextColor(Color.parseColor("#E94E1B"));
+            String s_longtitude = "";
+            String s_latitude = "";
+            try {
+                gps.getLocation();
+                s_longtitude = Double.toString(gps.getLongitude());
+                s_latitude = Double.toString(gps.getLatitude());
+                //Toast.makeText(getActivity(),"s_longtitude:"+s_longtitude+"\ns_latitude:"+s_latitude, Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                Toast.makeText(getApplicationContext(), "ex:" + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+            Async(Integer.valueOf(callid), "work", s_latitude, s_longtitude);
+            //Toast.makeText(getApplicationContext(), "work", Toast.LENGTH_LONG).show();
+        }
+    }
 
-          Calltime ct2 = new Calltime();
-          ct2 = getCTID(String.valueOf(Integer.valueOf(callid)),"ride","-2");
-          //Log.e("mytag","ride chk:" +" ctid:"+ct2.getCTID()+" getCtq:"+ct2.getCtq());
-          if (ct2.getCTID()!= -1 && ct2.getCTcomment().equals("ride")){
-              id1.setTextColor(Color.parseColor("#E94E1B"));
-          }else{
-              id1.setTextColor(Color.parseColor("black"));
-          }
-          ct2 = getCTID(String.valueOf(Integer.valueOf(callid)),"work","-2");
-          //Log.e("mytag","work chk:" +" ctid:"+ct2.getCTID()+" getCtq:"+ct2.getCtq());
-          if (ct2.getCTID()!= -1 && ct2.getCTcomment().equals("work")){
-              id2.setTextColor(Color.parseColor("#E94E1B"));
-              id1.setTextColor(Color.parseColor("#E94E1B"));
-          }else{
-              id2.setTextColor(Color.parseColor("black"));
-          }
+    private void stopChange(String callid) {
+        if (id1.getCurrentTextColor() == Color.parseColor("#E94E1B") == true &&
+                id2.getCurrentTextColor() == Color.parseColor("#E94E1B") == true) {
+            //draw color immediately
+            //id1.setTextColor(Color.parseColor("black"));
+            //id2.setTextColor(Color.parseColor("black"));
+            Async(Integer.valueOf(callid), "stop", "", "");
+            //Toast.makeText(getApplicationContext(), "stop", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "אינך יכול לעצור במצב זה", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void getCurrState(String callid) {
+        int count = Integer.parseInt(DatabaseHelper.getInstance(getApplicationContext()).getScalarByCountQuery("select count(*) from Calltime where callid=" + callid + ""));
+        int countFinishOffline = Integer.parseInt(DatabaseHelper.getInstance(getApplicationContext()).getScalarByCountQuery("select count(*) from Calltime where callid=" + callid + " and ctq <> '-2'"));
+        try {
+            //if (helper.isNetworkAvailable(getApplicationContext())==true){
+            //helper.transferJsonCallTime(getApplicationContext());
+            //getStateAsync(callid);
+            //}else{
+            getStateLocal(callid);
+            //}
+        } catch (Exception e) {
+            helper.LogPrintExStackTrace(e);
+        }
+
+    }
+
+    private void getStateLocal(String callid) {
+        //Call call2 = new Call();
+        //call2 = db.getCallDetailsByCallID(Integer.valueOf(callid));
+
+        Calltime ct2 = new Calltime();
+        ct2 = getCTID(String.valueOf(Integer.valueOf(callid)), "ride", "-2");
+        //Log.e("mytag","ride chk:" +" ctid:"+ct2.getCTID()+" getCtq:"+ct2.getCtq());
+        if (ct2.getCTID() != -1 && ct2.getCTcomment().equals("ride")) {
+            id1.setTextColor(Color.parseColor("#E94E1B"));
+        } else {
+            id1.setTextColor(Color.parseColor("black"));
+        }
+        ct2 = getCTID(String.valueOf(Integer.valueOf(callid)), "work", "-2");
+        //Log.e("mytag","work chk:" +" ctid:"+ct2.getCTID()+" getCtq:"+ct2.getCtq());
+        if (ct2.getCTID() != -1 && ct2.getCTcomment().equals("work")) {
+            id2.setTextColor(Color.parseColor("#E94E1B"));
+            id1.setTextColor(Color.parseColor("#E94E1B"));
+        } else {
+            id2.setTextColor(Color.parseColor("black"));
+        }
 
 //          if (isContain(call2.getState(), "ride")) {
 //              id1.setTextColor(Color.parseColor("#E94E1B"));
@@ -578,43 +581,45 @@ public class ActivityCallDetails extends FragmentActivity {
 //          } else {
 //              id2.setTextColor(Color.parseColor("black"));
 //          }
-      }
-      private void getStateAsync(String callid){
-          Model.getInstance().Async_Wz_Call_getTime_Listener(helper.getMacAddr(getApplicationContext()), Integer.valueOf(callid), "", new Model.Wz_Call_getTime_Listener() {
-              @Override
-              public void onResult(String str) {
-                  JSONObject j = null;
-                  try {
-                      j = new JSONObject(str);
-                      JSONArray jarray = j.getJSONArray("Wz_Call_getTime");
-                      String statuses = jarray.getJSONObject(0).getString("Status");
-                      //Toast.makeText(getActivity(),"statuses: " + statuses, Toast.LENGTH_LONG).show();
+    }
 
-                      if (isContain(statuses, "ride")) {
-                          id1.setTextColor(Color.parseColor("#E94E1B"));
-                      } else {
-                          id1.setTextColor(Color.parseColor("black"));
-                      }
-                      if (isContain(statuses, "work")) {
-                          id2.setTextColor(Color.parseColor("#E94E1B"));
-                          id1.setTextColor(Color.parseColor("#E94E1B"));
-                      } else {
-                          id2.setTextColor(Color.parseColor("black"));
-                      }
+    private void getStateAsync(String callid) {
+        Model.getInstance().Async_Wz_Call_getTime_Listener(helper.getMacAddr(getApplicationContext()), Integer.valueOf(callid), "", new Model.Wz_Call_getTime_Listener() {
+            @Override
+            public void onResult(String str) {
+                JSONObject j = null;
+                try {
+                    j = new JSONObject(str);
+                    JSONArray jarray = j.getJSONArray("Wz_Call_getTime");
+                    String statuses = jarray.getJSONObject(0).getString("Status");
+                    //Toast.makeText(getActivity(),"statuses: " + statuses, Toast.LENGTH_LONG).show();
 
-                  } catch (JSONException e1) {
-                      e1.printStackTrace();
-                  }
-              }
-          });
-      }
-      @Override
-      protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-          super.onActivityResult(requestCode, resultCode, data);
+                    if (isContain(statuses, "ride")) {
+                        id1.setTextColor(Color.parseColor("#E94E1B"));
+                    } else {
+                        id1.setTextColor(Color.parseColor("black"));
+                    }
+                    if (isContain(statuses, "work")) {
+                        id2.setTextColor(Color.parseColor("#E94E1B"));
+                        id1.setTextColor(Color.parseColor("#E94E1B"));
+                    } else {
+                        id2.setTextColor(Color.parseColor("black"));
+                    }
+
+                } catch (JSONException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if(result != null) {
-            if(result.getContents() == null) {
+        if (result != null) {
+            if (result.getContents() == null) {
                 Log.d("MainActivity", "Cancelled scan");
                 Toast.makeText(this, "Cancelled", Toast.LENGTH_LONG).show();
             } else {
@@ -627,217 +632,217 @@ public class ActivityCallDetails extends FragmentActivity {
         } else {
 
         }
-      }
+    }
 
-
-
-    private void goToCustomerCase(){
+    private void goToCustomerCase() {
         DatabaseHelper.getInstance(getApplicationContext()).delete_call_time();
         Toast.makeText(this, "Calltime deleted", Toast.LENGTH_LONG).show();
-          Intent intent = new Intent(getApplicationContext(), ActivityWebView.class);
-          Bundle b = new Bundle();
-          b.putInt("callid", call.getCallID());
-          b.putInt("cid", call.getCID());
-          b.putInt("technicianid", call.getTechnicianID());
-          b.putString("action","customercase");
-          intent.putExtras(b);
-          startActivity(intent);
-      }
-    private void goToHistory(){
-          Intent intent = new Intent(getApplicationContext(), ActivityWebView.class);
-          Bundle b = new Bundle();
-          b.putInt("callid", call.getCallID());
-          b.putInt("cid", call.getCID());
-          b.putInt("technicianid", call.getTechnicianID());
-          b.putString("action","history");
-          intent.putExtras(b);
-          startActivity(intent);
-      }
-    private void goToCallFiles(){
-//        Intent intent = new Intent(getApplicationContext(), ActivityWebView.class);
-//        Bundle b = new Bundle();
-//        b.putInt("callid", call.getCallID());
-//        b.putInt("cid", call.getCID());
-//        b.putInt("technicianid", call.getTechnicianID());
-//        b.putString("action","callfiles");
-//        intent.putExtras(b);
-//        startActivity(intent);
-          String url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
-                  + "/iframe.aspx?control=/modulesServices/CallsFiles&CallID=" + String.valueOf(call.getCallID()) + "&class=CallsFiles_appCell&mobile=True";
-          Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-          startActivity(browserIntent);
-      }
-    private void goToCalltime(){
         Intent intent = new Intent(getApplicationContext(), ActivityWebView.class);
         Bundle b = new Bundle();
         b.putInt("callid", call.getCallID());
         b.putInt("cid", call.getCID());
         b.putInt("technicianid", call.getTechnicianID());
-        b.putString("action","calltime");
+        b.putString("action", "customercase");
         intent.putExtras(b);
         startActivity(intent);
     }
-    private void goToWaze(){
-        try
-        {
+
+    private void goToHistory() {
+        Intent intent = new Intent(getApplicationContext(), ActivityWebView.class);
+        Bundle b = new Bundle();
+        b.putInt("callid", call.getCallID());
+        b.putInt("cid", call.getCID());
+        b.putInt("technicianid", call.getTechnicianID());
+        b.putString("action", "history");
+        intent.putExtras(b);
+        startActivity(intent);
+    }
+
+    private void goToCallFiles() {
+        Intent intent = new Intent(getApplicationContext(), ActivityWebView.class);
+        Bundle b = new Bundle();
+        b.putInt("callid", call.getCallID());
+        b.putInt("cid", call.getCID());
+        b.putInt("technicianid", call.getTechnicianID());
+        b.putString("action", "callfiles");
+        intent.putExtras(b);
+        startActivity(intent);
+        // String url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
+        //         + "/iframe.aspx?control=/modulesServices/CallsFiles&CallID=" + String.valueOf(call.getCallID()) + "&class=CallsFiles_appCell&mobile=True";
+        // Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        // startActivity(browserIntent);
+    }
+
+    private void goToCalltime() {
+        Intent intent = new Intent(getApplicationContext(), ActivityWebView.class);
+        Bundle b = new Bundle();
+        b.putInt("callid", call.getCallID());
+        b.putInt("cid", call.getCID());
+        b.putInt("technicianid", call.getTechnicianID());
+        b.putString("action", "calltime");
+        intent.putExtras(b);
+        startActivity(intent);
+    }
+
+    private void goToWaze() {
+        try {
             String url = "waze://?q=" + call.getCaddress() + " " + call.getCcity();
-            Intent intent = new Intent( Intent.ACTION_VIEW, Uri.parse( url ) );
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            getApplicationContext().startActivity( intent );
-        }
-        catch ( ActivityNotFoundException ex  )
-        {
+            getApplicationContext().startActivity(intent);
+        } catch (ActivityNotFoundException ex) {
             // If Waze is not installed, open it in Google Play:
-            Intent intent = new Intent( Intent.ACTION_VIEW, Uri.parse( "market://details?id=com.waze" ) );
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.waze"));
             getApplicationContext().startActivity(intent);
         }
     }
-    private void goToParts(){
-        try
-        {
+
+    private void goToParts() {
+        try {
+
             Intent intent = new Intent(getApplicationContext(), ActivityWebView.class);
             Bundle b = new Bundle();
             b.putInt("callid", call.getCallID());
             b.putInt("cid", call.getCID());
             b.putInt("technicianid", call.getTechnicianID());
-            b.putString("action","callparts");
+            b.putString("action", "callparts");
             intent.putExtras(b);
             startActivity(intent);
-        }
-        catch ( ActivityNotFoundException ex  )
-        {
+        } catch (ActivityNotFoundException ex) {
             Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-    private void goToSign(){
-        try
-        {
-            String url = "";//DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL") + "/modulesSign/sign.aspx?callID=" + String.valueOf(call.getCallID());
-            url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
-                    +"/IN.aspx?url="
-                    + "/modulesSign/sign.aspx?callID=" + String.valueOf(call.getCallID())
-                    +"&MACAddress=" + helper.getMacAddr(getBaseContext());
-            Log.e("mytag",url);
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            startActivity(browserIntent);
+
+    private void goToSign() {
+        try {
+            Intent intent = new Intent(getApplicationContext(), ActivityWebView.class);
+            Bundle b = new Bundle();
+            b.putInt("callid", call.getCallID());
+            b.putInt("cid", call.getCID());
+            b.putInt("technicianid", call.getTechnicianID());
+            b.putString("action", "callsign");
+            intent.putExtras(b);
+            startActivity(intent);
+//            String url = "";//DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL") + "/modulesSign/sign.aspx?callID=" + String.valueOf(call.getCallID());
+//            url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
+//                    +"/IN.aspx?url="
+//                    + "/modulesSign/sign.aspx?callID=" + String.valueOf(call.getCallID())
+//                    +"&MACAddress=" + helper.getMacAddr(getBaseContext());
+//            Log.e("mytag",url);
+//            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+//            startActivity(browserIntent);
             //AlertDialogWeb(String.valueOf(callsArrayList.get(pos).getCallID()));
-        }
-        catch ( ActivityNotFoundException ex  )
-        {
+        } catch (ActivityNotFoundException ex) {
             Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
-    public void Async(int callid,String action,String latitude,String longtitude) {
-            if (action.contains("stop")){
-                id1.setTextColor(Color.parseColor("black"));
-                id2.setTextColor(Color.parseColor("black"));
-                DatabaseHelper.getInstance(getApplicationContext()).updateSpecificValueInTable2("mgnet_calls","CallID",String.valueOf(callid),"state","'" + null + "'");
-                Calltime ct = new Calltime();
-                ct = getCTID(String.valueOf(Integer.valueOf(callid)),"work","");
-                if ( ct.getCTID() != -1 && ct.getCtq().contains("-2") ){
-                    closeWorkRow(ct);
-                    updateRideRow(ct.getCallID());
-                }
-                db.getJsonResultsFromTable("Calltime");
-                helper.transferJsonCallTime(getApplicationContext());
-            }else{
-                DatabaseHelper.getInstance(getApplicationContext()).updateSpecificValueInTable2("mgnet_calls","CallID",String.valueOf(callid),"state","'" +action + "'");
-                if (action.contains("ride")){
-                    addRideRow(callid);
-                    db.getJsonResultsFromTable("Calltime");
-                }
-                if (action.contains("work")){
-                    //updateWork(callid);
-                    addWorkRow(callid);
-                    db.getJsonResultsFromTable("Calltime");
-                    //check if we going to update work and we dont have line because it was online before
-                }
+    public void Async(int callid, String action, String latitude, String longtitude) {
+        if (action.contains("stop")) {
+            id1.setTextColor(Color.parseColor("black"));
+            id2.setTextColor(Color.parseColor("black"));
+            DatabaseHelper.getInstance(getApplicationContext()).updateSpecificValueInTable2("mgnet_calls", "CallID", String.valueOf(callid), "state", "'" + null + "'");
+            Calltime ct = new Calltime();
+            ct = getCTID(String.valueOf(Integer.valueOf(callid)), "work", "");
+            if (ct.getCTID() != -1 && ct.getCtq().contains("-2")) {
+                closeWorkRow(ct);
+                updateRideRow(ct.getCallID());
             }
-            Log.e("mytag",DatabaseHelper.getInstance(getApplicationContext()).getJsonResultsFromTable("Calltime").toString());
-            getStateLocal(String.valueOf(callid));
-            //getCurrState(String.valueOf(callid));
+            db.getJsonResultsFromTable("Calltime");
+            helper.transferJsonCallTime(getApplicationContext());
+        } else {
+            DatabaseHelper.getInstance(getApplicationContext()).updateSpecificValueInTable2("mgnet_calls", "CallID", String.valueOf(callid), "state", "'" + action + "'");
+            if (action.contains("ride")) {
+                addRideRow(callid);
+                db.getJsonResultsFromTable("Calltime");
+            }
+            if (action.contains("work")) {
+                //updateWork(callid);
+                addWorkRow(callid);
+                db.getJsonResultsFromTable("Calltime");
+                //check if we going to update work and we dont have line because it was online before
+            }
+        }
+        Log.e("mytag", DatabaseHelper.getInstance(getApplicationContext()).getJsonResultsFromTable("Calltime").toString());
+        getStateLocal(String.valueOf(callid));
+        //getCurrState(String.valueOf(callid));
     }
-      private void updateRideRow(int callid){
-          Calltime ct2 = new Calltime();
-          ct2 = getCTID(String.valueOf(Integer.valueOf(callid)),"ride","-2");
-          if (ct2.getCTID()!= -1){
-              ct2.setCtq("-1");
-              DatabaseHelper.getInstance(getApplicationContext()).update_calltime(ct2);
-          }
-      }
-      private void closeWorkRow(Calltime ct){
-          String date11 = ct.getCallStartTime();
-          String fromdateinmillis = String.valueOf(stringToDate(date11,"yyyy-MM-dd HH:mm:ss").getTime());
-          String currentDateTimeString1 = String.valueOf((new Date().getTime()));
-          int dateDifference = (int) helper.getDateDiff(fromdateinmillis, currentDateTimeString1);
-          ct.setCtq("-1");
-          ct.setMinute(String.valueOf(Integer.valueOf(dateDifference)+1));
-          DatabaseHelper.getInstance(getApplicationContext()).update_calltime(ct);
-      }
-      private void addRideRow(int callid){
-          DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-          String sdt = df.format(new Date(System.currentTimeMillis()));
-          Calltime ct = new Calltime();
-          ct = new Calltime(-1,Integer.valueOf(callid),sdt,"0","ride","-2");
-          DatabaseHelper.getInstance(getApplicationContext()).add_calltime(ct);
-      }
-      private void addWorkRow(int callid){
-          //normal situation and check if ride exists and update
-          DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-          String sdt = df.format(new Date(System.currentTimeMillis()));
-          Calltime ct = new Calltime();
-          ct = getCTID(String.valueOf(callid),"ride","-2");
-          if (ct.getCTID() == -1)
-          {
-          }else{
-              String date1 = ct.getCallStartTime();
-              String fromdateinmillis = String.valueOf(stringToDate(date1,"yyyy-MM-dd HH:mm:ss").getTime());
-              String currentDateTimeString = String.valueOf((new Date().getTime()));
-              int dateDifference = (int) helper.getDateDiff(fromdateinmillis, currentDateTimeString);
-              //ct.setCtq("-1");
-              ct.setMinute(String.valueOf(Integer.valueOf(dateDifference)+1));
-              DatabaseHelper.getInstance(getApplicationContext()).update_calltime(ct);
-          }
-          ct = new Calltime(-1,Integer.valueOf(callid),sdt,"0","work","-2");
-          DatabaseHelper.getInstance(getApplicationContext()).add_calltime(ct);
-      }
-  private Date stringToDate(String aDate,String aFormat) {
 
-      if(aDate==null) return null;
-      ParsePosition pos = new ParsePosition(0);
-      SimpleDateFormat simpledateformat = new SimpleDateFormat(aFormat);
-      Date stringDate = simpledateformat.parse(aDate, pos);
-      return stringDate;
-
-  }
-
-    private Calltime getCTID(String callid,String action,String openClose){
-        try{
-            Calltime ct= new Calltime();
-            ct = DatabaseHelper.getInstance(getApplicationContext()).getCalltimeByCallidAndAction(callid,action,openClose);
-            return ct;
-        }catch(Exception e){
-            helper.LogPrintExStackTrace(e);
-            return new Calltime(-1,1,"","","","");
+    private void updateRideRow(int callid) {
+        Calltime ct2 = new Calltime();
+        ct2 = getCTID(String.valueOf(Integer.valueOf(callid)), "ride", "-2");
+        if (ct2.getCTID() != -1) {
+            ct2.setCtq("-1");
+            DatabaseHelper.getInstance(getApplicationContext()).update_calltime(ct2);
         }
     }
-    public  boolean isContain(String inputStr, String item)
-    {
-        if(inputStr.contains(item)){
+
+    private void closeWorkRow(Calltime ct) {
+        String date11 = ct.getCallStartTime();
+        String fromdateinmillis = String.valueOf(U.stringToDate(date11, "yyyy-MM-dd HH:mm:ss").getTime());
+        String currentDateTimeString1 = String.valueOf((new Date().getTime()));
+        int dateDifference = (int) helper.getDateDiff(fromdateinmillis, currentDateTimeString1);
+        ct.setCtq("-1");
+        ct.setMinute(String.valueOf(Integer.valueOf(dateDifference) + 1));
+        DatabaseHelper.getInstance(getApplicationContext()).update_calltime(ct);
+    }
+
+    private void addRideRow(int callid) {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String sdt = df.format(new Date(System.currentTimeMillis()));
+        Calltime ct = new Calltime();
+        ct = new Calltime(-1, Integer.valueOf(callid), sdt, "0", "ride", "-2");
+        DatabaseHelper.getInstance(getApplicationContext()).add_calltime(ct);
+    }
+
+    private void addWorkRow(int callid) {
+        //normal situation and check if ride exists and update
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String sdt = df.format(new Date(System.currentTimeMillis()));
+        Calltime ct = new Calltime();
+        ct = getCTID(String.valueOf(callid), "ride", "-2");
+        if (ct.getCTID() == -1) {
+        } else {
+            String date1 = ct.getCallStartTime();
+            String fromdateinmillis = String.valueOf(U.stringToDate(date1, "yyyy-MM-dd HH:mm:ss").getTime());
+            String currentDateTimeString = String.valueOf((new Date().getTime()));
+            int dateDifference = (int) helper.getDateDiff(fromdateinmillis, currentDateTimeString);
+            //ct.setCtq("-1");
+            ct.setMinute(String.valueOf(Integer.valueOf(dateDifference) + 1));
+            DatabaseHelper.getInstance(getApplicationContext()).update_calltime(ct);
+        }
+        ct = new Calltime(-1, Integer.valueOf(callid), sdt, "0", "work", "-2");
+        DatabaseHelper.getInstance(getApplicationContext()).add_calltime(ct);
+    }
+
+
+    private Calltime getCTID(String callid, String action, String openClose) {
+        try {
+            Calltime ct = new Calltime();
+            ct = DatabaseHelper.getInstance(getApplicationContext()).getCalltimeByCallidAndAction(callid, action, openClose);
+            return ct;
+        } catch (Exception e) {
+            helper.LogPrintExStackTrace(e);
+            return new Calltime(-1, 1, "", "", "", "");
+        }
+    }
+
+    public boolean isContain(String inputStr, String item) {
+        if (inputStr.contains(item)) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
-    public  String isContainNull(String inputStr)
-    {
-        if(inputStr.contains("null")){
+
+    public String isContainNull(String inputStr) {
+        if (inputStr.contains("null")) {
             return "";
-        }else{
+        } else {
             return inputStr;
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -877,8 +882,7 @@ public class ActivityCallDetails extends FragmentActivity {
 //    }
 
 
-    public void AlertDialogWeb(String callid){
-
+    public void AlertDialogWeb(String callid) {
 
 
         AlertDialog.Builder alert = new AlertDialog.Builder(ActivityCallDetails.this);
@@ -889,7 +893,7 @@ public class ActivityCallDetails extends FragmentActivity {
 
         String url = DatabaseHelper.getInstance(getApplicationContext()).getValueByKey("URL")
                 + "/iframe.aspx?control=modulesServices%2fCallParts&CallID=" + callid + "&type=customer&val=" + String.valueOf(call.getCID()) + "";
-                //+ "/iframe.aspx?control=/modulesServices/CallsFiles&CallID=" + callid + "&class=CallsFiles_appCell&mobile=True";
+        //+ "/iframe.aspx?control=/modulesServices/CallsFiles&CallID=" + callid + "&class=CallsFiles_appCell&mobile=True";
 
         wv.loadUrl(url);
         wv.setWebViewClient(new WebViewClient() {
@@ -913,7 +917,8 @@ public class ActivityCallDetails extends FragmentActivity {
 // Showing Alert Message
         alertDialogMain.show();
     }
-    public void goToWebFragment(){
+
+    public void goToWebFragment() {
         android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
         //FragmentWebView frag = new FragmentWebView();
