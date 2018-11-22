@@ -164,7 +164,7 @@ public class LoginActivity extends Activity {
             @Override
             public void onClick(View v) {
                 setTopLogoImage();
-                memail = email.getText().toString();
+                memail = email.getText().toString(); // test
                 mpass = pass.getText().toString();
 
                 if (!checkEmail(memail)) {
@@ -274,7 +274,7 @@ public class LoginActivity extends Activity {
         Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         //startActivityForResult(intent, 1);
-        
+
         startActivity(intent);
     }
 
