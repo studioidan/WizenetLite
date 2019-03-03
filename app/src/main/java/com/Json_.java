@@ -6,11 +6,9 @@ import android.widget.Toast;
 
 import com.Classes.Call;
 import com.Classes.Ccustomer;
-import com.Classes.Ctype;
 import com.Classes.IS_Action;
 import com.Classes.IS_Status;
 import com.Classes.Product;
-import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,7 +16,6 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -28,25 +25,26 @@ import java.util.List;
 public class Json_ {
     Helper helper = new Helper();
     File_ f = new File_();
-    public JSONArray retJsonArrayFromResponse(String response,String name){
+
+    public JSONArray retJsonArrayFromResponse(String response, String name) {
         String myResponse = response;
-        myResponse = myResponse.replaceAll(name+"Response", "");
-        myResponse = myResponse.replaceAll(name+"Result=", "'a':");
+        myResponse = myResponse.replaceAll(name + "Response", "");
+        myResponse = myResponse.replaceAll(name + "Result=", "'a':");
         myResponse = myResponse.replaceAll(";", "");
 
         try {
-            JSONArray j = getJSONArrayByName(myResponse,"a");
+            JSONArray j = getJSONArrayByName(myResponse, "a");
             return j;
         } catch (Exception e) {
             helper.LogPrintExStackTrace(e);
             return null;
         }
     }
+
     public boolean isJSONValid(String test) {
         try {
             new JSONObject(test);
-        }
-        catch (JSONException ex) {
+        } catch (JSONException ex) {
 
             try {
                 new JSONArray(test);
@@ -56,14 +54,16 @@ public class Json_ {
         }
         return true;
     }
+
     JSONArray jarray = null;
 
     /**
      * example [{bla},{bla}]
+     *
      * @return
      */
     //[{bla}]
-    public  JSONArray getJSONArrayFromString(String str,Context context){
+    public JSONArray getJSONArrayFromString(String str, Context context) {
         JSONArray jsonArray = null;
         try {
             jsonArray = new JSONArray(str);
@@ -79,23 +79,24 @@ public class Json_ {
 
     }
 
-    public JSONArray getJSONArrayFromFile(String filenameWithSuffix,Context ctx){
+    public JSONArray getJSONArrayFromFile(String filenameWithSuffix, Context ctx) {
         JSONArray jarray = null;
         String strJson = "";
         File_ f = new File_();
 
-        strJson = f.readFromFileExternal(ctx,filenameWithSuffix);
-        if (!isJSONValid(strJson)){
+        strJson = f.readFromFileExternal(ctx, filenameWithSuffix);
+        if (!isJSONValid(strJson)) {
             return jarray;
         }
         try {
-            jarray =  new JSONArray(strJson);
+            jarray = new JSONArray(strJson);
         } catch (JSONException e) {
             helper.LogPrintExStackTrace(e);
         }
         return jarray;
     }
-    public JSONArray getJSONArrayByName(String strJson,String funcName){
+
+    public JSONArray getJSONArrayByName(String strJson, String funcName) {
         JSONArray jarray = null;
         try {
             JSONObject j = null;
@@ -107,15 +108,15 @@ public class Json_ {
         return jarray;
     }
 
-    public List<IS_Status> getISStatusList(Context ctx){
+    public List<IS_Status> getISStatusList(Context ctx) {
 
-        List<IS_Status> list = new ArrayList<IS_Status>() ;
+        List<IS_Status> list = new ArrayList<IS_Status>();
         JSONArray jarray = null;
         try {
             String strJson = "";
             File_ f = new File_();
-            strJson = f.readFromFileExternal(ctx,"is_status.txt");
-            jarray =  new JSONArray(strJson);
+            strJson = f.readFromFileExternal(ctx, "is_status.txt");
+            jarray = new JSONArray(strJson);
 
         } catch (JSONException e) {
             helper.LogPrintExStackTrace(e);
@@ -125,7 +126,7 @@ public class Json_ {
             final JSONObject e;
             try {
                 e = jarray.getJSONObject(i);
-                list.add(new IS_Status(e.getString("statusID"),e.getString("statusName")));
+                list.add(new IS_Status(e.getString("statusID"), e.getString("statusName")));
             } catch (JSONException e1) {
                 helper.LogPrintExStackTrace(e1);
                 return list;
@@ -133,40 +134,41 @@ public class Json_ {
         }
         return list;
     }
-    public List<Ccustomer> getClientsListByJSONarray(JSONArray j,Context ctx){
 
-        List<Ccustomer> list = new ArrayList<Ccustomer>() ;
+    public List<Ccustomer> getClientsListByJSONarray(JSONArray j, Context ctx) {
+
+        List<Ccustomer> list = new ArrayList<Ccustomer>();
         JSONArray jarray = null;
-        try{
+        try {
             for (int i = 0; i < j.length(); i++) {
                 final JSONObject e;
-                    e = j.getJSONObject(i);
-                    list.add(new Ccustomer(
-                            "",
-                            "",
-                            e.getString("Cemail"),
-                            e.getString("Cphone"),
-                            e.getString("Ccell"),
-                            e.getString("Ccompany"),
-                            e.getString("CID"),
-                            e.getString("Caddress"),
-                            ""));
+                e = j.getJSONObject(i);
+                list.add(new Ccustomer(
+                        "",
+                        "",
+                        e.getString("Cemail"),
+                        e.getString("Cphone"),
+                        e.getString("Ccell"),
+                        e.getString("Ccompany"),
+                        e.getString("CID"),
+                        e.getString("Caddress"),
+                        ""));
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             return list;
         }
         return list;
     }
 
-    public List<String> getISStatusString(Context ctx){
+    public List<String> getISStatusString(Context ctx) {
         ArrayList<IS_Status> is_statuses;
         JSONArray jsonArray = new JSONArray();
-        jsonArray = getJSONArrayFromFile("is_status.txt",ctx);
+        jsonArray = getJSONArrayFromFile("is_status.txt", ctx);
         ArrayList<String> listdata = new ArrayList<String>();
         is_statuses = new ArrayList<IS_Status>();
-        JSONArray jArray = (JSONArray)jsonArray;
+        JSONArray jArray = (JSONArray) jsonArray;
         if (jArray != null) {
-            for (int i=0;i<jArray.length();i++){
+            for (int i = 0; i < jArray.length(); i++) {
                 try {
                     is_statuses.add(new IS_Status(
                             jArray.getJSONObject(i).getString("statusID"),
@@ -180,6 +182,7 @@ public class Json_ {
         }
         return listdata;
     }
+
     private Ccustomer[] getCustomerListByJson(Context ctx) {
         Helper helper = new Helper();
         File_ f = new File_();
@@ -196,29 +199,30 @@ public class Json_ {
             helper.LogPrintExStackTrace(e);
             return null;
         }
-        Toast.makeText(ctx,"length:" + length, Toast.LENGTH_SHORT).show();
+        Toast.makeText(ctx, "length:" + length, Toast.LENGTH_SHORT).show();
         ccustomers = new Ccustomer[length];
         ccustomers = helper.getWizenetClientsFromJson(myString);
         return ccustomers;
     }
-    public boolean addCcustomerToDBfromFile(Context context){
+
+    public boolean addCcustomerToDBfromFile(Context context) {
 
         boolean ret = false;
         String strJson = "";
         File_ f = new File_();
-        strJson = f.readFromFileExternal(context,"wzClients.txt");
-        if (isJSONValid(strJson) == false){
+        strJson = f.readFromFileExternal(context, "wzClients.txt");
+        if (isJSONValid(strJson) == false) {
             return false;
         }
         JSONObject j = null;
         JSONArray jarray = null;
         try {
             j = new JSONObject(strJson);
-            jarray= j.getJSONArray("Wz_ret_ClientsAddressesByActions");
+            jarray = j.getJSONArray("Wz_ret_ClientsAddressesByActions");
             //need to delete or update the ccustomers
             //DatabaseHelper.getInstance(context).delete_IS_Actions_Rows("");
-            Log.e("MYTAG","jarray length is:" + jarray.length());
-            if (jarray.length() == 0){
+            Log.e("MYTAG", "jarray length is:" + jarray.length());
+            if (jarray.length() == 0) {
                 //Log.e("MYTAG"," jarray is 0");
                 return false;
             }
@@ -231,7 +235,7 @@ public class Json_ {
             final JSONObject e;
             try {
                 e = jarray.getJSONObject(i);
-                Ccustomer c= new Ccustomer();//Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("AID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("CID"))), cursor.getString(cursor.getColumnIndex("CreateDate")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("statusID"))), cursor.getString(cursor.getColumnIndex("CallPriority")), cursor.getString(cursor.getColumnIndex("subject")), cursor.getString(cursor.getColumnIndex("comments")), cursor.getString(cursor.getColumnIndex("CallUpdate")), cursor.getString(cursor.getColumnIndex("cntrctDate")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("TechnicianID"))), cursor.getString(cursor.getColumnIndex("statusName")), cursor.getString(cursor.getColumnIndex("internalSN")), cursor.getString(cursor.getColumnIndex("Pmakat")), cursor.getString(cursor.getColumnIndex("Pname")), cursor.getString(cursor.getColumnIndex("contractID")), cursor.getString(cursor.getColumnIndex("Cphone")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("OriginID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("ProblemTypeID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallTypeID"))), cursor.getString(cursor.getColumnIndex("priorityID")), cursor.getString(cursor.getColumnIndex("OriginName")), cursor.getString(cursor.getColumnIndex("problemTypeName")), cursor.getString(cursor.getColumnIndex("CallTypeName")), cursor.getString(cursor.getColumnIndex("Cname")), cursor.getString(cursor.getColumnIndex("Cemail")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("contctCode"))), cursor.getString(cursor.getColumnIndex("callStartTime")), cursor.getString(cursor.getColumnIndex("callEndTime")), cursor.getString(cursor.getColumnIndex("Ccompany")), cursor.getString(cursor.getColumnIndex("Clocation")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("callOrder"))), cursor.getString(cursor.getColumnIndex("Caddress")), cursor.getString(cursor.getColumnIndex("Ccity")), cursor.getString(cursor.getColumnIndex("Ccomments")), cursor.getString(cursor.getColumnIndex("Cfname")), cursor.getString(cursor.getColumnIndex("Clname")), cursor.getString(cursor.getColumnIndex("techName")), cursor.getString(cursor.getColumnIndex("Aname")), cursor.getString(cursor.getColumnIndex("ContctName")), cursor.getString(cursor.getColumnIndex("ContctAddress")), cursor.getString(cursor.getColumnIndex("ContctCity")), cursor.getString(cursor.getColumnIndex("ContctCell")), cursor.getString(cursor.getColumnIndex("ContctPhone")), cursor.getString(cursor.getColumnIndex("ContctCity")), cursor.getString(cursor.getColumnIndex("Ccell")), cursor.getString(cursor.getColumnIndex("techColor")), cursor.getString(cursor.getColumnIndex("ContctCemail")), cursor.getString(cursor.getColumnIndex("CallParentID")));
+                Ccustomer c = new Ccustomer();//Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("AID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("CID"))), cursor.getString(cursor.getColumnIndex("CreateDate")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("statusID"))), cursor.getString(cursor.getColumnIndex("CallPriority")), cursor.getString(cursor.getColumnIndex("subject")), cursor.getString(cursor.getColumnIndex("comments")), cursor.getString(cursor.getColumnIndex("CallUpdate")), cursor.getString(cursor.getColumnIndex("cntrctDate")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("TechnicianID"))), cursor.getString(cursor.getColumnIndex("statusName")), cursor.getString(cursor.getColumnIndex("internalSN")), cursor.getString(cursor.getColumnIndex("Pmakat")), cursor.getString(cursor.getColumnIndex("Pname")), cursor.getString(cursor.getColumnIndex("contractID")), cursor.getString(cursor.getColumnIndex("Cphone")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("OriginID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("ProblemTypeID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallTypeID"))), cursor.getString(cursor.getColumnIndex("priorityID")), cursor.getString(cursor.getColumnIndex("OriginName")), cursor.getString(cursor.getColumnIndex("problemTypeName")), cursor.getString(cursor.getColumnIndex("CallTypeName")), cursor.getString(cursor.getColumnIndex("Cname")), cursor.getString(cursor.getColumnIndex("Cemail")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("contctCode"))), cursor.getString(cursor.getColumnIndex("callStartTime")), cursor.getString(cursor.getColumnIndex("callEndTime")), cursor.getString(cursor.getColumnIndex("Ccompany")), cursor.getString(cursor.getColumnIndex("Clocation")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("callOrder"))), cursor.getString(cursor.getColumnIndex("Caddress")), cursor.getString(cursor.getColumnIndex("Ccity")), cursor.getString(cursor.getColumnIndex("Ccomments")), cursor.getString(cursor.getColumnIndex("Cfname")), cursor.getString(cursor.getColumnIndex("Clname")), cursor.getString(cursor.getColumnIndex("techName")), cursor.getString(cursor.getColumnIndex("Aname")), cursor.getString(cursor.getColumnIndex("ContctName")), cursor.getString(cursor.getColumnIndex("ContctAddress")), cursor.getString(cursor.getColumnIndex("ContctCity")), cursor.getString(cursor.getColumnIndex("ContctCell")), cursor.getString(cursor.getColumnIndex("ContctPhone")), cursor.getString(cursor.getColumnIndex("ContctCity")), cursor.getString(cursor.getColumnIndex("Ccell")), cursor.getString(cursor.getColumnIndex("techColor")), cursor.getString(cursor.getColumnIndex("ContctCemail")), cursor.getString(cursor.getColumnIndex("CallParentID")));
 
                 c.setCID(e.getString("CID"));
                 c.setCParentID(e.getString("CParentID"));
@@ -314,13 +318,13 @@ public class Json_ {
         String strJson = "";
         List<Product> a = new ArrayList<Product>();
 
-        strJson = f.readFromFileExternal(c,"products.txt");
+        strJson = f.readFromFileExternal(c, "products.txt");
         JSONArray jArray = new JSONArray();
         jArray = getJsonArrayFromString(strJson);
-        if (jArray == null){
+        if (jArray == null) {
             return a;
         }
-        for (int i=0;i<jArray.length();i++){
+        for (int i = 0; i < jArray.length(); i++) {
             try {
                 a.add(new Product(
                         jArray.getJSONObject(i).getString("PID"),
@@ -337,41 +341,43 @@ public class Json_ {
         //{"PID":11306,"Pmakat":"NB-509","Pmodel":null,"Pname":"LENOVO 59385926 TABLET 7\u0027\u0027 ANDROID 4.2 1Y","PdescS":"","PdescL":null,"Pprice":1.0000,"POprice":1.0000,"PSprice":null,"PCprice":null,"PMprice":1.0000,"Pcomment":"","Ptime":null,"Pguarantee":null,"Pshipping":null,"Ppayment":"","PimageS":null,"PimageB":null,"PcompanyID":null,"PsupplierID":null,"PcatID":null,"PStypeID":1,"Pspecial":false,"Ponline":true,"Psite":0,"Plight":false,"PsaleSpecial":false,"Porder":null,"Pstock":0,"PtypeID":null,"LNG":"HE","PimageR":null,"Pdisk":null,"Pmemory":null,"Pscreen":null,"U_nocat_7055524":null},
         return a;
     }
-    public JSONArray getJsonArrayFromString(String strJson){
+
+    public JSONArray getJsonArrayFromString(String strJson) {
         JSONArray j;
         try {
-            j= new JSONArray(strJson);
+            j = new JSONArray(strJson);
         } catch (JSONException e) {
-            j=null;
+            j = null;
             helper.LogPrintExStackTrace(e);
         }
         return j;
     }
-    public void addActions(Context context){
+
+    public void addActions(Context context) {
         String strJson = "";
         File_ f = new File_();
-        strJson = f.readFromFileExternal(context,"is_actions.txt");
+        strJson = f.readFromFileExternal(context, "is_actions.txt");
         JSONObject j = null;
         JSONArray jarray = null;
         try {
             j = new JSONObject(strJson);
-            jarray= j.getJSONArray("Wz_ACTIONS_retList");
+            jarray = j.getJSONArray("Wz_ACTIONS_retList");
             DatabaseHelper.getInstance(context).delete_IS_Actions_Rows("");
-            Log.e("MYTAG","jarray length is:" + jarray.length());
-            if (jarray.length() == 0){
-                Log.e("MYTAG"," jarray is 0");
+            Log.e("MYTAG", "jarray length is:" + jarray.length());
+            if (jarray.length() == 0) {
+                Log.e("MYTAG", " jarray is 0");
                 return;
             }
         } catch (JSONException e) {
             helper.LogPrintExStackTrace(e);
-            Log.e("MYTAG"," Wz_ACTIONS_retList "+e.getMessage().toString());
+            Log.e("MYTAG", " Wz_ACTIONS_retList " + e.getMessage().toString());
         }
         for (int i = 0; i < jarray.length(); i++) {
             final JSONObject e;
 
             try {
                 e = jarray.getJSONObject(i);
-                IS_Action action= new IS_Action();//Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("AID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("CID"))), cursor.getString(cursor.getColumnIndex("CreateDate")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("statusID"))), cursor.getString(cursor.getColumnIndex("CallPriority")), cursor.getString(cursor.getColumnIndex("subject")), cursor.getString(cursor.getColumnIndex("comments")), cursor.getString(cursor.getColumnIndex("CallUpdate")), cursor.getString(cursor.getColumnIndex("cntrctDate")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("TechnicianID"))), cursor.getString(cursor.getColumnIndex("statusName")), cursor.getString(cursor.getColumnIndex("internalSN")), cursor.getString(cursor.getColumnIndex("Pmakat")), cursor.getString(cursor.getColumnIndex("Pname")), cursor.getString(cursor.getColumnIndex("contractID")), cursor.getString(cursor.getColumnIndex("Cphone")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("OriginID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("ProblemTypeID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallTypeID"))), cursor.getString(cursor.getColumnIndex("priorityID")), cursor.getString(cursor.getColumnIndex("OriginName")), cursor.getString(cursor.getColumnIndex("problemTypeName")), cursor.getString(cursor.getColumnIndex("CallTypeName")), cursor.getString(cursor.getColumnIndex("Cname")), cursor.getString(cursor.getColumnIndex("Cemail")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("contctCode"))), cursor.getString(cursor.getColumnIndex("callStartTime")), cursor.getString(cursor.getColumnIndex("callEndTime")), cursor.getString(cursor.getColumnIndex("Ccompany")), cursor.getString(cursor.getColumnIndex("Clocation")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("callOrder"))), cursor.getString(cursor.getColumnIndex("Caddress")), cursor.getString(cursor.getColumnIndex("Ccity")), cursor.getString(cursor.getColumnIndex("Ccomments")), cursor.getString(cursor.getColumnIndex("Cfname")), cursor.getString(cursor.getColumnIndex("Clname")), cursor.getString(cursor.getColumnIndex("techName")), cursor.getString(cursor.getColumnIndex("Aname")), cursor.getString(cursor.getColumnIndex("ContctName")), cursor.getString(cursor.getColumnIndex("ContctAddress")), cursor.getString(cursor.getColumnIndex("ContctCity")), cursor.getString(cursor.getColumnIndex("ContctCell")), cursor.getString(cursor.getColumnIndex("ContctPhone")), cursor.getString(cursor.getColumnIndex("ContctCity")), cursor.getString(cursor.getColumnIndex("Ccell")), cursor.getString(cursor.getColumnIndex("techColor")), cursor.getString(cursor.getColumnIndex("ContctCemail")), cursor.getString(cursor.getColumnIndex("CallParentID")));
+                IS_Action action = new IS_Action();//Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("AID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("CID"))), cursor.getString(cursor.getColumnIndex("CreateDate")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("statusID"))), cursor.getString(cursor.getColumnIndex("CallPriority")), cursor.getString(cursor.getColumnIndex("subject")), cursor.getString(cursor.getColumnIndex("comments")), cursor.getString(cursor.getColumnIndex("CallUpdate")), cursor.getString(cursor.getColumnIndex("cntrctDate")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("TechnicianID"))), cursor.getString(cursor.getColumnIndex("statusName")), cursor.getString(cursor.getColumnIndex("internalSN")), cursor.getString(cursor.getColumnIndex("Pmakat")), cursor.getString(cursor.getColumnIndex("Pname")), cursor.getString(cursor.getColumnIndex("contractID")), cursor.getString(cursor.getColumnIndex("Cphone")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("OriginID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("ProblemTypeID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallTypeID"))), cursor.getString(cursor.getColumnIndex("priorityID")), cursor.getString(cursor.getColumnIndex("OriginName")), cursor.getString(cursor.getColumnIndex("problemTypeName")), cursor.getString(cursor.getColumnIndex("CallTypeName")), cursor.getString(cursor.getColumnIndex("Cname")), cursor.getString(cursor.getColumnIndex("Cemail")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("contctCode"))), cursor.getString(cursor.getColumnIndex("callStartTime")), cursor.getString(cursor.getColumnIndex("callEndTime")), cursor.getString(cursor.getColumnIndex("Ccompany")), cursor.getString(cursor.getColumnIndex("Clocation")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("callOrder"))), cursor.getString(cursor.getColumnIndex("Caddress")), cursor.getString(cursor.getColumnIndex("Ccity")), cursor.getString(cursor.getColumnIndex("Ccomments")), cursor.getString(cursor.getColumnIndex("Cfname")), cursor.getString(cursor.getColumnIndex("Clname")), cursor.getString(cursor.getColumnIndex("techName")), cursor.getString(cursor.getColumnIndex("Aname")), cursor.getString(cursor.getColumnIndex("ContctName")), cursor.getString(cursor.getColumnIndex("ContctAddress")), cursor.getString(cursor.getColumnIndex("ContctCity")), cursor.getString(cursor.getColumnIndex("ContctCell")), cursor.getString(cursor.getColumnIndex("ContctPhone")), cursor.getString(cursor.getColumnIndex("ContctCity")), cursor.getString(cursor.getColumnIndex("Ccell")), cursor.getString(cursor.getColumnIndex("techColor")), cursor.getString(cursor.getColumnIndex("ContctCemail")), cursor.getString(cursor.getColumnIndex("CallParentID")));
                 action.setActionID(e.getInt("actionID"));
                 action.setTaskID(e.getInt("taskID"));
                 action.setStatusID(e.getInt("statusID"));
@@ -381,20 +387,20 @@ public class Json_ {
                 action.setUserCtypeID(e.getInt("userCtypeID"));
                 action.setOwnerCtypeID(e.getInt("ownerCtypeID"));
                 action.setProjectID(e.getInt("projectID"));
-                if (e.getString("ParentActionID").contains("null")){
-                }else{
+                if (e.getString("ParentActionID").contains("null")) {
+                } else {
                     action.setParentActionID(Integer.valueOf(e.getString("ParentActionID")));
                 }
                 action.setActionDate(e.getString("actionDate"));
                 action.setActionStartDate(e.getString("actionStartDate"));
                 action.setActionDue(e.getString("actionDue"));
                 action.setActionDesc(e.getString("actionDesc"));
-                String result=e.getString("comments");
+                String result = e.getString("comments");
                 try {
                     String string = e.getString("comments");
                     byte[] utf8 = string.getBytes("UTF-8");
                     string = new String(utf8, "UTF-8");
-                    result= String.valueOf(string);
+                    result = String.valueOf(string);
                 } catch (UnsupportedEncodingException ee) {
                     helper.LogPrintExStackTrace(ee);
                 }
@@ -445,22 +451,29 @@ public class Json_ {
 
         DatabaseHelper.getInstance(context).getISActions("");
     }
-    public String addCalls(Context context){
+
+    public String addCalls(Context context) {
         String ret = "";
         String strJson = "";
-        strJson=f.readFromFileExternal(context,"calls.txt");
+        strJson = f.readFromFileExternal(context, "calls.txt");
 
         JSONObject j = null;
         JSONArray jarray = null;
         try {
             j = new JSONObject(strJson);
-            jarray= j.getJSONArray("Calls");
+            jarray = j.getJSONArray("Calls");
             DatabaseHelper.getInstance(context).deleteAllCalls();
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.e("MYTAG","_Wz_Calls_List "+ e.getMessage() + "  dd");
+            Log.e("MYTAG", "_Wz_Calls_List " + e.getMessage() + "  dd");
             return "";
         }
+
+        // added by idan
+        // delete all current calls
+        DatabaseHelper.getInstance(context).deleteAllCalls();
+        DatabaseHelper.getInstance(context).deleteAllCall_offline();
+
 
         for (int i = 0; i < jarray.length(); i++) {
             final JSONObject e;
@@ -468,15 +481,15 @@ public class Json_ {
             try {
 
                 e = jarray.getJSONObject(i);
-                boolean isExist =DatabaseHelper.getInstance(context).IsExistCallID(e.getInt("CallID"));
-                if (isExist == true)
+                boolean isExist = DatabaseHelper.getInstance(context).IsExistCallID(e.getInt("CallID"));
+                /*if (isExist == true)
                 {
                     continue;
-                }
-                addCallByJSONObject(e,context);
+                }*/
+                addCallByJSONObject(e, context);
 
             } catch (JSONException e1) {
-                Log.e("MYTAG","model add call: " +e1.getMessage());
+                Log.e("MYTAG", "model add call: " + e1.getMessage());
                 return "1";
             }
             //ADD TO DATABASE
@@ -484,9 +497,10 @@ public class Json_ {
         }
         return "0";
     }
-    public void addCallByJSONObject(JSONObject e,Context context){
 
-        Call call= new Call();//Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("AID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("CID"))), cursor.getString(cursor.getColumnIndex("CreateDate")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("statusID"))), cursor.getString(cursor.getColumnIndex("CallPriority")), cursor.getString(cursor.getColumnIndex("subject")), cursor.getString(cursor.getColumnIndex("comments")), cursor.getString(cursor.getColumnIndex("CallUpdate")), cursor.getString(cursor.getColumnIndex("cntrctDate")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("TechnicianID"))), cursor.getString(cursor.getColumnIndex("statusName")), cursor.getString(cursor.getColumnIndex("internalSN")), cursor.getString(cursor.getColumnIndex("Pmakat")), cursor.getString(cursor.getColumnIndex("Pname")), cursor.getString(cursor.getColumnIndex("contractID")), cursor.getString(cursor.getColumnIndex("Cphone")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("OriginID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("ProblemTypeID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallTypeID"))), cursor.getString(cursor.getColumnIndex("priorityID")), cursor.getString(cursor.getColumnIndex("OriginName")), cursor.getString(cursor.getColumnIndex("problemTypeName")), cursor.getString(cursor.getColumnIndex("CallTypeName")), cursor.getString(cursor.getColumnIndex("Cname")), cursor.getString(cursor.getColumnIndex("Cemail")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("contctCode"))), cursor.getString(cursor.getColumnIndex("callStartTime")), cursor.getString(cursor.getColumnIndex("callEndTime")), cursor.getString(cursor.getColumnIndex("Ccompany")), cursor.getString(cursor.getColumnIndex("Clocation")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("callOrder"))), cursor.getString(cursor.getColumnIndex("Caddress")), cursor.getString(cursor.getColumnIndex("Ccity")), cursor.getString(cursor.getColumnIndex("Ccomments")), cursor.getString(cursor.getColumnIndex("Cfname")), cursor.getString(cursor.getColumnIndex("Clname")), cursor.getString(cursor.getColumnIndex("techName")), cursor.getString(cursor.getColumnIndex("Aname")), cursor.getString(cursor.getColumnIndex("ContctName")), cursor.getString(cursor.getColumnIndex("ContctAddress")), cursor.getString(cursor.getColumnIndex("ContctCity")), cursor.getString(cursor.getColumnIndex("ContctCell")), cursor.getString(cursor.getColumnIndex("ContctPhone")), cursor.getString(cursor.getColumnIndex("ContctCity")), cursor.getString(cursor.getColumnIndex("Ccell")), cursor.getString(cursor.getColumnIndex("techColor")), cursor.getString(cursor.getColumnIndex("ContctCemail")), cursor.getString(cursor.getColumnIndex("CallParentID")));
+    public void addCallByJSONObject(JSONObject e, Context context) {
+
+        Call call = new Call();//Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("AID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("CID"))), cursor.getString(cursor.getColumnIndex("CreateDate")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("statusID"))), cursor.getString(cursor.getColumnIndex("CallPriority")), cursor.getString(cursor.getColumnIndex("subject")), cursor.getString(cursor.getColumnIndex("comments")), cursor.getString(cursor.getColumnIndex("CallUpdate")), cursor.getString(cursor.getColumnIndex("cntrctDate")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("TechnicianID"))), cursor.getString(cursor.getColumnIndex("statusName")), cursor.getString(cursor.getColumnIndex("internalSN")), cursor.getString(cursor.getColumnIndex("Pmakat")), cursor.getString(cursor.getColumnIndex("Pname")), cursor.getString(cursor.getColumnIndex("contractID")), cursor.getString(cursor.getColumnIndex("Cphone")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("OriginID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("ProblemTypeID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallTypeID"))), cursor.getString(cursor.getColumnIndex("priorityID")), cursor.getString(cursor.getColumnIndex("OriginName")), cursor.getString(cursor.getColumnIndex("problemTypeName")), cursor.getString(cursor.getColumnIndex("CallTypeName")), cursor.getString(cursor.getColumnIndex("Cname")), cursor.getString(cursor.getColumnIndex("Cemail")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("contctCode"))), cursor.getString(cursor.getColumnIndex("callStartTime")), cursor.getString(cursor.getColumnIndex("callEndTime")), cursor.getString(cursor.getColumnIndex("Ccompany")), cursor.getString(cursor.getColumnIndex("Clocation")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("callOrder"))), cursor.getString(cursor.getColumnIndex("Caddress")), cursor.getString(cursor.getColumnIndex("Ccity")), cursor.getString(cursor.getColumnIndex("Ccomments")), cursor.getString(cursor.getColumnIndex("Cfname")), cursor.getString(cursor.getColumnIndex("Clname")), cursor.getString(cursor.getColumnIndex("techName")), cursor.getString(cursor.getColumnIndex("Aname")), cursor.getString(cursor.getColumnIndex("ContctName")), cursor.getString(cursor.getColumnIndex("ContctAddress")), cursor.getString(cursor.getColumnIndex("ContctCity")), cursor.getString(cursor.getColumnIndex("ContctCell")), cursor.getString(cursor.getColumnIndex("ContctPhone")), cursor.getString(cursor.getColumnIndex("ContctCity")), cursor.getString(cursor.getColumnIndex("Ccell")), cursor.getString(cursor.getColumnIndex("techColor")), cursor.getString(cursor.getColumnIndex("ContctCemail")), cursor.getString(cursor.getColumnIndex("CallParentID")));
         try {
             call.setCallID(e.getInt("CallID"));
             call.setAID(e.getInt("AID"));
@@ -543,27 +557,27 @@ public class Json_ {
             call.setCallParentID(e.getString("CallParentID"));
             call.setState(e.getString("state"));
             call.setSla(e.getString("sla"));
-            Log.e("MYTAG","test doron");
+            Log.e("MYTAG", "test doron");
 
             DatabaseHelper.getInstance(context).addNewCall(call);
         } catch (JSONException e1) {
-            Log.e("mytag","exception insert call");
+            Log.e("mytag", "exception insert call");
             helper.LogPrintExStackTrace(e1);
             e1.printStackTrace();
         }
 
     }
 
-    public boolean addCallsFromJSONArray(JSONArray jarray,Context c) {
-        try{
-            if (jarray.length() > 0){
+    public boolean addCallsFromJSONArray(JSONArray jarray, Context c) {
+        try {
+            if (jarray.length() > 0) {
                 for (int i = 0; i < jarray.length(); i++) {
                     try {
                         JSONObject e = jarray.getJSONObject(i);
-                        addCallByJSONObject(e,c);
+                        addCallByJSONObject(e, c);
 
                     } catch (JSONException e1) {
-                        Log.e("mytag","addCallsFromJSONArray:" );
+                        Log.e("mytag", "addCallsFromJSONArray:");
                         helper.LogPrintExStackTrace(e1);
                         e1.printStackTrace();
                         return false;
@@ -572,10 +586,10 @@ public class Json_ {
                 return true;
 
             }
-        }catch(Exception e){
+        } catch (Exception e) {
 
-        }return false;
-
+        }
+        return false;
 
 
     }

@@ -44,7 +44,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity {
+public class MainActivity extends BaseActivity {
     public static final String TAG = "Main Activity";
 
     private static final int REQUEST_PERMISSION_MULTIPLE = 300;
@@ -301,7 +301,7 @@ public class MainActivity extends Activity {
         int storagePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         int readPhoneStatePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
         int gpsPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        int sms = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
+        // int sms = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
 
         List<String> listPermissionsNeeded = new ArrayList<String>();
 
@@ -316,9 +316,9 @@ public class MainActivity extends Activity {
         if (gpsPermission != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
-        if (sms != PackageManager.PERMISSION_GRANTED) {
+        /*if (sms != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.SEND_SMS);
-        }
+        }*/
 
         if (!listPermissionsNeeded.isEmpty()) {
             ActivityCompat.requestPermissions(MainActivity.this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_PERMISSION_MULTIPLE);

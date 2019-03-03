@@ -23,6 +23,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.model.Consts;
 import com.model.Model;
+import com.server.ServerManager;
 import com.uk.U;
 
 import org.json.JSONArray;
@@ -67,6 +68,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         callId = data.getString("callId");
                         String statusId = data.getString("statusId");
                         updateCallStatus(callId, statusId);
+                        break;
+                    case Consts.OP_CODE_REQUEST_CALL_TIME_TABLE:
+                        DatabaseHelper db = new DatabaseHelper(getApplicationContext());
+                        JSONArray arr = db.getJsonResultsFromTable("Calltime");
+                        ServerManager.logCallTimeTable(getApplicationContext(), arr);
+                        //new Helper().transferJsonCallTime(getApplicationContext());
                         break;
                 }
             } catch (Exception e) {

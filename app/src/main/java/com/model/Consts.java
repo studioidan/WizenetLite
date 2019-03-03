@@ -7,5 +7,6 @@ public class Consts {
     public static final String OP_CODE_CLOSE_CALL_TIME = "closeCallTime";
     public static final String OP_CODE_UPDATE_CALL_STATUS = "updateCallStatus";
     public static final String OP_CODE_START_CALL_TIME = "startCallTime";
+    public static final String OP_CODE_REQUEST_CALL_TIME_TABLE = "requestCallTimeTable";
 
 }

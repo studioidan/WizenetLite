@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary"
     android:minHeight="@dimen/_45sdp"
+    android:layoutDirection="ltr"
     android:orientation="horizontal"
     android:padding="@dimen/_4sdp">
 
@@ -14,7 +15,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:gravity="center"
         android:textColor="@color/white"
@@ -62,11 +62,8 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/headerBackHolder"
-        android:layout_toRightOf="@+id/headerBackHolder"
         android:gravity="center"
         android:orientation="horizontal">
 

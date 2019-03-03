@@ -1,7 +1,5 @@
 package com.Fragments;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -12,25 +10,20 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.Activities.ActivityWebView;
 import com.Activities.MenuActivity;
 import com.Activities.R;
-import com.Classes.Ccustomer;
 import com.Classes.Favorite;
 import com.Classes.Message;
 import com.DatabaseHelper;
 import com.Helper;
-import com.journeyapps.barcodescanner.camera.CenterCropStrategy;
 import com.model.Model;
 
 import org.json.JSONArray;
@@ -74,7 +67,6 @@ public class FragmentFavorite extends android.support.v4.app.Fragment {
 
         layout = (LinearLayout) v.findViewById(R.id.placeHolderFragment);
 
-
         Model.getInstance().Async_Wz_retClientFavorites_Listener(helper.getMacAddr(getContext()), new Model.Wz_retClientFavorites_Listener() {
             @Override
             public void onResult(String str) {
@@ -82,7 +74,6 @@ public class FragmentFavorite extends android.support.v4.app.Fragment {
                 getFavorite(str);
             }
         });
-
 
         return v;
     }

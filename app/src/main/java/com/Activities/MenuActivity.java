@@ -17,7 +17,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -46,6 +45,7 @@ import com.Fragments.FragmentMidCalls;
 import com.GPSTracker;
 import com.Helper;
 import com.model.Model;
+import com.util.FLogger;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -57,7 +57,7 @@ import java.util.List;
 //import com.google.zxing.integration.android.IntentIntegrator;
 //import com.google.zxing.integration.android.IntentResult;
 
-public class MenuActivity extends FragmentActivity implements LocationListener {
+public class MenuActivity extends BaseActivity implements LocationListener {
     EditText myEditText5;
     Handler mHandler = new Handler();
     TextView tv;
@@ -91,6 +91,7 @@ public class MenuActivity extends FragmentActivity implements LocationListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        FLogger.log_i("Logged in");
 
         setContentView(R.layout.top_bar);
 

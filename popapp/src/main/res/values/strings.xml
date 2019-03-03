@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="Save">Save</string>
-    <string name="Cancel">Cancel</string>
-    <string name="Back">Back</string>
+    <string name="Save">שמור</string>
+    <string name="Cancel">ביטול</string>
+    <string name="Back">חזור</string>
 </resources>

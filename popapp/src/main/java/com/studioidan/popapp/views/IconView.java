@@ -24,9 +24,9 @@ public class IconView extends AppCompatTextView {
 
     static Typeface mTypefaceAwesomeFont, mTypefaceMaterialIcons, mTypefaceIcoFont;
 
-    private static final int ICON_FONT_AWESOME = 0;
-    private static final int ICON_MATERIAL = 1;
-    private static final int ICON_ICO_FONT = 2;
+    public static final int ICON_FONT_AWESOME = 0;
+    public static final int ICON_MATERIAL = 1;
+    public static final int ICON_ICO_FONT = 2;
 
     private int selectedFont = 0;
 
@@ -133,7 +133,7 @@ public class IconView extends AppCompatTextView {
     }
 
 
-    public void setIcon(String icon, int iconType) {
+    public void setIcon(int iconType, String icon) {
         if (this.selectedFont != iconType) {
             this.selectedFont = iconType;
             setTypeface(getSelectedTypeface());

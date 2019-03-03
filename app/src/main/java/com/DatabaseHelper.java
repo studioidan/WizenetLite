@@ -20,6 +20,7 @@ import com.Classes.IS_ActionTime;
 import com.Classes.Lead;
 import com.Classes.Message;
 import com.Classes.Order;
+import com.util.FLogger;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,9 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 public class DatabaseHelper extends SQLiteOpenHelper {
-    static Constants constants ;
+    static Constants constants;
     public static DatabaseHelper mInstance;
     // Database Version
     private static final int DATABASE_VERSION = 1;
@@ -46,7 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //Table Columns mgnet_calls
     //CID, AID, StartDate, subject, CallType, TechnicianID, CPhone, ProblemID,
-     //comments, Pmakat, InternalSN, Pname, OriginID, contractID, cntrctDate, CallStatus, resolution, CallTypeID, Cname, priorityID, contctCode,CallRefID
+    //comments, Pmakat, InternalSN, Pname, OriginID, contractID, cntrctDate, CallStatus, resolution, CallTypeID, Cname, priorityID, contctCode,CallRefID
 
     //CallStatusID,CallStatusName,CallStatusOrder,* from CallStatus
 
@@ -58,7 +58,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DEMOURL = "http://main.wizenet.co.il/webservices/freelance.asmx";//default
     //Table Columns MESSAGES
     private static final String MsgID = "msgID";
-    private static final String MsgSUBJECT ="msgSubject";
+    private static final String MsgSUBJECT = "msgSubject";
     private static final String MsgCOMMENT = "msgComment";
     private static final String MsgURL = "msgUrl";
     private static final String MsgDATE = "msgDate";
@@ -79,8 +79,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (mInstance == null) {
             //try{
             mInstance = new DatabaseHelper(ctx);
-           // }catch (Exception ex){
-              //  Log.e("mytag_getInstance",ex.getMessage());
+            // }catch (Exception ex){
+            //  Log.e("mytag_getInstance",ex.getMessage());
             //}
             mCtx = ctx;
         }
@@ -97,18 +97,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String CREATE_Leads = constants.retLeadsBuilder();
         String CREATE_IS_Actions = constants.retISActionsBuilder();
-        String CREATE_mgnet_calls= constants.retMgnetCallsBuilder();
+        String CREATE_mgnet_calls = constants.retMgnetCallsBuilder();
         String CREATE_Ccustomers = constants.retCcustomersBuilder();
         String CREATE_CP_TABLE = constants.retCPBuilder();
-        String CREATE_call_offline= constants.retCall_OfflineBuilder();
+        String CREATE_call_offline = constants.retCall_OfflineBuilder();
 
         String CREATE_call_time = constants.retCallTimeBuilder();
 
 
-        String CREATE_IS_ActionsTime= constants.retISActionsTimeBuilder();
-
-
-
+        String CREATE_IS_ActionsTime = constants.retISActionsTimeBuilder();
 
 
         String CREATE_mgnet_items =
@@ -136,11 +133,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         + ")";
 
 
-
-
         String CREATE_MESSAGES_TABLE =
                 "CREATE TABLE " + TABLE_MESSAGES + "("
-                        + MsgID +  " TEXT PRIMARY KEY,"
+                        + MsgID + " TEXT PRIMARY KEY,"
                         + MsgSUBJECT + " TEXT, "
                         + MsgCOMMENT + " TEXT, "
                         + MsgURL + " TEXT, "
@@ -163,6 +158,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_Ccustomers);
         //db.execSQL("DROP TABLE "+TABLE_CONTROL_PANEL+" ");
     }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 // Drop older table if existed
@@ -171,65 +167,68 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public String getScalarByCountQuery(String s){
+    public String getScalarByCountQuery(String s) {
         Helper helper = new Helper();
         SQLiteDatabase db = this.getReadableDatabase();
         //SELECT count(*) FROM " + TABLE_CONTROL_PANEL
         String count = s;
         int icount = 0;
-        try{
+        try {
             Cursor mcursor = db.rawQuery(count, null);
             mcursor.moveToFirst();
             icount = mcursor.getInt(0);
             //Log.e("mytag",Integer.toString(icount));
-        }catch(Exception e){
+        } catch (Exception e) {
             helper.LogPrintExStackTrace(e);
         }
         //db.close();
-        return Integer.toString(icount) ;
+        return Integer.toString(icount);
     }
-    public String getScalarBySql(String s){
+
+    public String getScalarBySql(String s) {
         Helper helper = new Helper();
         SQLiteDatabase db = this.getReadableDatabase();
         //SELECT count(*) FROM " + TABLE_CONTROL_PANEL
         String count = s;
         String icount = "";
-        try{
+        try {
             Cursor mcursor = db.rawQuery(count, null);
             mcursor.moveToFirst();
             icount = mcursor.getString(0);
-            Log.e("mytag",(icount));
-        }catch(Exception e){
+            Log.e("mytag", (icount));
+        } catch (Exception e) {
             helper.LogPrintExStackTrace(e);
         }
         db.close();
-        return (icount) ;
+        return (icount);
     }
-    public  List<String> getTablesNames() {
+
+    public List<String> getTablesNames() {
         List<String> tablesList = new ArrayList<String>();
         Cursor cursor = null;
         SQLiteDatabase db = null;
-        try{
+        try {
             db = this.getReadableDatabase();
             Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
             if (c.moveToFirst()) {
-                while ( !c.isAfterLast() ) {
+                while (!c.isAfterLast()) {
                     tablesList.add(c.getString(0));
                     //Toast.makeText(mCtx, "Table Name=> "+c.getString(0), Toast.LENGTH_LONG).show();
                     c.moveToNext();
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
 
         }
         return tablesList;
 
     }
-    public  boolean columnExistsInTable(String table, String columnToCheck) {
+
+    public boolean columnExistsInTable(String table, String columnToCheck) {
         Cursor cursor = null;
         SQLiteDatabase db = null;
         try {
-             db = this.getReadableDatabase();
+            db = this.getReadableDatabase();
             //query a row. don't acquire db lock
             cursor = db.rawQuery("SELECT top 1 * FROM " + table + " LIMIT 0", null);
 
@@ -238,7 +237,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (cursor.getColumnIndex(columnToCheck) != -1) {
                 //great, the column exists
                 return true;
-            }else {
+            } else {
                 //sorry, the column does not exist
                 return false;
             }
@@ -250,40 +249,42 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return false;
         }
     }
+
     public boolean isTableExists(String tableName) {
 
         try {
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '"+tableName+"'", null);
-        if(cursor!=null) {
-            if(cursor.getCount()>0) {
+            SQLiteDatabase db = this.getWritableDatabase();
+            Cursor cursor = db.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '" + tableName + "'", null);
+            if (cursor != null) {
+                if (cursor.getCount() > 0) {
+                    cursor.close();
+                    return true;
+                }
                 cursor.close();
-                return true;
             }
-            cursor.close();
-        }
-        }catch (Exception e){
+        } catch (Exception e) {
             Helper h = new Helper();
-            Log.e("mytag_isTableExists",e.getMessage());
+            Log.e("mytag_isTableExists", e.getMessage());
             h.LogPrintExStackTrace(e);
         }
         return false;
     }
-    public String[] getTableColumns(){
-        Log.e("mytag","getTableColums");
-        try{
+
+    public String[] getTableColumns() {
+        Log.e("mytag", "getTableColums");
+        try {
             SQLiteDatabase db = this.getReadableDatabase();
-            Log.e("mytag","getTableColums1");
+            Log.e("mytag", "getTableColums1");
             Cursor dbCursor = db.query("IS_Actions", null, null, null, null, null, null);
             String[] columnNames = dbCursor.getColumnNames();
 
             String ret = "IS_Actions:";
-            for (String c:columnNames) {
+            for (String c : columnNames) {
                 ret += c + ", ";
             }
-            Log.e("mytag",ret);
+            Log.e("mytag", ret);
             return columnNames;
-        }catch(Exception e){
+        } catch (Exception e) {
             Helper h = new Helper();
             h.LogPrintExStackTrace(e);
             return null;
@@ -291,11 +292,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public boolean createColumnTo(String tablename,String column){
+    public boolean createColumnTo(String tablename, String column) {
         Boolean isTableEsixts = DatabaseHelper.getInstance(mCtx).isTableExists(tablename) ? true : false;
 
         //if only to create
-        if (column == "" && isTableEsixts == true){
+        if (column == "" && isTableEsixts == true) {
             return false;
         }
 
@@ -306,62 +307,71 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = this.getWritableDatabase();
 
             String CREATE_table = "";
-            switch (tablename){
-                case "Ccustomers": CREATE_table = constants.retCcustomersBuilder();
+            switch (tablename) {
+                case "Ccustomers":
+                    CREATE_table = constants.retCcustomersBuilder();
                     break;
-                case "call_offline": CREATE_table = constants.retCall_OfflineBuilder();
+                case "call_offline":
+                    CREATE_table = constants.retCall_OfflineBuilder();
                     break;
-                case "mgnet_calls":  CREATE_table = constants.retMgnetCallsBuilder();
+                case "mgnet_calls":
+                    CREATE_table = constants.retMgnetCallsBuilder();
                     break;
-                case "ControlPanel": CREATE_table = constants.retCPBuilder();
+                case "ControlPanel":
+                    CREATE_table = constants.retCPBuilder();
                     break;
-                case "Calltime":  CREATE_table = constants.retCallTimeBuilder();
+                case "Calltime":
+                    CREATE_table = constants.retCallTimeBuilder();
                     break;
-                case "IS_Actions":  CREATE_table = constants.retISActionsBuilder();
+                case "IS_Actions":
+                    CREATE_table = constants.retISActionsBuilder();
                     break;
-                case "IS_ActionsTime":  CREATE_table = constants.retISActionsTimeBuilder();
+                case "IS_ActionsTime":
+                    CREATE_table = constants.retISActionsTimeBuilder();
                     break;
-                case "Leads":  CREATE_table =  constants.retLeadsBuilder();
+                case "Leads":
+                    CREATE_table = constants.retLeadsBuilder();
                     break;
-                default: CREATE_table = "";
+                default:
+                    CREATE_table = "";
                     return false;
-                    //break;
+                //break;
             }
 
 
-            if (isTableEsixts == true){
+            if (isTableEsixts == true) {
                 db.execSQL("DROP TABLE IF EXISTS '" + generalTable + "_old" + "'");
                 db.execSQL("ALTER TABLE " + generalTable + " RENAME TO " + generalTable + "_old;");
             }
-            try{
+            try {
                 db.execSQL(CREATE_table);
-            }catch (Exception e){
-                Log.e("mytag","exception create exe: " + e.getMessage());
+            } catch (Exception e) {
+                Log.e("mytag", "exception create exe: " + e.getMessage());
                 //String bla = CREATE_mgnet_calls.replace("CREATE TABLE","ALTER TABLE");
                 //db.execSQL(bla);
             }
-            if (isTableEsixts == true){
+            if (isTableEsixts == true) {
                 db.execSQL("DROP TABLE " + generalTable + "_old;");
             }
-            if (!columnExistsInTable(generalTable,column)){
-                try{
+            if (!columnExistsInTable(generalTable, column)) {
+                try {
                     db.execSQL("ALTER TABLE " + generalTable + " ADD COLUMN " + column + " TEXT;");
-                }catch (Exception e){
+                } catch (Exception e) {
                     h.LogPrintExStackTrace(e);
                 }
             }
 
             flag = true;
-        }catch (Exception e){
+        } catch (Exception e) {
 
-            Log.e("mytag_createColumnTo",e.getMessage());
+            Log.e("mytag_createColumnTo", e.getMessage());
             h.LogPrintExStackTrace(e);
         }
         return flag;
     }
 
 
-    public boolean createColumnToLeads(String column,boolean isTableExist){
+    public boolean createColumnToLeads(String column, boolean isTableExist) {
         //getTableColumns();
         String IS_ActionsTime = "Leads";
         boolean flag = false;
@@ -371,45 +381,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             String CREATE_Leads = constants.retLeadsBuilder();
 
-            if (isTableExist){
+            if (isTableExist) {
                 db.execSQL("DROP TABLE IF EXISTS '" + IS_ActionsTime + "_old" + "'");
                 db.execSQL("ALTER TABLE " + IS_ActionsTime + " RENAME TO " + IS_ActionsTime + "_old;");
-                Log.e("mytag","step 1");
+                Log.e("mytag", "step 1");
             }
 
-            try{
+            try {
                 db.execSQL(CREATE_Leads);
-            }catch (Exception e){
-                Log.e("mytag","exception create exe: " + e.getMessage());
+            } catch (Exception e) {
+                Log.e("mytag", "exception create exe: " + e.getMessage());
                 //String bla = CREATE_mgnet_calls.replace("CREATE TABLE","ALTER TABLE");
                 //db.execSQL(bla);
             }
-            if (isTableExist){
+            if (isTableExist) {
                 db.execSQL("DROP TABLE " + IS_ActionsTime + "_old;");
-                Log.e("mytag","step 2");
+                Log.e("mytag", "step 2");
             }
 
             //Log.e("mytag","last time: " + columnExistsInTable("mgnet_calls","sla"));
-            if (!columnExistsInTable(IS_ActionsTime,column)){
-                try{
+            if (!columnExistsInTable(IS_ActionsTime, column)) {
+                try {
                     db.execSQL("ALTER TABLE " + IS_ActionsTime + " ADD COLUMN " + column + " TEXT;");
-                    Log.e("mytag","success to add " + column + "to IS_ActionsTime");
+                    Log.e("mytag", "success to add " + column + "to IS_ActionsTime");
 
-                }catch (Exception e){
-                    Log.e("mytag","err step 4, " + e.getMessage());
+                } catch (Exception e) {
+                    Log.e("mytag", "err step 4, " + e.getMessage());
                     h.LogPrintExStackTrace(e);
                 }
             }
 
             flag = true;
-        }catch (Exception e){
+        } catch (Exception e) {
 
-            Log.e("mytag",e.getMessage());
+            Log.e("mytag", e.getMessage());
             h.LogPrintExStackTrace(e);
         }
         return flag;
     }
-    public boolean createColumnToISActionsTime(String column,boolean isTableExist){
+
+    public boolean createColumnToISActionsTime(String column, boolean isTableExist) {
         //getTableColumns();
         String IS_ActionsTime = "IS_ActionsTime";
         boolean flag = false;
@@ -417,53 +428,54 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             SQLiteDatabase db = this.getWritableDatabase();
 
-            String CREATE_IS_ActionsTime=
+            String CREATE_IS_ActionsTime =
                     "CREATE TABLE " + "IS_ActionsTime" + "("
-                            + "ID" +  " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                            + "CID"+  " TEXT, "
-                            + "ActionID"+ " TEXT, "
-                            + "ActionStart"+ " TEXT, "
-                            + "ActionEnd"+ " TEXT "
+                            + "ID" + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                            + "CID" + " TEXT, "
+                            + "ActionID" + " TEXT, "
+                            + "ActionStart" + " TEXT, "
+                            + "ActionEnd" + " TEXT "
                             + ")";
-            if (isTableExist){
+            if (isTableExist) {
                 db.execSQL("DROP TABLE IF EXISTS '" + IS_ActionsTime + "_old" + "'");
                 db.execSQL("ALTER TABLE " + IS_ActionsTime + " RENAME TO " + IS_ActionsTime + "_old;");
-                Log.e("mytag","step 1");
+                Log.e("mytag", "step 1");
             }
 
-            try{
+            try {
                 db.execSQL(CREATE_IS_ActionsTime);
-            }catch (Exception e){
-                Log.e("mytag","exception create exe: " + e.getMessage());
+            } catch (Exception e) {
+                Log.e("mytag", "exception create exe: " + e.getMessage());
                 //String bla = CREATE_mgnet_calls.replace("CREATE TABLE","ALTER TABLE");
                 //db.execSQL(bla);
             }
-            if (isTableExist){
+            if (isTableExist) {
                 db.execSQL("DROP TABLE " + IS_ActionsTime + "_old;");
-                Log.e("mytag","step 2");
+                Log.e("mytag", "step 2");
             }
 
             //Log.e("mytag","last time: " + columnExistsInTable("mgnet_calls","sla"));
-            if (!columnExistsInTable(IS_ActionsTime,column)){
-                try{
+            if (!columnExistsInTable(IS_ActionsTime, column)) {
+                try {
                     db.execSQL("ALTER TABLE " + IS_ActionsTime + " ADD COLUMN " + column + " TEXT;");
-                    Log.e("mytag","success to add " + column + "to IS_ActionsTime");
+                    Log.e("mytag", "success to add " + column + "to IS_ActionsTime");
 
-                }catch (Exception e){
-                    Log.e("mytag","err step 4, " + e.getMessage());
+                } catch (Exception e) {
+                    Log.e("mytag", "err step 4, " + e.getMessage());
                     h.LogPrintExStackTrace(e);
                 }
             }
 
             flag = true;
-        }catch (Exception e){
+        } catch (Exception e) {
 
-            Log.e("mytag",e.getMessage());
+            Log.e("mytag", e.getMessage());
             h.LogPrintExStackTrace(e);
         }
         return flag;
     }
-    public boolean createColumnToISActions(String column,boolean isTableExist){
+
+    public boolean createColumnToISActions(String column, boolean isTableExist) {
         getTableColumns();
         String IS_Actions = "IS_Actions";
         boolean flag = false;
@@ -473,93 +485,95 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             String CREATE_IS_Actions = constants.retISActionsBuilder();
 
-            if (isTableExist){
+            if (isTableExist) {
                 db.execSQL("DROP TABLE IF EXISTS '" + IS_Actions + "_old" + "'");
                 db.execSQL("ALTER TABLE " + IS_Actions + " RENAME TO " + IS_Actions + "_old;");
-                Log.e("mytag","step 1");
+                Log.e("mytag", "step 1");
             }
 
-            try{
+            try {
                 db.execSQL(CREATE_IS_Actions);
-            }catch (Exception e){
-                Log.e("mytag","exception create exe: " + e.getMessage());
+            } catch (Exception e) {
+                Log.e("mytag", "exception create exe: " + e.getMessage());
                 //String bla = CREATE_mgnet_calls.replace("CREATE TABLE","ALTER TABLE");
                 //db.execSQL(bla);
             }
-            if (isTableExist){
+            if (isTableExist) {
                 db.execSQL("DROP TABLE " + IS_Actions + "_old;");
-                Log.e("mytag","step 2");
+                Log.e("mytag", "step 2");
             }
 
             //Log.e("mytag","last time: " + columnExistsInTable("mgnet_calls","sla"));
-            if (!columnExistsInTable(IS_Actions,column)){
-                try{
+            if (!columnExistsInTable(IS_Actions, column)) {
+                try {
                     db.execSQL("ALTER TABLE " + IS_Actions + " ADD COLUMN " + column + " TEXT;");
-                    Log.e("mytag","success to add " + column + "to calls");
+                    Log.e("mytag", "success to add " + column + "to calls");
 
-                }catch (Exception e){
-                    Log.e("mytag","err step 4, " + e.getMessage());
+                } catch (Exception e) {
+                    Log.e("mytag", "err step 4, " + e.getMessage());
                     h.LogPrintExStackTrace(e);
                 }
             }
 
             flag = true;
-        }catch (Exception e){
+        } catch (Exception e) {
 
-            Log.e("mytag",e.getMessage());
+            Log.e("mytag", e.getMessage());
             h.LogPrintExStackTrace(e);
         }
         return flag;
     }
-    public boolean createColumnToCalls(String column,boolean isTableExist){
+
+    public boolean createColumnToCalls(String column, boolean isTableExist) {
         String mgnet_calls = "mgnet_calls";
         boolean flag = false;
         Helper h = new Helper();
         try {
             SQLiteDatabase db = this.getWritableDatabase();
 
-            String CREATE_mgnet_calls= constants.retMgnetCallsBuilder();
+            String CREATE_mgnet_calls = constants.retMgnetCallsBuilder();
 
-            if (isTableExist){
+            if (isTableExist) {
                 db.execSQL("DROP TABLE IF EXISTS '" + mgnet_calls + "_old" + "'");
                 db.execSQL("ALTER TABLE " + mgnet_calls + " RENAME TO " + mgnet_calls + "_old;");
-                Log.e("mytag","step 1");
+                Log.e("mytag", "step 1");
             }
 
-            try{
-            db.execSQL(CREATE_mgnet_calls);
-            }catch (Exception e){
-                Log.e("mytag","exception create exe: " + e.getMessage());
+            try {
+                db.execSQL(CREATE_mgnet_calls);
+            } catch (Exception e) {
+                Log.e("mytag", "exception create exe: " + e.getMessage());
                 //String bla = CREATE_mgnet_calls.replace("CREATE TABLE","ALTER TABLE");
                 //db.execSQL(bla);
             }
-            if (isTableExist){
+            if (isTableExist) {
                 db.execSQL("DROP TABLE " + mgnet_calls + "_old;");
-                Log.e("mytag","step 2");
+                Log.e("mytag", "step 2");
             }
 
-            Log.e("mytag","last time: " + columnExistsInTable("mgnet_calls","sla"));
-            if (!columnExistsInTable("mgnet_calls","sla")){
-                Log.e("mytag","step 3");
-                try{
+            Log.e("mytag", "last time: " + columnExistsInTable("mgnet_calls", "sla"));
+            if (!columnExistsInTable("mgnet_calls", "sla")) {
+                Log.e("mytag", "step 3");
+                try {
                     db.execSQL("ALTER TABLE " + mgnet_calls + " ADD COLUMN " + column + " TEXT;");
-                    Log.e("mytag","success to add " + column + "to calls");
+                    Log.e("mytag", "success to add " + column + "to calls");
 
-                }catch (Exception e){
-                    Log.e("mytag","err step 4, " + e.getMessage());
+                } catch (Exception e) {
+                    Log.e("mytag", "err step 4, " + e.getMessage());
                     h.LogPrintExStackTrace(e);
                 }
             }
 
             flag = true;
-        }catch (Exception e){
+        } catch (Exception e) {
 
-            Log.e("mytag",e.getMessage());
+            Log.e("mytag", e.getMessage());
             h.LogPrintExStackTrace(e);
         }
         return flag;
     }
-    public boolean createColumnToCalltime(String column,boolean isTableExist){
+
+    public boolean createColumnToCalltime(String column, boolean isTableExist) {
         String Calltime = "Calltime";
         boolean flag = false;
         try {
@@ -568,44 +582,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String CREATE_call_time =
                     "CREATE TABLE " + "Calltime" + "("
                             + "CTID" + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                            + "CallID" +  " INTEGER, "
-                            + "CallStartTime" +  " TEXT, "
+                            + "CallID" + " INTEGER, "
+                            + "CallStartTime" + " TEXT, "
                             + "Minute" + " TEXT, "
                             + "CTcomment" + " TEXT ,"
                             + "ctq" + " TEXT "
                             + ")";
-            if (isTableExist){
+            if (isTableExist) {
                 db.execSQL("ALTER TABLE " + Calltime + " RENAME TO " + Calltime + "_old;");
             }
             db.execSQL(CREATE_call_time);
             if (isTableExist) {
                 db.execSQL("DROP TABLE " + Calltime + "_old;");
             }
-            if (!column.equals("")){
+            if (!column.equals("")) {
                 db.execSQL("ALTER TABLE " + Calltime + " ADD COLUMN " + column + " TEXT;");
             }
             flag = true;
-        }catch (Exception e){
+        } catch (Exception e) {
             Helper h = new Helper();
-            Log.e("mytag",e.getMessage());
+            Log.e("mytag", e.getMessage());
             h.LogPrintExStackTrace(e);
         }
         return flag;
     }
-    public boolean createColumnToCalls_Offline(String column,boolean isTableExist){
+
+    public boolean createColumnToCalls_Offline(String column, boolean isTableExist) {
         String call_offline = "call_offline";
         boolean flag = false;
         try {
             SQLiteDatabase db = this.getWritableDatabase();
 
-            String CREATE_call_offline=
+            String CREATE_call_offline =
                     "CREATE TABLE " + "call_offline" + "("
-                            + "CallID" +  " INTEGER, "
-                            + "statusID"+  " INTEGER, "
-                            + "internalSN"+ " TEXT, "
-                            + "techAnswer"+ " TEXT "
+                            + "CallID" + " INTEGER, "
+                            + "statusID" + " INTEGER, "
+                            + "internalSN" + " TEXT, "
+                            + "techAnswer" + " TEXT "
                             + ")";
-            if (isTableExist){
+            if (isTableExist) {
                 db.execSQL("ALTER TABLE " + call_offline + " RENAME TO " + call_offline + "_old;");
             }
 
@@ -613,35 +628,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (isTableExist) {
                 db.execSQL("DROP TABLE " + call_offline + "_old;");
             }
-            if (!column.equals("")){
+            if (!column.equals("")) {
                 db.execSQL("ALTER TABLE " + call_offline + " ADD COLUMN " + column + " TEXT;");
             }
             flag = true;
-        }catch (Exception e){
+        } catch (Exception e) {
             Helper h = new Helper();
-            Log.e("mytag",e.getMessage());
+            Log.e("mytag", e.getMessage());
             h.LogPrintExStackTrace(e);
         }
         return flag;
     }
-    public boolean createColumnToCP(String column,boolean isTableExist){
+
+    public boolean createColumnToCP(String column, boolean isTableExist) {
         String ControlPanel = "ControlPanel";
         boolean flag = false;
         try {
             SQLiteDatabase db = this.getWritableDatabase();
             String CREATE_CP_TABLE =
                     "CREATE TABLE " + TABLE_CONTROL_PANEL + "("
-                            + KEY +  " TEXT PRIMARY KEY,"
+                            + KEY + " TEXT PRIMARY KEY,"
                             + VALUE + " TEXT, "
                             + DESCRIPTION + " TEXT "
                             + ")";
 
-            if (isTableExist){
+            if (isTableExist) {
                 db.execSQL("ALTER TABLE " + ControlPanel + " RENAME TO " + ControlPanel + "_old;");
             }
 
             db.execSQL(CREATE_CP_TABLE);
-            if (isTableExist){
+            if (isTableExist) {
                 db.execSQL("DROP TABLE " + ControlPanel + "_old;");
             }
 
@@ -649,110 +665,116 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL("ALTER TABLE " + ControlPanel + " ADD COLUMN " + column + " TEXT;");
             }
             flag = true;
-        }catch (Exception e){
+        } catch (Exception e) {
             Helper h = new Helper();
-            Log.e("mytag",e.getMessage());
+            Log.e("mytag", e.getMessage());
             h.LogPrintExStackTrace(e);
         }
         return flag;
     }
+
     public boolean delete_call_time() {
         boolean flag = true;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
 
             db.delete("Calltime", null, null);
             //db.close();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             flag = false;
             e.printStackTrace();
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
         return flag;
     }
+
     public boolean deleteTableByName(String tableName) {
         boolean flag = false;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
             db.execSQL("DROP TABLE IF EXISTS " + tableName + "");
             //db.delete("IS_Actions", null, null);
             //db.close();
             flag = true;
-        }catch (Exception e){
+        } catch (Exception e) {
             flag = false;
             e.printStackTrace();
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
         return flag;
     }
+
     public boolean delete_Table_Rows(String tableName) {
         boolean flag = false;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
-            String strSql ="delete from " + tableName + "";
+            String strSql = "delete from " + tableName + "";
 
             db.execSQL(strSql);
             //db.close();
             flag = true;
-        }catch (Exception e){
+        } catch (Exception e) {
             flag = false;
             e.printStackTrace();
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
         return flag;
     }
-    public boolean delete_Table_Rows(String tableName,String where) {
+
+    public boolean delete_Table_Rows(String tableName, String where) {
         boolean flag = false;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
-            String strSql ="delete from " + tableName + " " + where;
+            String strSql = "delete from " + tableName + " " + where;
 
             db.execSQL(strSql);
             //db.close();
             flag = true;
-        }catch (Exception e){
+        } catch (Exception e) {
             flag = false;
             e.printStackTrace();
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
         return flag;
     }
+
     public boolean delete_IS_Actions_Rows(String str) {
         boolean flag = false;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
-            String strSql ="delete from IS_Actions";
-            if(str == "offline"){
-                strSql ="delete from IS_Actions where actionID < 0";
+            String strSql = "delete from IS_Actions";
+            if (str == "offline") {
+                strSql = "delete from IS_Actions where actionID < 0";
             }
             db.execSQL(strSql);
             //db.close();
             flag = true;
-        }catch (Exception e){
+        } catch (Exception e) {
             flag = false;
             e.printStackTrace();
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
         return flag;
     }
 
     //region calltime
-    public boolean add_calltime(Calltime ct){
+    public boolean add_calltime(Calltime ct) {
         boolean flag = false;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
-            values.put("CallID" , ct.getCallID());
+            values.put("CallID", ct.getCallID());
             values.put("CallStartTime", ct.getCallStartTime());
             values.put("Minute", ct.getMinute());
             values.put("CTcomment", ct.getCTcomment().trim());
             values.put("ctq", ct.getCtq());
             db.insert("Calltime", null, values);
             flag = true;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            Log.e("MYTAG",e.getMessage());
+            FLogger.log_e("error in add_calltime: " + e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
         return flag;
     }
@@ -761,31 +783,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean update_calltime(Calltime ct) {
         //Log.e("mytag",ct.toString());
         boolean flag = false;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
-            values.put("CallID" , ct.getCallID());
+            values.put("CallID", ct.getCallID());
             values.put("CallStartTime", ct.getCallStartTime());
             values.put("Minute", ct.getMinute());
             values.put("CTcomment", ct.getCTcomment().trim());
             values.put("ctq", ct.getCtq());
             db.update("Calltime", values, "CTID = " + ct.getCTID(), null);
             flag = true;
-        }catch (Exception e){
+        } catch (Exception e) {
             Helper h = new Helper();
             h.LogPrintExStackTrace(e);
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
         return flag;
 
     }
-   //region call_offline
-    public boolean add_call_offline(Call_offline co){
+
+    //region call_offline
+    public boolean add_call_offline(Call_offline co) {
         boolean flag = false;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
-            values.put("CallID" , co.getCallID());
+            values.put("CallID", co.getCallID());
             values.put("statusID", co.getStatusID());
             values.put("internalSN", co.getInternalSN());
             values.put("techAnswer", co.getTechAnswer().trim());
@@ -794,9 +817,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // Closing database connection
             //db.close();
             flag = true;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
         return flag;
     }
@@ -805,14 +828,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //Log.e("mytag","hello from db");
         SQLiteDatabase db = this.getReadableDatabase();
         String searchQuery = "";
-        if (tableName.equals("IS_Actions_Offline")){
-            searchQuery = "SELECT  * FROM IS_Actions where actionID < 0" ;
+        if (tableName.equals("IS_Actions_Offline")) {
+            searchQuery = "SELECT  * FROM IS_Actions where actionID < 0";
 
-        }else{
+        } else {
             searchQuery = "SELECT  * FROM " + tableName;
 
         }
-        Cursor cursor = db.rawQuery(searchQuery, null );
+        Cursor cursor = db.rawQuery(searchQuery, null);
 
         JSONArray resultSet = new JSONArray();
 
@@ -822,25 +845,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int totalColumn = cursor.getColumnCount();
             JSONObject rowObject = new JSONObject();
 
-            for( int i=0 ;  i< totalColumn ; i++ )
-            {
-                if( cursor.getColumnName(i) != null )
-                {
-                    try
-                    {
-                        if( cursor.getString(i) != null )
-                        {
-                            Log.d("TAG_NAME", cursor.getString(i) );
-                            rowObject.put(cursor.getColumnName(i) ,  cursor.getString(i) );
+            for (int i = 0; i < totalColumn; i++) {
+                if (cursor.getColumnName(i) != null) {
+                    try {
+                        if (cursor.getString(i) != null) {
+                            Log.d("TAG_NAME", cursor.getString(i));
+                            rowObject.put(cursor.getColumnName(i), cursor.getString(i));
+                        } else {
+                            rowObject.put(cursor.getColumnName(i), "");
                         }
-                        else
-                        {
-                            rowObject.put( cursor.getColumnName(i) ,  "" );
-                        }
-                    }
-                    catch( Exception e )
-                    {
-                        Log.d("TAG_NAME", e.getMessage()  );
+                    } catch (Exception e) {
+                        Log.d("TAG_NAME", e.getMessage());
                     }
                 }
             }
@@ -848,15 +863,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor.moveToNext();
         }
         cursor.close();
-        Log.d("TAG_NAME", resultSet.toString() );
+        Log.d("TAG_NAME", resultSet.toString());
         return resultSet;
     }
-    public JSONArray getJsonResultsFromTable(String tableName,String where) {
+
+    public JSONArray getJsonResultsFromTable(String tableName, String where) {
         //Log.e("mytag","hello from db");
         SQLiteDatabase db = this.getReadableDatabase();
         String searchQuery = "";
         searchQuery = "SELECT  * FROM " + tableName + " " + where;
-        Cursor cursor = db.rawQuery(searchQuery, null );
+        Cursor cursor = db.rawQuery(searchQuery, null);
 
         JSONArray resultSet = new JSONArray();
 
@@ -866,25 +882,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int totalColumn = cursor.getColumnCount();
             JSONObject rowObject = new JSONObject();
 
-            for( int i=0 ;  i< totalColumn ; i++ )
-            {
-                if( cursor.getColumnName(i) != null )
-                {
-                    try
-                    {
-                        if( cursor.getString(i) != null )
-                        {
-                            Log.d("TAG_NAME", cursor.getString(i) );
-                            rowObject.put(cursor.getColumnName(i) ,  cursor.getString(i) );
+            for (int i = 0; i < totalColumn; i++) {
+                if (cursor.getColumnName(i) != null) {
+                    try {
+                        if (cursor.getString(i) != null) {
+                            Log.d("TAG_NAME", cursor.getString(i));
+                            rowObject.put(cursor.getColumnName(i), cursor.getString(i));
+                        } else {
+                            rowObject.put(cursor.getColumnName(i), "");
                         }
-                        else
-                        {
-                            rowObject.put( cursor.getColumnName(i) ,  "" );
-                        }
-                    }
-                    catch( Exception e )
-                    {
-                        Log.d("TAG_NAME", e.getMessage()  );
+                    } catch (Exception e) {
+                        Log.d("TAG_NAME", e.getMessage());
                     }
                 }
             }
@@ -892,17 +900,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor.moveToNext();
         }
         cursor.close();
-        Log.d("TAG_NAME", resultSet.toString() );
+        Log.d("TAG_NAME", resultSet.toString());
         return resultSet;
     }
-    public JSONArray getJsonResults()
-    {
+
+    public JSONArray getJsonResults() {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String searchQuery = "SELECT  * FROM " + "call_offline";
-        Cursor cursor = db.rawQuery(searchQuery, null );
+        Cursor cursor = db.rawQuery(searchQuery, null);
 
-        JSONArray resultSet     = new JSONArray();
+        JSONArray resultSet = new JSONArray();
 
         cursor.moveToFirst();
         while (cursor.isAfterLast() == false) {
@@ -910,25 +918,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int totalColumn = cursor.getColumnCount();
             JSONObject rowObject = new JSONObject();
 
-            for( int i=0 ;  i< totalColumn ; i++ )
-            {
-                if( cursor.getColumnName(i) != null )
-                {
-                    try
-                    {
-                        if( cursor.getString(i) != null )
-                        {
-                            Log.d("TAG_NAME", cursor.getString(i) );
-                            rowObject.put(cursor.getColumnName(i) ,  cursor.getString(i) );
+            for (int i = 0; i < totalColumn; i++) {
+                if (cursor.getColumnName(i) != null) {
+                    try {
+                        if (cursor.getString(i) != null) {
+                            Log.d("TAG_NAME", cursor.getString(i));
+                            rowObject.put(cursor.getColumnName(i), cursor.getString(i));
+                        } else {
+                            rowObject.put(cursor.getColumnName(i), "");
                         }
-                        else
-                        {
-                            rowObject.put( cursor.getColumnName(i) ,  "" );
-                        }
-                    }
-                    catch( Exception e )
-                    {
-                        Log.d("TAG_NAME", e.getMessage()  );
+                    } catch (Exception e) {
+                        Log.d("TAG_NAME", e.getMessage());
                     }
                 }
             }
@@ -936,20 +936,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor.moveToNext();
         }
         cursor.close();
-        Log.d("TAG_NAME", resultSet.toString() );
+        Log.d("TAG_NAME", resultSet.toString());
         return resultSet;
     }
+
     public List<Call_offline> getCall_offline() {
         List<Call_offline> callList = new ArrayList<Call_offline>();
 // Select All Query
-        String selectQuery ="";
-        selectQuery = "SELECT * FROM call_offline " ;
+        String selectQuery = "";
+        selectQuery = "SELECT * FROM call_offline ";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                Call_offline c= new Call_offline(
+                Call_offline c = new Call_offline(
                         Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallID"))),
                         Integer.valueOf(cursor.getString(cursor.getColumnIndex("statusID"))),
                         cursor.getString(cursor.getColumnIndex("internalSN")),
@@ -966,13 +967,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<Ccustomer> getCcustomers(String cond) {
         List<Ccustomer> ccustomerList = new ArrayList<Ccustomer>();
 
-        String selectQuery ="";
-        selectQuery = "SELECT * FROM Ccustomers order by Distance" ;
+        String selectQuery = "";
+        selectQuery = "SELECT * FROM Ccustomers order by Distance";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
             do {
-                Ccustomer c= new Ccustomer();
+                Ccustomer c = new Ccustomer();
                 //c.setCID(cursor.getString(cursor.getColumnIndex("internalSN")));
                 c.setCID(cursor.getString(cursor.getColumnIndex("CID")));
                 c.setCParentID(cursor.getString(cursor.getColumnIndex("CParentID")));
@@ -987,33 +988,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 c.setCArea(cursor.getString(cursor.getColumnIndex("CArea")));
                 c.setCcountry(cursor.getString(cursor.getColumnIndex("Ccountry")));
                 c.setCstate(cursor.getString(cursor.getColumnIndex("Cstate")));
-                c.setCzip(  cursor.getString(cursor.getColumnIndex("Czip")));
+                c.setCzip(cursor.getString(cursor.getColumnIndex("Czip")));
                 c.setCphone(cursor.getString(cursor.getColumnIndex("Cphone")));
-                c.setCcell( cursor.getString(cursor.getColumnIndex("Ccell")));
-                c.setCfax(  cursor.getString(cursor.getColumnIndex("Cfax")));
-                c.setCdate( cursor.getString(cursor.getColumnIndex("Cdate")));
-                c.setCBirthDate(   cursor.getString(cursor.getColumnIndex("CBirthDate")));
-                c.setCStartDate(   cursor.getString(cursor.getColumnIndex("CStartDate")));
-                c.setCEndDate(     cursor.getString(cursor.getColumnIndex("CEndDate")));
+                c.setCcell(cursor.getString(cursor.getColumnIndex("Ccell")));
+                c.setCfax(cursor.getString(cursor.getColumnIndex("Cfax")));
+                c.setCdate(cursor.getString(cursor.getColumnIndex("Cdate")));
+                c.setCBirthDate(cursor.getString(cursor.getColumnIndex("CBirthDate")));
+                c.setCStartDate(cursor.getString(cursor.getColumnIndex("CStartDate")));
+                c.setCEndDate(cursor.getString(cursor.getColumnIndex("CEndDate")));
                 c.setCFemilyStatus(cursor.getString(cursor.getColumnIndex("CFemilyStatus")));
-                c.setCBuySum(      cursor.getString(cursor.getColumnIndex("CBuySum")));
-                c.setCcompany(     cursor.getString(cursor.getColumnIndex("Ccompany")));
-                c.setCprofession(  cursor.getString(cursor.getColumnIndex("Cprofession")));
-                c.setLNG(          cursor.getString(cursor.getColumnIndex("LNG")));
-                c.setCTypeID(      cursor.getString(cursor.getColumnIndex("CTypeID")));
-                c.setCCodeID(  cursor.getString(cursor.getColumnIndex("CCodeID")));
-                c.setCConfirm( cursor.getString(cursor.getColumnIndex("CConfirm")));
+                c.setCBuySum(cursor.getString(cursor.getColumnIndex("CBuySum")));
+                c.setCcompany(cursor.getString(cursor.getColumnIndex("Ccompany")));
+                c.setCprofession(cursor.getString(cursor.getColumnIndex("Cprofession")));
+                c.setLNG(cursor.getString(cursor.getColumnIndex("LNG")));
+                c.setCTypeID(cursor.getString(cursor.getColumnIndex("CTypeID")));
+                c.setCCodeID(cursor.getString(cursor.getColumnIndex("CCodeID")));
+                c.setCConfirm(cursor.getString(cursor.getColumnIndex("CConfirm")));
                 c.setCInterest(cursor.getString(cursor.getColumnIndex("CInterest")));
-                c.setCduty(    cursor.getString(cursor.getColumnIndex("Cduty")));
-                c.setCPoints(  cursor.getString(cursor.getColumnIndex("CPoints")));
+                c.setCduty(cursor.getString(cursor.getColumnIndex("Cduty")));
+                c.setCPoints(cursor.getString(cursor.getColumnIndex("CPoints")));
                 c.setSendEmail(cursor.getString(cursor.getColumnIndex("SendEmail")));
-                c.setCcName(   cursor.getString(cursor.getColumnIndex("ccName")));
-                c.setCcID(  cursor.getString(cursor.getColumnIndex("ccID")));
+                c.setCcName(cursor.getString(cursor.getColumnIndex("ccName")));
+                c.setCcID(cursor.getString(cursor.getColumnIndex("ccID")));
                 c.setCcType(cursor.getString(cursor.getColumnIndex("ccType")));
-                c.setCcNo(  cursor.getString(cursor.getColumnIndex("ccNo")));
-                c.setCcExp( cursor.getString(cursor.getColumnIndex("ccExp")));
+                c.setCcNo(cursor.getString(cursor.getColumnIndex("ccNo")));
+                c.setCcExp(cursor.getString(cursor.getColumnIndex("ccExp")));
                 c.setCcpayment(cursor.getString(cursor.getColumnIndex("ccpayment")));
-                c.setCStatus(  cursor.getString(cursor.getColumnIndex("CStatus")));
+                c.setCStatus(cursor.getString(cursor.getColumnIndex("CStatus")));
                 c.setCstatusName(cursor.getString(cursor.getColumnIndex("CstatusName")));
                 c.setCage("");//e.getString("Cage"));
                 c.setCIMG(cursor.getString(cursor.getColumnIndex("CIMG")));
@@ -1030,7 +1031,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 c.setAge(cursor.getString(cursor.getColumnIndex("Age")));
                 c.setWeight(cursor.getString(cursor.getColumnIndex("Weight")));
                 c.setLooseWeight(cursor.getString(cursor.getColumnIndex("LooseWeight")));
-                c.setHeight( cursor.getString(cursor.getColumnIndex("Height")));
+                c.setHeight(cursor.getString(cursor.getColumnIndex("Height")));
                 c.setAgentID(cursor.getString(cursor.getColumnIndex("AgentID")));
                 c.setLastLogin(cursor.getString(cursor.getColumnIndex("LastLogin")));
                 c.setSlpCode(cursor.getString(cursor.getColumnIndex("SlpCode")));
@@ -1050,88 +1051,87 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-
-
-
     public boolean deleteAllCall_offline() {
         boolean flag = true;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
 
             db.delete("Call_offline", null, null);
             db.close();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             flag = false;
             e.printStackTrace();
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
         return flag;
     }
+
     public boolean delete_all_offline_is_actions() {
         boolean flag = true;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
 
             db.delete("Call_offline", null, null);
             db.close();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             flag = false;
             e.printStackTrace();
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
         return flag;
     }
     //endregion
 
-//region CALLS
-public void updateSpecificValueInTable2(String table,String primarykey,String primaryval,String fieldName,String fieldValue) {
-    try{
-        SQLiteDatabase db = this.getWritableDatabase();
-        String strSQL = "UPDATE " + table + " SET " + fieldName + " = " + fieldValue + " WHERE " + primarykey + " like "+ primaryval.trim() + "";
-        Log.e("mytag",strSQL);
-        db.execSQL(strSQL);
-        Log.e("mytag","success to update value2");
-    }catch (Exception e){
-        Log.e("mytag",e.getMessage());
+    //region CALLS
+    public void updateSpecificValueInTable2(String table, String primarykey, String primaryval, String fieldName, String fieldValue) {
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            String strSQL = "UPDATE " + table + " SET " + fieldName + " = " + fieldValue + " WHERE " + primarykey + " like " + primaryval.trim() + "";
+            Log.e("mytag", strSQL);
+            db.execSQL(strSQL);
+            Log.e("mytag", "success to update value2");
+        } catch (Exception e) {
+            Log.e("mytag", e.getMessage());
+        }
     }
-}
 
     public List<IS_ActionTime> getISActionsTime(String sortby) {
         List<IS_ActionTime> actionsTime = new ArrayList<IS_ActionTime>();
-        try{
-        String selectQuery ="";
-        selectQuery = "SELECT * FROM IS_ActionsTime where 1=1   " ;
+        try {
+            String selectQuery = "";
+            selectQuery = "SELECT * FROM IS_ActionsTime where 1=1   ";
 
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
+            SQLiteDatabase db = this.getReadableDatabase();
+            Cursor cursor = db.rawQuery(selectQuery, null);
             //Log.e("mytag","row count is_actions: " +cursor.getCount());
-        if (cursor.moveToFirst()) {
-            do {
-                IS_ActionTime action= new IS_ActionTime(
-                        cursor.getString(cursor.getColumnIndex("ID")),
-                        cursor.getString(cursor.getColumnIndex("CID")),
-                        cursor.getString(cursor.getColumnIndex("ActionID")),
-                        cursor.getString(cursor.getColumnIndex("ActionStart")),
-                        cursor.getString(cursor.getColumnIndex("ActionEnd"))
-                );
-                actionsTime.add(action);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        }catch(Exception e){
+            if (cursor.moveToFirst()) {
+                do {
+                    IS_ActionTime action = new IS_ActionTime(
+                            cursor.getString(cursor.getColumnIndex("ID")),
+                            cursor.getString(cursor.getColumnIndex("CID")),
+                            cursor.getString(cursor.getColumnIndex("ActionID")),
+                            cursor.getString(cursor.getColumnIndex("ActionStart")),
+                            cursor.getString(cursor.getColumnIndex("ActionEnd"))
+                    );
+                    actionsTime.add(action);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        } catch (Exception e) {
             Helper h = new Helper();
             h.LogPrintExStackTrace(e);
         }
         return actionsTime;
     }
+
     public List<Lead> getLeadsByOstatus(String sortby) {
         List<Lead> leadList = new ArrayList<Lead>();
-        try{
-            String selectQuery ="";
-            selectQuery = "SELECT * FROM Leads where 1=1" ;
-            if (sortby.trim() != ""){
+        try {
+            String selectQuery = "";
+            selectQuery = "SELECT * FROM Leads where 1=1";
+            if (sortby.trim() != "") {
                 selectQuery += "  and Ostatus='" + sortby + "'";
             }
 
@@ -1140,82 +1140,80 @@ public void updateSpecificValueInTable2(String table,String primarykey,String pr
             //Log.e("mytag","row count is_actions: " +cursor.getCount());
             if (cursor.moveToFirst()) {
                 do {
-                    Lead lead= new Lead(
+                    Lead lead = new Lead(
                             cursor.getString(cursor.getColumnIndex("OID")),
-                                    cursor.getString(cursor.getColumnIndex("CID")),
-                                    cursor.getString(cursor.getColumnIndex("Odate")),
-                                    cursor.getString(cursor.getColumnIndex("ccName")),
-                                    cursor.getString(cursor.getColumnIndex("ccID")),
-                                    cursor.getString(cursor.getColumnIndex("ccType")),
-                                    cursor.getString(cursor.getColumnIndex("ccNum")),
-                                    cursor.getString(cursor.getColumnIndex("ccExp")),
-                                    cursor.getString(cursor.getColumnIndex("CCpayment")),
-                                    cursor.getString(cursor.getColumnIndex("Oshipping")),
-                                    cursor.getString(cursor.getColumnIndex("Osum")),
-                                    cursor.getString(cursor.getColumnIndex("Sfname")),
-                                    cursor.getString(cursor.getColumnIndex("Slname")),
-                                    cursor.getString(cursor.getColumnIndex("Saddress")),
-                                    cursor.getString(cursor.getColumnIndex("Scity")),
-                                    cursor.getString(cursor.getColumnIndex("Scountry")),
-                                    cursor.getString(cursor.getColumnIndex("Sstate")),
-                                    cursor.getString(cursor.getColumnIndex("Szip")),
-                                    cursor.getString(cursor.getColumnIndex("Sphone")),
-                                    cursor.getString(cursor.getColumnIndex("Scell")),
-                                    cursor.getString(cursor.getColumnIndex("Semail")),
-                                    cursor.getString(cursor.getColumnIndex("Scomment")),
-                                    cursor.getString(cursor.getColumnIndex("Oprint")),
-                                    cursor.getString(cursor.getColumnIndex("Ofile")),
-                                    cursor.getString(cursor.getColumnIndex("PStypeID")),
-                                    cursor.getString(cursor.getColumnIndex("PSaleID")),
-                                    cursor.getString(cursor.getColumnIndex("Ostatus")),
-                                    cursor.getString(cursor.getColumnIndex("OBstatus")),
-                                    cursor.getString(cursor.getColumnIndex("OpaymentType")),
-                                    cursor.getString(cursor.getColumnIndex("LNG")),
-                                    cursor.getString(cursor.getColumnIndex("PsupplierID")),
-                                    cursor.getString(cursor.getColumnIndex("Ocard")),
-                                    cursor.getString(cursor.getColumnIndex("Oinvoice")),
-                                    cursor.getString(cursor.getColumnIndex("OnotHome")),
-                                    cursor.getString(cursor.getColumnIndex("OtimeShipping")),
-                                    cursor.getString(cursor.getColumnIndex("OdateShipping")),
-                                    cursor.getString(cursor.getColumnIndex("Orate")),
-                                    cursor.getString(cursor.getColumnIndex("Ocoin")),
-                                    cursor.getString(cursor.getColumnIndex("Expr1")),
-                                    cursor.getString(cursor.getColumnIndex("OstatusName")),
-                                    cursor.getString(cursor.getColumnIndex("CparentName")),
-                                    cursor.getString(cursor.getColumnIndex("CParentID")),
-                                    cursor.getString(cursor.getColumnIndex("CparentUsername")),
-                                    cursor.getString(cursor.getColumnIndex("Ocomment")),
-                                    cursor.getString(cursor.getColumnIndex("Otax")),
-                                    cursor.getString(cursor.getColumnIndex("Sfax")),
-                                    cursor.getString(cursor.getColumnIndex("Omakats")),
-                                    cursor.getString(cursor.getColumnIndex("Cfax")),
-                                    cursor.getString(cursor.getColumnIndex("OwnerID")),
-                                    cursor.getString(cursor.getColumnIndex("Ofname")),
-                                    cursor.getString(cursor.getColumnIndex("Olname")),
-                                    cursor.getString(cursor.getColumnIndex("Ccompany")),
-                                    cursor.getString(cursor.getColumnIndex("ProdSum")),
-                                    cursor.getString(cursor.getColumnIndex("CJoinerID")),
-                                    cursor.getString(cursor.getColumnIndex("PsupplierNAME")),
-                                    cursor.getString(cursor.getColumnIndex("SUsername")),
-                                    cursor.getString(cursor.getColumnIndex("PsupplierLOGO")),
-                                    cursor.getString(cursor.getColumnIndex("SPassword")),
-                                    cursor.getString(cursor.getColumnIndex("Cusername")),
-                                    cursor.getString(cursor.getColumnIndex("Oemail")),
-                                    cursor.getString(cursor.getColumnIndex("OUdate")),
-                                    cursor.getString(cursor.getColumnIndex("OTdate")),
-                                    cursor.getString(cursor.getColumnIndex("CTypeID")),
-                                    cursor.getString(cursor.getColumnIndex("CTypeName")),
-                                    cursor.getString(cursor.getColumnIndex("OcommentID")),
-                                    cursor.getString(cursor.getColumnIndex("SID")),
-                                    cursor.getString(cursor.getColumnIndex("Oref")),
-                                    cursor.getString(cursor.getColumnIndex("Cusername2")))
-
-                            ;
+                            cursor.getString(cursor.getColumnIndex("CID")),
+                            cursor.getString(cursor.getColumnIndex("Odate")),
+                            cursor.getString(cursor.getColumnIndex("ccName")),
+                            cursor.getString(cursor.getColumnIndex("ccID")),
+                            cursor.getString(cursor.getColumnIndex("ccType")),
+                            cursor.getString(cursor.getColumnIndex("ccNum")),
+                            cursor.getString(cursor.getColumnIndex("ccExp")),
+                            cursor.getString(cursor.getColumnIndex("CCpayment")),
+                            cursor.getString(cursor.getColumnIndex("Oshipping")),
+                            cursor.getString(cursor.getColumnIndex("Osum")),
+                            cursor.getString(cursor.getColumnIndex("Sfname")),
+                            cursor.getString(cursor.getColumnIndex("Slname")),
+                            cursor.getString(cursor.getColumnIndex("Saddress")),
+                            cursor.getString(cursor.getColumnIndex("Scity")),
+                            cursor.getString(cursor.getColumnIndex("Scountry")),
+                            cursor.getString(cursor.getColumnIndex("Sstate")),
+                            cursor.getString(cursor.getColumnIndex("Szip")),
+                            cursor.getString(cursor.getColumnIndex("Sphone")),
+                            cursor.getString(cursor.getColumnIndex("Scell")),
+                            cursor.getString(cursor.getColumnIndex("Semail")),
+                            cursor.getString(cursor.getColumnIndex("Scomment")),
+                            cursor.getString(cursor.getColumnIndex("Oprint")),
+                            cursor.getString(cursor.getColumnIndex("Ofile")),
+                            cursor.getString(cursor.getColumnIndex("PStypeID")),
+                            cursor.getString(cursor.getColumnIndex("PSaleID")),
+                            cursor.getString(cursor.getColumnIndex("Ostatus")),
+                            cursor.getString(cursor.getColumnIndex("OBstatus")),
+                            cursor.getString(cursor.getColumnIndex("OpaymentType")),
+                            cursor.getString(cursor.getColumnIndex("LNG")),
+                            cursor.getString(cursor.getColumnIndex("PsupplierID")),
+                            cursor.getString(cursor.getColumnIndex("Ocard")),
+                            cursor.getString(cursor.getColumnIndex("Oinvoice")),
+                            cursor.getString(cursor.getColumnIndex("OnotHome")),
+                            cursor.getString(cursor.getColumnIndex("OtimeShipping")),
+                            cursor.getString(cursor.getColumnIndex("OdateShipping")),
+                            cursor.getString(cursor.getColumnIndex("Orate")),
+                            cursor.getString(cursor.getColumnIndex("Ocoin")),
+                            cursor.getString(cursor.getColumnIndex("Expr1")),
+                            cursor.getString(cursor.getColumnIndex("OstatusName")),
+                            cursor.getString(cursor.getColumnIndex("CparentName")),
+                            cursor.getString(cursor.getColumnIndex("CParentID")),
+                            cursor.getString(cursor.getColumnIndex("CparentUsername")),
+                            cursor.getString(cursor.getColumnIndex("Ocomment")),
+                            cursor.getString(cursor.getColumnIndex("Otax")),
+                            cursor.getString(cursor.getColumnIndex("Sfax")),
+                            cursor.getString(cursor.getColumnIndex("Omakats")),
+                            cursor.getString(cursor.getColumnIndex("Cfax")),
+                            cursor.getString(cursor.getColumnIndex("OwnerID")),
+                            cursor.getString(cursor.getColumnIndex("Ofname")),
+                            cursor.getString(cursor.getColumnIndex("Olname")),
+                            cursor.getString(cursor.getColumnIndex("Ccompany")),
+                            cursor.getString(cursor.getColumnIndex("ProdSum")),
+                            cursor.getString(cursor.getColumnIndex("CJoinerID")),
+                            cursor.getString(cursor.getColumnIndex("PsupplierNAME")),
+                            cursor.getString(cursor.getColumnIndex("SUsername")),
+                            cursor.getString(cursor.getColumnIndex("PsupplierLOGO")),
+                            cursor.getString(cursor.getColumnIndex("SPassword")),
+                            cursor.getString(cursor.getColumnIndex("Cusername")),
+                            cursor.getString(cursor.getColumnIndex("Oemail")),
+                            cursor.getString(cursor.getColumnIndex("OUdate")),
+                            cursor.getString(cursor.getColumnIndex("OTdate")),
+                            cursor.getString(cursor.getColumnIndex("CTypeID")),
+                            cursor.getString(cursor.getColumnIndex("CTypeName")),
+                            cursor.getString(cursor.getColumnIndex("OcommentID")),
+                            cursor.getString(cursor.getColumnIndex("SID")),
+                            cursor.getString(cursor.getColumnIndex("Oref")),
+                            cursor.getString(cursor.getColumnIndex("Cusername2")));
                     leadList.add(lead);
                 } while (cursor.moveToNext());
             }
             cursor.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             Helper h = new Helper();
             h.LogPrintExStackTrace(e);
         }
@@ -1223,19 +1221,18 @@ public void updateSpecificValueInTable2(String table,String primarykey,String pr
     }
 
 
-
     public List<IS_Action> getISActions(String sortby) {
         List<IS_Action> actions = new ArrayList<IS_Action>();
-        try{
+        try {
 // Select All Query
-            String selectQuery ="";
-            selectQuery = "SELECT * FROM IS_Actions where 1=1   " ;
-            if ((!sortby.trim().equals("") && (sortby != "top1"))){
-                selectQuery+=  sortby + "";
+            String selectQuery = "";
+            selectQuery = "SELECT * FROM IS_Actions where 1=1   ";
+            if ((!sortby.trim().equals("") && (sortby != "top1"))) {
+                selectQuery += sortby + "";
                 //selectQuery+= "  order by " + sortby + "";
             }
-            if (sortby == "top1"){
-                selectQuery+=   " order by actionID limit 1";
+            if (sortby == "top1") {
+                selectQuery += " order by actionID limit 1";
             }
             SQLiteDatabase db = this.getReadableDatabase();
             //Log.e("mytag","sql: " +selectQuery);
@@ -1244,10 +1241,10 @@ public void updateSpecificValueInTable2(String table,String primarykey,String pr
 // looping through all rows and adding to list
             if (cursor.moveToFirst()) {
                 do {
-                    IS_Action action= new IS_Action(
+                    IS_Action action = new IS_Action(
                             Integer.valueOf(cursor.getString(cursor.getColumnIndex("actionID"))),
                             Integer.valueOf(cursor.getString(cursor.getColumnIndex("taskID"))),
-                            cursor.getString(cursor.getColumnIndex("actionDate")),cursor.getString(cursor.getColumnIndex("actionStartDate")),
+                            cursor.getString(cursor.getColumnIndex("actionDate")), cursor.getString(cursor.getColumnIndex("actionStartDate")),
                             cursor.getString(cursor.getColumnIndex("actionDue")),
                             cursor.getString(cursor.getColumnIndex("actionDesc")),
                             cursor.getString(cursor.getColumnIndex("comments")),
@@ -1297,81 +1294,82 @@ public void updateSpecificValueInTable2(String table,String primarykey,String pr
                 } while (cursor.moveToNext());
             }
             cursor.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             Helper h = new Helper();
             h.LogPrintExStackTrace(e);
         }
         return actions;
     }
+
     public List<Call> getCalls(String sortby) {
         List<Call> callList = new ArrayList<Call>();
 // Select All Query
-        String selectQuery ="";
-            selectQuery = "SELECT * FROM mgnet_calls where 1=1 and statusid <> -1  " ;
-        if (!sortby.trim().equals("")){
-            selectQuery+=  sortby + "";
+        String selectQuery = "";
+        selectQuery = "SELECT * FROM mgnet_calls where 1=1 and statusid <> -1  ";
+        if (!sortby.trim().equals("")) {
+            selectQuery += sortby + "";
             //selectQuery+= "  order by " + sortby + "";
         }
-        Log.e("mytag","dbname: " + this.getDatabaseName());
+        Log.e("mytag", "dbname: " + this.getDatabaseName());
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Log.e("mytag","sql: " +selectQuery);
+        Log.e("mytag", "sql: " + selectQuery);
         Cursor cursor = db.rawQuery(selectQuery, null);
 // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                Call c= new Call(
-                Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallID"))),
-                Integer.valueOf(cursor.getString(cursor.getColumnIndex("AID"))),
-                Integer.valueOf(cursor.getString(cursor.getColumnIndex("CID"))),
-                cursor.getString(cursor.getColumnIndex("CreateDate")),
-                Integer.valueOf(cursor.getString(cursor.getColumnIndex("statusID"))),
-                cursor.getString(cursor.getColumnIndex("CallPriority")),
-                cursor.getString(cursor.getColumnIndex("subject")),
-                cursor.getString(cursor.getColumnIndex("comments")),
-                cursor.getString(cursor.getColumnIndex("CallUpdate")),
-                cursor.getString(cursor.getColumnIndex("cntrctDate")),
-                Integer.valueOf(cursor.getString(cursor.getColumnIndex("TechnicianID"))),
-                cursor.getString(cursor.getColumnIndex("statusName")),
-                cursor.getString(cursor.getColumnIndex("internalSN")),
-                cursor.getString(cursor.getColumnIndex("Pmakat")),
-                cursor.getString(cursor.getColumnIndex("Pname")),
-                cursor.getString(cursor.getColumnIndex("contractID")),
-                cursor.getString(cursor.getColumnIndex("Cphone")),
-                Integer.valueOf(cursor.getString(cursor.getColumnIndex("OriginID"))),
-                Integer.valueOf(cursor.getString(cursor.getColumnIndex("ProblemTypeID"))),
-                Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallTypeID"))),
-                cursor.getString(cursor.getColumnIndex("priorityID")),
-                cursor.getString(cursor.getColumnIndex("OriginName")),
-                cursor.getString(cursor.getColumnIndex("problemTypeName")),
-                cursor.getString(cursor.getColumnIndex("CallTypeName")),
-                cursor.getString(cursor.getColumnIndex("Cname")),
-                cursor.getString(cursor.getColumnIndex("Cemail")),
-                Integer.valueOf(cursor.getString(cursor.getColumnIndex("contctCode"))),
-                cursor.getString(cursor.getColumnIndex("callStartTime")),
-                cursor.getString(cursor.getColumnIndex("callEndTime")),
-                cursor.getString(cursor.getColumnIndex("Ccompany")),
-                cursor.getString(cursor.getColumnIndex("Clocation")),
-                Integer.valueOf(cursor.getString(cursor.getColumnIndex("callOrder"))),
-                cursor.getString(cursor.getColumnIndex("Caddress")),
-                cursor.getString(cursor.getColumnIndex("Ccity")),
-                cursor.getString(cursor.getColumnIndex("Ccomments")),
-                cursor.getString(cursor.getColumnIndex("Cfname")),
-                cursor.getString(cursor.getColumnIndex("Clname")),
-                cursor.getString(cursor.getColumnIndex("techName")),
-                cursor.getString(cursor.getColumnIndex("Aname")),
-                cursor.getString(cursor.getColumnIndex("ContctName")),
-                cursor.getString(cursor.getColumnIndex("ContctAddress")),
-                cursor.getString(cursor.getColumnIndex("ContctCity")),
-                cursor.getString(cursor.getColumnIndex("ContctCell")),
-                cursor.getString(cursor.getColumnIndex("ContctPhone")),
-                cursor.getString(cursor.getColumnIndex("ContctCity")),
-                cursor.getString(cursor.getColumnIndex("Ccell")),
-                cursor.getString(cursor.getColumnIndex("techColor")),
-                cursor.getString(cursor.getColumnIndex("ContctCemail")),
-                cursor.getString(cursor.getColumnIndex("CallParentID")),
-                getState(cursor.getString(cursor.getColumnIndex("CallID"))),
-                cursor.getString(cursor.getColumnIndex("sla"))
+                Call c = new Call(
+                        Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallID"))),
+                        Integer.valueOf(cursor.getString(cursor.getColumnIndex("AID"))),
+                        Integer.valueOf(cursor.getString(cursor.getColumnIndex("CID"))),
+                        cursor.getString(cursor.getColumnIndex("CreateDate")),
+                        Integer.valueOf(cursor.getString(cursor.getColumnIndex("statusID"))),
+                        cursor.getString(cursor.getColumnIndex("CallPriority")),
+                        cursor.getString(cursor.getColumnIndex("subject")),
+                        cursor.getString(cursor.getColumnIndex("comments")),
+                        cursor.getString(cursor.getColumnIndex("CallUpdate")),
+                        cursor.getString(cursor.getColumnIndex("cntrctDate")),
+                        Integer.valueOf(cursor.getString(cursor.getColumnIndex("TechnicianID"))),
+                        cursor.getString(cursor.getColumnIndex("statusName")),
+                        cursor.getString(cursor.getColumnIndex("internalSN")),
+                        cursor.getString(cursor.getColumnIndex("Pmakat")),
+                        cursor.getString(cursor.getColumnIndex("Pname")),
+                        cursor.getString(cursor.getColumnIndex("contractID")),
+                        cursor.getString(cursor.getColumnIndex("Cphone")),
+                        Integer.valueOf(cursor.getString(cursor.getColumnIndex("OriginID"))),
+                        Integer.valueOf(cursor.getString(cursor.getColumnIndex("ProblemTypeID"))),
+                        Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallTypeID"))),
+                        cursor.getString(cursor.getColumnIndex("priorityID")),
+                        cursor.getString(cursor.getColumnIndex("OriginName")),
+                        cursor.getString(cursor.getColumnIndex("problemTypeName")),
+                        cursor.getString(cursor.getColumnIndex("CallTypeName")),
+                        cursor.getString(cursor.getColumnIndex("Cname")),
+                        cursor.getString(cursor.getColumnIndex("Cemail")),
+                        Integer.valueOf(cursor.getString(cursor.getColumnIndex("contctCode"))),
+                        cursor.getString(cursor.getColumnIndex("callStartTime")),
+                        cursor.getString(cursor.getColumnIndex("callEndTime")),
+                        cursor.getString(cursor.getColumnIndex("Ccompany")),
+                        cursor.getString(cursor.getColumnIndex("Clocation")),
+                        Integer.valueOf(cursor.getString(cursor.getColumnIndex("callOrder"))),
+                        cursor.getString(cursor.getColumnIndex("Caddress")),
+                        cursor.getString(cursor.getColumnIndex("Ccity")),
+                        cursor.getString(cursor.getColumnIndex("Ccomments")),
+                        cursor.getString(cursor.getColumnIndex("Cfname")),
+                        cursor.getString(cursor.getColumnIndex("Clname")),
+                        cursor.getString(cursor.getColumnIndex("techName")),
+                        cursor.getString(cursor.getColumnIndex("Aname")),
+                        cursor.getString(cursor.getColumnIndex("ContctName")),
+                        cursor.getString(cursor.getColumnIndex("ContctAddress")),
+                        cursor.getString(cursor.getColumnIndex("ContctCity")),
+                        cursor.getString(cursor.getColumnIndex("ContctCell")),
+                        cursor.getString(cursor.getColumnIndex("ContctPhone")),
+                        cursor.getString(cursor.getColumnIndex("ContctCity")),
+                        cursor.getString(cursor.getColumnIndex("Ccell")),
+                        cursor.getString(cursor.getColumnIndex("techColor")),
+                        cursor.getString(cursor.getColumnIndex("ContctCemail")),
+                        cursor.getString(cursor.getColumnIndex("CallParentID")),
+                        getState(cursor.getString(cursor.getColumnIndex("CallID"))),
+                        cursor.getString(cursor.getColumnIndex("sla"))
                 );//cursor.getString(cursor.getColumnIndex("state")),
 // Adding contact to list
                 callList.add(c);
@@ -1381,58 +1379,60 @@ public void updateSpecificValueInTable2(String table,String primarykey,String pr
         //db.close();
         return callList;
     }
-private String getState(String callid){
-    Helper h = new Helper();
-    try{
-        SQLiteDatabase db = this.getWritableDatabase();
-        String count = "select count(*) from Calltime where callid=" + callid + " and ctq='-2'";
-        Cursor mcursor = db.rawQuery(count, null);
-        mcursor.moveToFirst();
-        int icount = mcursor.getInt(0);
-        //db.close();
-        if(icount==2){
-            return "work";
-        }else if(icount==1){
-            try{
-                String count1 = "select count(*) from Calltime where callid=" + callid + " and ctq='-2' and CTcomment='work'";
-                String res = "";
-                res = getScalarByCountQuery(count1);
-                Log.e("mytag","res:" +res);
-                if (res == "1"){
-                    return "work";
-                }else{
+
+    private String getState(String callid) {
+        Helper h = new Helper();
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            String count = "select count(*) from Calltime where callid=" + callid + " and ctq='-2'";
+            Cursor mcursor = db.rawQuery(count, null);
+            mcursor.moveToFirst();
+            int icount = mcursor.getInt(0);
+            //db.close();
+            if (icount == 2) {
+                return "work";
+            } else if (icount == 1) {
+                try {
+                    String count1 = "select count(*) from Calltime where callid=" + callid + " and ctq='-2' and CTcomment='work'";
+                    String res = "";
+                    res = getScalarByCountQuery(count1);
+                    Log.e("mytag", "res:" + res);
+                    if (res == "1") {
+                        return "work";
+                    } else {
+                        return "ride";
+                    }
+                } catch (Exception e) {
+                    h.LogPrintExStackTrace(e);
                     return "ride";
                 }
-            }catch(Exception e){
-                h.LogPrintExStackTrace(e);
-                return "ride";
+            } else {
+                return "null";
             }
-        }else{
+        } catch (Exception e) {
+            h.LogPrintExStackTrace(e);
             return "null";
         }
-    }catch(Exception e){
-        h.LogPrintExStackTrace(e);
-        return "null";
+
     }
 
-}
-public boolean getCallsCount() {
-    String selectQuery = "SELECT count(callid) as count1 FROM mgnet_calls " ;
-    boolean flag;
-    try {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-        flag = (cursor.getCount() > 0) ? true : false;
-        db.close();
-    }catch(Exception e){
-        flag = false;
-        Log.e("MYTAG","db + "+e.getMessage());
+    public boolean getCallsCount() {
+        String selectQuery = "SELECT count(callid) as count1 FROM mgnet_calls ";
+        boolean flag;
+        try {
+            SQLiteDatabase db = this.getReadableDatabase();
+            Cursor cursor = db.rawQuery(selectQuery, null);
+            flag = (cursor.getCount() > 0) ? true : false;
+            db.close();
+        } catch (Exception e) {
+            flag = false;
+            Log.e("MYTAG", "db + " + e.getMessage());
+        }
+        return flag;
     }
-    return flag;
-}
 
     public int getFirstISAction() {
-        String selectQuery = "SELECT * FROM IS_Actions order by actionID asc LIMIT 1" ;
+        String selectQuery = "SELECT * FROM IS_Actions order by actionID asc LIMIT 1";
         int flag;
         try {
             SQLiteDatabase db = this.getReadableDatabase();
@@ -1440,40 +1440,40 @@ public boolean getCallsCount() {
             flag = Integer.valueOf(cursor.getString(cursor.getColumnIndex("actionID")));
             //flag = (cursor.getCount() > 0) ? true : false;
             //db.close ();
-        }catch(Exception e){
+        } catch (Exception e) {
             flag = 0;
-            Log.e("MYTAG","db + "+e.getMessage());
+            Log.e("MYTAG", "db + " + e.getMessage());
         }
 
         IS_Action is = new IS_Action();
-        String selectQuery2 = "SELECT * FROM IS_Actions" ;
+        String selectQuery2 = "SELECT * FROM IS_Actions";
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery2, null);
         if (cursor.moveToFirst()) {
             do {
-                is.setActionID( Integer.valueOf(cursor.getColumnIndex("actionID")));
-                Log.e("mytag","list: "+String.valueOf(cursor.getColumnIndex("actionID")));
+                is.setActionID(Integer.valueOf(cursor.getColumnIndex("actionID")));
+                Log.e("mytag", "list: " + String.valueOf(cursor.getColumnIndex("actionID")));
             } while (cursor.moveToNext());
         }
         // db.close();
         cursor.close();
 
 
-
         return flag;
 
 
     }
+
     public boolean IsExistCallID(int callid) {
-        String selectQuery = "SELECT * FROM mgnet_calls where callid=" + callid + "" ;
+        String selectQuery = "SELECT * FROM mgnet_calls where callid=" + callid + "";
         boolean flag;
         try {
             SQLiteDatabase db = this.getReadableDatabase();
             Cursor cursor = db.rawQuery(selectQuery, null);
             flag = (cursor.getCount() > 0) ? true : false;
-        }catch(Exception e){
+        } catch (Exception e) {
             flag = false;
-            Log.e("MYTAG","db + "+e.getMessage());
+            Log.e("MYTAG", "db + " + e.getMessage());
         }
         return flag;
     }
@@ -1481,310 +1481,318 @@ public boolean getCallsCount() {
     public void addNewCall(Call call) {
         //boolean isExist =IsExistCallID(call.getCallID());
         //if (isExist == true) {return;}
-        try{
+        try {
 
 
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("CallID" , call.getCallID());
-                values.put("AID", call.getAID());
-                values.put("CID", call.getCID());
-                values.put("CreateDate", call.getCreateDate());
-               // values.put("EndDate", call.getEndDate());
-                //values.put("CallEmail", call.getCallEmail());
-                values.put("statusID", call.getStatusID());
-                values.put("CallPriority", call.getCallPriority());
-                values.put("subject", call.getSubject());
-                values.put("comments", call.getComments());
-                //values.put("IsClose", call.getIsClose());
-                //values.put("IsRead", call.getIsRead());
-                //values.put("CallType", call.getCallType());
-                //values.put("CallReminderDate", call.getCallReminderDate());
-                values.put("CallUpdate", call.getCallUpdate());
-                //values.put("resolution", call.getResolution());
-                values.put("cntrctDate", call.getCntrctDate());
-                values.put("TechnicianID", call.getTechnicianID());
-                values.put("statusName", call.getStatusName());
-                //values.put("PcatID", call.getPcatID());
-                values.put("internalSN", call.getInternalSN());
-                values.put("Pmakat", call.getPmakat());
-                values.put("Pname", call.getPname());
-                values.put("contractID", call.getContractID());
-                values.put("Cphone", call.getCphone());
-                if (String.valueOf(call.getOriginID()).toLowerCase().contains("null")){
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("CallID", call.getCallID());
+            values.put("AID", call.getAID());
+            values.put("CID", call.getCID());
+            values.put("CreateDate", call.getCreateDate());
+            // values.put("EndDate", call.getEndDate());
+            //values.put("CallEmail", call.getCallEmail());
+            values.put("statusID", call.getStatusID());
+            values.put("CallPriority", call.getCallPriority());
+            values.put("subject", call.getSubject());
+            values.put("comments", call.getComments());
+            //values.put("IsClose", call.getIsClose());
+            //values.put("IsRead", call.getIsRead());
+            //values.put("CallType", call.getCallType());
+            //values.put("CallReminderDate", call.getCallReminderDate());
+            values.put("CallUpdate", call.getCallUpdate());
+            //values.put("resolution", call.getResolution());
+            values.put("cntrctDate", call.getCntrctDate());
+            values.put("TechnicianID", call.getTechnicianID());
+            values.put("statusName", call.getStatusName());
+            //values.put("PcatID", call.getPcatID());
+            values.put("internalSN", call.getInternalSN());
+            values.put("Pmakat", call.getPmakat());
+            values.put("Pname", call.getPname());
+            values.put("contractID", call.getContractID());
+            values.put("Cphone", call.getCphone());
+            if (String.valueOf(call.getOriginID()).toLowerCase().contains("null")) {
 
-                }else{
-                    values.put("OriginID", call.getOriginID());
+            } else {
+                values.put("OriginID", call.getOriginID());
 
-                }
-                values.put("ProblemTypeID" , call.getProblemTypeID());
-                values.put("CallTypeID", call.getCallTypeID());
-                values.put("priorityID", call.getPriorityID());
-                values.put("OriginName", call.getOriginName());
-                values.put("problemTypeName", call.getProblemTypeName());
-                values.put("CallTypeName", call.getCallTypeName());
-                values.put("Cname", call.getCname());
-                values.put("Cemail", call.getCemail());
-                values.put("contctCode", call.getContctCode());
-                values.put("callStartTime", call.getCallStartTime());
-                values.put("callEndTime", call.getCallEndTime());
-                values.put("Ccompany", call.getCcompany());
-                values.put("Clocation", call.getClocation());
-                values.put("callOrder", call.getCallOrder());
-                values.put("Caddress", call.getCaddress());
-                values.put("Ccity", call.getCcity());
-                values.put("Ccomments", call.getCcomments());
-                values.put("Cfname", call.getCfname());
-                values.put("Clname", call.getClname());
-                values.put("techName", call.getTechName());
-                values.put("Aname", call.getAname());
-                values.put("ContctName", call.getContctName());
-                values.put("ContctAddress", call.getContctAddress());
-                values.put("ContctCity", call.getContctCity());
-                values.put("ContctCell", call.getContctCell());
-                values.put("ContctPhone", call.getContctPhone());
-                values.put("Ccell", call.getCcell());
-                values.put("techColor", call.getTechColor());
-                values.put("ContctCemail", call.getContctCemail());
-                values.put("CallParentID", call.getCallParentID());
-                values.put("state", call.getState().trim());
-                values.put("sla",  call.getSla().toString());
-        // Inserting Row
-        db.insert("mgnet_calls", null, values);
-            Log.e("mytag","added successfully: " +call.getCallID());
-        // Closing database connection
-        //db.close();
+            }
+            values.put("ProblemTypeID", call.getProblemTypeID());
+            values.put("CallTypeID", call.getCallTypeID());
+            values.put("priorityID", call.getPriorityID());
+            values.put("OriginName", call.getOriginName());
+            values.put("problemTypeName", call.getProblemTypeName());
+            values.put("CallTypeName", call.getCallTypeName());
+            values.put("Cname", call.getCname());
+            values.put("Cemail", call.getCemail());
+            values.put("contctCode", call.getContctCode());
+            values.put("callStartTime", call.getCallStartTime());
+            values.put("callEndTime", call.getCallEndTime());
+            values.put("Ccompany", call.getCcompany());
+            values.put("Clocation", call.getClocation());
+            values.put("callOrder", call.getCallOrder());
+            values.put("Caddress", call.getCaddress());
+            values.put("Ccity", call.getCcity());
+            values.put("Ccomments", call.getCcomments());
+            values.put("Cfname", call.getCfname());
+            values.put("Clname", call.getClname());
+            values.put("techName", call.getTechName());
+            values.put("Aname", call.getAname());
+            values.put("ContctName", call.getContctName());
+            values.put("ContctAddress", call.getContctAddress());
+            values.put("ContctCity", call.getContctCity());
+            values.put("ContctCell", call.getContctCell());
+            values.put("ContctPhone", call.getContctPhone());
+            values.put("Ccell", call.getCcell());
+            values.put("techColor", call.getTechColor());
+            values.put("ContctCemail", call.getContctCemail());
+            values.put("CallParentID", call.getCallParentID());
+            values.put("state", call.getState().trim());
+            values.put("sla", call.getSla().toString());
+            // Inserting Row
+            db.insert("mgnet_calls", null, values);
+            Log.e("mytag", "added successfully: " + call.getCallID());
+            // Closing database connection
+            //db.close();
 
-    }catch (Exception e){
-        e.printStackTrace();
-        Log.e("MYTAG"," db error1: " +e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("MYTAG", " db error1: " + e.getMessage());
+        }
+
     }
 
-}
-    private boolean isCustomerExist(String CID){
+    private boolean isCustomerExist(String CID) {
         boolean ret;
-        try{
+        try {
             SQLiteDatabase db = this.getReadableDatabase();
-            String sql ="select count(*) as mycount from Ccustomers WHERE CID like '" + CID +"'";
-            Cursor cursor= db.rawQuery(sql,null);
-            ret = Integer.valueOf(cursor.getColumnIndex("mycount")) >0 ? true : false;
-            Log.e("mytag",sql + "  " + String.valueOf(ret));
+            String sql = "select count(*) as mycount from Ccustomers WHERE CID like '" + CID + "'";
+            Cursor cursor = db.rawQuery(sql, null);
+            ret = Integer.valueOf(cursor.getColumnIndex("mycount")) > 0 ? true : false;
+            Log.e("mytag", sql + "  " + String.valueOf(ret));
             cursor.close();
             return ret;
-        }catch(Exception e){
+        } catch (Exception e) {
             return true;
         }
     }
+
     public boolean deleteAllCcustomers() {
         boolean flag = true;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
 
             db.delete("Ccustomers", null, null);
             //db.close();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             flag = false;
             e.printStackTrace();
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
         return flag;
     }
+
     public void addNewCcustomer(Ccustomer c) {
-        try{
+        try {
 
             //if (isCustomerExist(c.getCID().trim()) == true){
             //    return;
             //}
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
-            values.put("CID" , c.getCID());
-            values.put("CParentID" , c.getCParentID());
-            values.put("TargetWeight" , c.getTargetWeight());
-            values.put("Cusername" , c.getCusername());
-            values.put("Cpassword" , c.getCpassword());
-            values.put("Cfname" , c.getCfname());
-            values.put("Clname" , c.getClname());
-            values.put("Cemail" , c.getCemail());
-            values.put("Caddress" , c.getCaddress());
-            values.put("Ccity" , c.getCcity());
-            values.put("CArea" , c.getCArea());
-            values.put("Ccountry" , c.getCcountry());
-            values.put("Cstate" , c.getCstate());
-            values.put("Czip" , c.getCzip());
-            values.put("Cphone" , c.getCphone());
-            values.put("Ccell" , c.getCcell());
-            values.put("Cfax" , c.getCfax());
-            values.put("Cdate" , c.getCdate());
-            values.put("CBirthDate" , c.getCBirthDate());
-            values.put("CStartDate" , c.getCStartDate());
-            values.put("CEndDate" , c.getCEndDate());
-            values.put("CFemilyStatus" , c.getCFemilyStatus());
-            values.put("CBuySum" , c.getCBuySum());
-            values.put("Ccompany" , c.getCcompany());
-            values.put("Cprofession" , c.getCprofession());
-            values.put("LNG" , c.getLNG());
-            values.put("CTypeID" , c.getCTypeID());
-            values.put("CCodeID" , c.getCCodeID());
-            values.put("CConfirm" , c.getCConfirm());
-            values.put("CInterest" , c.getCInterest());
-            values.put("Cduty" , c.getCduty());
-            values.put("CPoints" , c.getCPoints());
-            values.put("SendEmail" , c.getSendEmail());
-            values.put("ccName" , c.getCcName());
-            values.put("ccID" , c.getCcID());
-            values.put("ccType" , c.getCcType());
-            values.put("ccNo" , c.getCcNo());
-            values.put("ccExp" , c.getCcExp());
-            values.put("ccpayment" , c.getCcpayment());
-            values.put("CStatus" , c.getCStatus());
-            values.put("CstatusName" , c.getCstatusName());
-            values.put("Cage" , c.getCage());
-            values.put("CIMG" , c.getCIMG());
-            values.put("CSex" , c.getCSex());
-            values.put("Ccomments" , c.getCcomments());
-            values.put("CJoinerID" , c.getCJoinerID());
-            values.put("Cweb" , c.getCweb());
-            values.put("CstatusID" , c.getCstatusID());
-            values.put("CstatusDate" , c.getCstatusDate());
-            values.put("CstatusID2" , c.getCstatusID2());
-            values.put("CstatusDate2" , c.getCstatusDate2());
-            values.put("IsActive" , c.getIsActive());
-            values.put("Herb_ID" , c.getHerb_ID());
-            values.put("Age" , c.getAge());
-            values.put("Weight" , c.getWeight());
-            values.put("LooseWeight" , c.getLooseWeight());
-            values.put("Height" , c.getHeight());
-            values.put("AgentID" , c.getAgentID());
-            values.put("LastLogin" , c.getLastLogin());
-            values.put("SlpCode" , c.getSlpCode());
-            values.put("LastPassword" , c.getLastPassword());
-            values.put("CTypeName" , c.getCTypeName());
-            values.put("Longtitude" , c.getLongtitude());
-            values.put("Latitude" , c.getLatitude());
-            values.put("Link" , c.getLink());
-            values.put("Distance" , c.getDistance());
+            values.put("CID", c.getCID());
+            values.put("CParentID", c.getCParentID());
+            values.put("TargetWeight", c.getTargetWeight());
+            values.put("Cusername", c.getCusername());
+            values.put("Cpassword", c.getCpassword());
+            values.put("Cfname", c.getCfname());
+            values.put("Clname", c.getClname());
+            values.put("Cemail", c.getCemail());
+            values.put("Caddress", c.getCaddress());
+            values.put("Ccity", c.getCcity());
+            values.put("CArea", c.getCArea());
+            values.put("Ccountry", c.getCcountry());
+            values.put("Cstate", c.getCstate());
+            values.put("Czip", c.getCzip());
+            values.put("Cphone", c.getCphone());
+            values.put("Ccell", c.getCcell());
+            values.put("Cfax", c.getCfax());
+            values.put("Cdate", c.getCdate());
+            values.put("CBirthDate", c.getCBirthDate());
+            values.put("CStartDate", c.getCStartDate());
+            values.put("CEndDate", c.getCEndDate());
+            values.put("CFemilyStatus", c.getCFemilyStatus());
+            values.put("CBuySum", c.getCBuySum());
+            values.put("Ccompany", c.getCcompany());
+            values.put("Cprofession", c.getCprofession());
+            values.put("LNG", c.getLNG());
+            values.put("CTypeID", c.getCTypeID());
+            values.put("CCodeID", c.getCCodeID());
+            values.put("CConfirm", c.getCConfirm());
+            values.put("CInterest", c.getCInterest());
+            values.put("Cduty", c.getCduty());
+            values.put("CPoints", c.getCPoints());
+            values.put("SendEmail", c.getSendEmail());
+            values.put("ccName", c.getCcName());
+            values.put("ccID", c.getCcID());
+            values.put("ccType", c.getCcType());
+            values.put("ccNo", c.getCcNo());
+            values.put("ccExp", c.getCcExp());
+            values.put("ccpayment", c.getCcpayment());
+            values.put("CStatus", c.getCStatus());
+            values.put("CstatusName", c.getCstatusName());
+            values.put("Cage", c.getCage());
+            values.put("CIMG", c.getCIMG());
+            values.put("CSex", c.getCSex());
+            values.put("Ccomments", c.getCcomments());
+            values.put("CJoinerID", c.getCJoinerID());
+            values.put("Cweb", c.getCweb());
+            values.put("CstatusID", c.getCstatusID());
+            values.put("CstatusDate", c.getCstatusDate());
+            values.put("CstatusID2", c.getCstatusID2());
+            values.put("CstatusDate2", c.getCstatusDate2());
+            values.put("IsActive", c.getIsActive());
+            values.put("Herb_ID", c.getHerb_ID());
+            values.put("Age", c.getAge());
+            values.put("Weight", c.getWeight());
+            values.put("LooseWeight", c.getLooseWeight());
+            values.put("Height", c.getHeight());
+            values.put("AgentID", c.getAgentID());
+            values.put("LastLogin", c.getLastLogin());
+            values.put("SlpCode", c.getSlpCode());
+            values.put("LastPassword", c.getLastPassword());
+            values.put("CTypeName", c.getCTypeName());
+            values.put("Longtitude", c.getLongtitude());
+            values.put("Latitude", c.getLatitude());
+            values.put("Link", c.getLink());
+            values.put("Distance", c.getDistance());
             // Inserting Row
             db.insert("Ccustomers", null, values);
             // Closing database connection
             //db.close();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            Log.e("MYTAG"," db error1: " +e.getMessage());
+            Log.e("MYTAG", " db error1: " + e.getMessage());
         }
 
     }
+
     public boolean deleteAllCalls() {
         boolean flag = true;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
 
             db.delete("mgnet_calls", null, null);
             //db.close();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             flag = false;
             e.printStackTrace();
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
         return flag;
     }
+
     public boolean deleteAllLeads() {
         boolean flag = true;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
 
             db.delete("Leads", null, null);
             //db.close();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             flag = false;
             e.printStackTrace();
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
         return flag;
     }
-//endregion
-public boolean add_ISActionTime(IS_ActionTime ct){
-    boolean flag = false;
-    try{
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        //values.put("ID" , ct.getID());
-        values.put("CID", ct.getCID());
-        values.put("actionID", ct.getActionID());
-        values.put("actionStart", ct.getActionStart());
-        values.put("actionEnd", ct.getActionEnd());
-        db.insert("IS_ActionsTime", null, values);
-        flag = true;
-        Log.e("mytag","ISActionTime added");
-    }catch (Exception e){
-        Helper h = new Helper();
-        h.LogPrintExStackTrace(e);
-    }
-    return flag;
-}
-public IS_ActionTime getISActionTimeByActionID(String actionid){
 
-    IS_ActionTime at = new IS_ActionTime();
-
-    try {
-        String selectQuery = "";
-        selectQuery = "SELECT * FROM IS_ActionsTime where actionID= '" + actionid + "' order by ID desc  LIMIT 1";
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor= db.rawQuery(selectQuery, null);
-        if (cursor.getCount() == 0){
-            return null;
-        }
-        if (cursor.moveToFirst()) {
-            at.setID((cursor.getString(cursor.getColumnIndex("ID"))));
-            at.setCID((cursor.getString(cursor.getColumnIndex("CID"))));
-            at.setActionID((cursor.getString(cursor.getColumnIndex("ActionID"))));
-            at.setActionStart((cursor.getString(cursor.getColumnIndex("ActionStart"))));
-            at.setActionEnd((cursor.getString(cursor.getColumnIndex("ActionEnd"))));
-        }
-                cursor.close();
-        return at;
-    }
-    catch(Exception e) {
-        Helper h = new Helper();
-        h.LogPrintExStackTrace(e);
-        return null;
-    }
-}
-    public boolean updateISActionTime(IS_ActionTime at) {
+    //endregion
+    public boolean add_ISActionTime(IS_ActionTime ct) {
         boolean flag = false;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
-            values.put("ID" , at.getID());
+            //values.put("ID" , ct.getID());
+            values.put("CID", ct.getCID());
+            values.put("actionID", ct.getActionID());
+            values.put("actionStart", ct.getActionStart());
+            values.put("actionEnd", ct.getActionEnd());
+            db.insert("IS_ActionsTime", null, values);
+            flag = true;
+            Log.e("mytag", "ISActionTime added");
+        } catch (Exception e) {
+            Helper h = new Helper();
+            h.LogPrintExStackTrace(e);
+        }
+        return flag;
+    }
+
+    public IS_ActionTime getISActionTimeByActionID(String actionid) {
+
+        IS_ActionTime at = new IS_ActionTime();
+
+        try {
+            String selectQuery = "";
+            selectQuery = "SELECT * FROM IS_ActionsTime where actionID= '" + actionid + "' order by ID desc  LIMIT 1";
+            SQLiteDatabase db = this.getReadableDatabase();
+            Cursor cursor = db.rawQuery(selectQuery, null);
+            if (cursor.getCount() == 0) {
+                return null;
+            }
+            if (cursor.moveToFirst()) {
+                at.setID((cursor.getString(cursor.getColumnIndex("ID"))));
+                at.setCID((cursor.getString(cursor.getColumnIndex("CID"))));
+                at.setActionID((cursor.getString(cursor.getColumnIndex("ActionID"))));
+                at.setActionStart((cursor.getString(cursor.getColumnIndex("ActionStart"))));
+                at.setActionEnd((cursor.getString(cursor.getColumnIndex("ActionEnd"))));
+            }
+            cursor.close();
+            return at;
+        } catch (Exception e) {
+            Helper h = new Helper();
+            h.LogPrintExStackTrace(e);
+            return null;
+        }
+    }
+
+    public boolean updateISActionTime(IS_ActionTime at) {
+        boolean flag = false;
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("ID", at.getID());
             values.put("CID", at.getCID());
             values.put("ActionID", at.getActionID());
             values.put("ActionStart", at.getActionStart());
             values.put("ActionEnd", at.getActionEnd());
             db.update("IS_ActionsTime", values, "ID = " + at.getID(), null);
             flag = true;
-        }catch (Exception e){
+        } catch (Exception e) {
             Helper h = new Helper();
             h.LogPrintExStackTrace(e);
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
         return flag;
 
     }
+
     public List<Calltime> getCalltimes(String sortby) {
         List<Calltime> calltimeList = new ArrayList<Calltime>();
-        try{
-            String selectQuery ="";
-            selectQuery = "SELECT * FROM Calltime where 1=1   " ;
+        try {
+            String selectQuery = "";
+            selectQuery = "SELECT * FROM Calltime where 1=1   ";
 
             SQLiteDatabase db = this.getReadableDatabase();
             Cursor cursor = db.rawQuery(selectQuery, null);
             //Log.e("mytag","row count is_actions: " +cursor.getCount());
             if (cursor.moveToFirst()) {
                 do {
-                    Calltime action= new Calltime(
+                    Calltime action = new Calltime(
                             cursor.getInt(cursor.getColumnIndex("CTID")),
                             cursor.getInt(cursor.getColumnIndex("CallID")),
                             cursor.getString(cursor.getColumnIndex("CallStartTime")),
@@ -1796,72 +1804,72 @@ public IS_ActionTime getISActionTimeByActionID(String actionid){
                 } while (cursor.moveToNext());
             }
             cursor.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             Helper h = new Helper();
             h.LogPrintExStackTrace(e);
         }
         return calltimeList;
     }
-public Calltime getCalltimeByCallidAndAction(String callid,String action,String openClose){
 
-    Calltime calltime = new Calltime();
+    public Calltime getCalltimeByCallidAndAction(String callid, String action, String openClose) {
 
-    String openCloseCondition = "";
-    if(openClose != ""){
-        openCloseCondition = " and ctq='" + openClose + "' ";
-    }
+        Calltime calltime = new Calltime();
 
-    try {
-        String selectQuery = "";
-        selectQuery = "SELECT * FROM Calltime where callid= '" + callid + "' and CTcomment= '" + action + "' " + openCloseCondition + " order by CTID desc LIMIT 1";
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor= db.rawQuery(selectQuery, null);
-        if (cursor.getCount() == 0){
+        String openCloseCondition = "";
+        if (openClose != "") {
+            openCloseCondition = " and ctq='" + openClose + "' ";
+        }
+
+        try {
+            String selectQuery = "";
+            selectQuery = "SELECT * FROM Calltime where callid= '" + callid + "' and CTcomment= '" + action + "' " + openCloseCondition + " order by CTID desc LIMIT 1";
+            SQLiteDatabase db = this.getReadableDatabase();
+            Cursor cursor = db.rawQuery(selectQuery, null);
+            if (cursor.getCount() == 0) {
+                calltime.setCTID(-1);
+                return calltime;
+            }
+            if (cursor.moveToFirst()) {
+                calltime.setCTID((cursor.getInt(cursor.getColumnIndex("CTID"))));
+                calltime.setCallID((cursor.getInt(cursor.getColumnIndex("CallID"))));
+                calltime.setCallStartTime((cursor.getString(cursor.getColumnIndex("CallStartTime"))));
+                calltime.setCTcomment((cursor.getString(cursor.getColumnIndex("CTcomment"))));
+                calltime.setMinute((cursor.getString(cursor.getColumnIndex("Minute"))));
+                calltime.setCtq((cursor.getString(cursor.getColumnIndex("ctq"))));
+            }
+            cursor.close();
+            return calltime;
+        } catch (Exception e) {
+            Helper h = new Helper();
+            h.LogPrintExStackTrace(e);
             calltime.setCTID(-1);
             return calltime;
         }
-        if (cursor.moveToFirst()) {
-            calltime.setCTID((cursor.getInt(cursor.getColumnIndex("CTID"))));
-            calltime.setCallID((cursor.getInt(cursor.getColumnIndex("CallID"))));
-            calltime.setCallStartTime((cursor.getString(cursor.getColumnIndex("CallStartTime"))));
-            calltime.setCTcomment((cursor.getString(cursor.getColumnIndex("CTcomment"))));
-            calltime.setMinute((cursor.getString(cursor.getColumnIndex("Minute"))));
-            calltime.setCtq((cursor.getString(cursor.getColumnIndex("ctq"))));
+    }
+
+    public CallStatus getCallStatusByCallStatusName(String CallStatusName) {
+
+        CallStatus callStatus = new CallStatus();
+        String selectQuery = "";
+        selectQuery = "SELECT * FROM CallStatus where CallStatusName= '" + CallStatusName + "' ";
+        SQLiteDatabase db = this.getReadableDatabase();
+        try {
+            Cursor cursor = db.rawQuery(selectQuery, null);
+            if (cursor.moveToFirst()) {
+                callStatus.setCallStatusID(Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallStatusID"))));
+                callStatus.setCallStatusName((cursor.getString(cursor.getColumnIndex("CallStatusName"))));
+                callStatus.setCallStatusOrder(Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallStatusOrder"))));
+            }
+            cursor.close();
+            return callStatus;
+        } finally {
+
+            return callStatus;
         }
-        cursor.close();
-        return calltime;
     }
-    catch(Exception e) {
-        Helper h = new Helper();
-        h.LogPrintExStackTrace(e);
-        calltime.setCTID(-1);
-        return calltime;
-    }
-}
 
-public CallStatus getCallStatusByCallStatusName(String CallStatusName){
-
-    CallStatus callStatus = new CallStatus();
-    String selectQuery = "";
-    selectQuery = "SELECT * FROM CallStatus where CallStatusName= '" + CallStatusName + "' ";
-    SQLiteDatabase db = this.getReadableDatabase();
-    try {
-        Cursor cursor= db.rawQuery(selectQuery, null);
-        if (cursor.moveToFirst()) {
-            callStatus.setCallStatusID(Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallStatusID"))));
-            callStatus.setCallStatusName( (cursor.getString(cursor.getColumnIndex("CallStatusName"))));
-            callStatus.setCallStatusOrder( Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallStatusOrder"))));
-        }
-        cursor.close();
-        return callStatus;
-    }
-    finally {
-
-        return callStatus;
-    }
-}
     public void addCallStatus(CallStatus callStatus) {
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
             values.put("CallStatusID", callStatus.getCallStatusID());
@@ -1870,172 +1878,174 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
             db.insert(CallStatus, null, values);
             // Closing database connection
             //db.close();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
 
     }
 
     public boolean addLead(Lead lead) {
         boolean flag = false;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
 
-            values.put("OID",lead.getOID());
-            values.put("CID",lead.getCID());
-            values.put("Odate",lead.getOdate());
-            values.put("ccName",lead.getCcName());
-            values.put("ccID",lead.getCcID());
-            values.put("ccType",lead.getCcType());
-            values.put("ccNum",lead.getCcNum());
-            values.put("ccExp",lead.getCcExp());
-            values.put("CCpayment",lead.getCCpayment());
-            values.put("Oshipping",lead.getOshipping());
-            values.put("Osum",lead.getOsum());
-            values.put("Sfname",lead.getSfname());
-            values.put("Slname",lead.getSlname());
-            values.put("Saddress",lead.getSaddress());
-            values.put("Scity",lead.getScity());
-            values.put("Scountry",lead.getScountry());
-            values.put("Sstate",lead.getSstate());
-            values.put("Szip",lead.getSzip());
-            values.put("Sphone",lead.getSphone());
-            values.put("Scell",lead.getScell());
-            values.put("Semail",lead.getSemail());
-            values.put("Scomment",lead.getScomment());
-            values.put("Oprint",lead.getOprint());
-            values.put("Ofile",lead.getOfile());
-            values.put("PStypeID",lead.getPStypeID());
-            values.put("PSaleID",lead.getPSaleID());
-            values.put("Ostatus",lead.getOstatus());
-            values.put("OBstatus",lead.getOBstatus());
-            values.put("OpaymentType",lead.getOpaymentType());
-            values.put("LNG",lead.getLNG());
-            values.put("PsupplierID",lead.getPsupplierID());
-            values.put("Ocard",lead.getOcard());
-            values.put("Oinvoice",lead.getOinvoice());
-            values.put("OnotHome",lead.getOnotHome());
+            values.put("OID", lead.getOID());
+            values.put("CID", lead.getCID());
+            values.put("Odate", lead.getOdate());
+            values.put("ccName", lead.getCcName());
+            values.put("ccID", lead.getCcID());
+            values.put("ccType", lead.getCcType());
+            values.put("ccNum", lead.getCcNum());
+            values.put("ccExp", lead.getCcExp());
+            values.put("CCpayment", lead.getCCpayment());
+            values.put("Oshipping", lead.getOshipping());
+            values.put("Osum", lead.getOsum());
+            values.put("Sfname", lead.getSfname());
+            values.put("Slname", lead.getSlname());
+            values.put("Saddress", lead.getSaddress());
+            values.put("Scity", lead.getScity());
+            values.put("Scountry", lead.getScountry());
+            values.put("Sstate", lead.getSstate());
+            values.put("Szip", lead.getSzip());
+            values.put("Sphone", lead.getSphone());
+            values.put("Scell", lead.getScell());
+            values.put("Semail", lead.getSemail());
+            values.put("Scomment", lead.getScomment());
+            values.put("Oprint", lead.getOprint());
+            values.put("Ofile", lead.getOfile());
+            values.put("PStypeID", lead.getPStypeID());
+            values.put("PSaleID", lead.getPSaleID());
+            values.put("Ostatus", lead.getOstatus());
+            values.put("OBstatus", lead.getOBstatus());
+            values.put("OpaymentType", lead.getOpaymentType());
+            values.put("LNG", lead.getLNG());
+            values.put("PsupplierID", lead.getPsupplierID());
+            values.put("Ocard", lead.getOcard());
+            values.put("Oinvoice", lead.getOinvoice());
+            values.put("OnotHome", lead.getOnotHome());
 
-            values.put("OtimeShipping",lead.getOtimeShipping());
-            values.put("OdateShipping",lead.getOdateShipping());
-            values.put("Orate",lead.getOrate());
-            values.put("Ocoin",lead.getOcoin());
-            values.put("Expr1",lead.getExpr1());
-            values.put("OstatusName",lead.getOstatusName());
-            values.put("CparentName",lead.getCparentName());
-            values.put("CParentID",lead.getCParentID());
-            values.put("CparentUsername",lead.getCparentUsername());
-            values.put("Ocomment",lead.getOcomment());
-            values.put("Otax",lead.getOtax());
-            values.put("Sfax",lead.getSfax());
-            values.put("Omakats",lead.getOmakats());
-            values.put("Cfax",lead.getCfax());
-            values.put("OwnerID",lead.getOwnerID());
+            values.put("OtimeShipping", lead.getOtimeShipping());
+            values.put("OdateShipping", lead.getOdateShipping());
+            values.put("Orate", lead.getOrate());
+            values.put("Ocoin", lead.getOcoin());
+            values.put("Expr1", lead.getExpr1());
+            values.put("OstatusName", lead.getOstatusName());
+            values.put("CparentName", lead.getCparentName());
+            values.put("CParentID", lead.getCParentID());
+            values.put("CparentUsername", lead.getCparentUsername());
+            values.put("Ocomment", lead.getOcomment());
+            values.put("Otax", lead.getOtax());
+            values.put("Sfax", lead.getSfax());
+            values.put("Omakats", lead.getOmakats());
+            values.put("Cfax", lead.getCfax());
+            values.put("OwnerID", lead.getOwnerID());
 
 
-            values.put("Ofname",lead.getOfname());
-            values.put("Olname",lead.getOlname());
-            values.put("Ccompany",lead.getCcompany());
-            values.put("ProdSum",lead.getProdSum());
-            values.put("CJoinerID",lead.getCJoinerID());
-            values.put("PsupplierNAME",lead.getPsupplierNAME());
-            values.put("SUsername",lead.getSUsername());
-            values.put("PsupplierLOGO",lead.getPsupplierLOGO());
-            values.put("SPassword",lead.getSPassword());
-            values.put("Cusername",lead.getCusername());
-            values.put("Oemail",lead.getOemail());
-            values.put("OUdate",lead.getOUdate());
-            values.put("OTdate",lead.getOTdate());
-            values.put("CTypeID",lead.getCTypeID());
-            values.put("CTypeName",lead.getCTypeName());
-            values.put("OcommentID",lead.getOcommentID());
-            values.put("SID",lead.getSID());
-            values.put("Oref",lead.getOref());
-            values.put("Cusername2",lead.getCusername2());
+            values.put("Ofname", lead.getOfname());
+            values.put("Olname", lead.getOlname());
+            values.put("Ccompany", lead.getCcompany());
+            values.put("ProdSum", lead.getProdSum());
+            values.put("CJoinerID", lead.getCJoinerID());
+            values.put("PsupplierNAME", lead.getPsupplierNAME());
+            values.put("SUsername", lead.getSUsername());
+            values.put("PsupplierLOGO", lead.getPsupplierLOGO());
+            values.put("SPassword", lead.getSPassword());
+            values.put("Cusername", lead.getCusername());
+            values.put("Oemail", lead.getOemail());
+            values.put("OUdate", lead.getOUdate());
+            values.put("OTdate", lead.getOTdate());
+            values.put("CTypeID", lead.getCTypeID());
+            values.put("CTypeName", lead.getCTypeName());
+            values.put("OcommentID", lead.getOcommentID());
+            values.put("SID", lead.getSID());
+            values.put("Oref", lead.getOref());
+            values.put("Cusername2", lead.getCusername2());
             db.insert("Leads", null, values);
             flag = true;
             //Log.e("MYTAG","added!!" + is_action.toString());
             // Closing database connection
             //db.close();
-        }catch (Exception e){
+        } catch (Exception e) {
             //e.printStackTrace();
             Helper h = new Helper();
             h.LogPrintExStackTrace(e);
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
             //return flag;
         }
         return flag;
     }
+
     public boolean addISAction(IS_Action is_action) {
         boolean flag = false;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
 
-            values.put("actionID",is_action.getActionID());
-            values.put("taskID",is_action.getTaskID());
-            values.put("statusID",is_action.getStatusID());
-            values.put("ownerID",is_action.getOwnerID());
-            values.put("userID",is_action.getUserID());
-            values.put("depID",is_action.getDepID());
-            values.put("userCtypeID",is_action.getUserCtypeID());
-            values.put("ownerCtypeID",is_action.getOwnerCtypeID());
-            values.put("projectID",is_action.getProjectID());
-            values.put("ParentActionID",is_action.getParentActionID());
-            values.put("actionDate",is_action.getActionDate());
-            values.put("actionStartDate",is_action.getActionStartDate());
-            values.put("actionDue",is_action.getActionDue());
-            values.put("actionDesc",is_action.getActionDesc());
-            values.put("comments",is_action.getComments());
-            values.put("priorityID",is_action.getPriorityID());
-            values.put("reminderID",is_action.getReminderID());
-            values.put("WorkHours",is_action.getWorkHours());
-            values.put("WorkEstHours",is_action.getWorkEstHours());
-            values.put("[Create]",is_action.getCreate());
-            values.put("LastUpdate",is_action.getLastUpdate());
-            values.put("actionLink",is_action.getActionLink());
-            values.put("actionRef",is_action.getActionRef());
-            values.put("userCfname",is_action.getUserCfname());
-            values.put("userClname",is_action.getUserClname());
-            values.put("userCemail",is_action.getUserCemail());
-            values.put("ownerCfname",is_action.getOwnerCfname());
-            values.put("ownerClname",is_action.getOwnerClname());
-            values.put("ownerCemail",is_action.getOwnerCemail());
-            values.put("statusName",is_action.getStatusName());
-            values.put("PriorityName",is_action.getPriorityName());
-            values.put("actionType",is_action.getActionType());
-            values.put("actionSdate",is_action.getActionSdate());
-            values.put("actionEdate",is_action.getActionEdate());
-            values.put("WorkHoursM",is_action.getWorkHoursM());
-            values.put("WorkEstHoursM",is_action.getWorkEstHoursM());
-            values.put("actionPrice",is_action.getActionPrice());
-            values.put("statusColor",is_action.getStatusColor());
-            values.put("taskSummery",is_action.getTaskSummery());
-            values.put("projectSummery",is_action.getProjectSummery());
-            values.put("projectType",is_action.getProjectType());
-            values.put("actionNum",is_action.getActionNum());
-            values.put("actionFrom",is_action.getActionFrom());
-            values.put("actionDays",is_action.getActionDays());
-            values.put("remindertime",is_action.getRemindertime());
-            values.put("Expr1",is_action.getExpr1());
-            values.put("projectDesc",is_action.getProjectDesc());
+            values.put("actionID", is_action.getActionID());
+            values.put("taskID", is_action.getTaskID());
+            values.put("statusID", is_action.getStatusID());
+            values.put("ownerID", is_action.getOwnerID());
+            values.put("userID", is_action.getUserID());
+            values.put("depID", is_action.getDepID());
+            values.put("userCtypeID", is_action.getUserCtypeID());
+            values.put("ownerCtypeID", is_action.getOwnerCtypeID());
+            values.put("projectID", is_action.getProjectID());
+            values.put("ParentActionID", is_action.getParentActionID());
+            values.put("actionDate", is_action.getActionDate());
+            values.put("actionStartDate", is_action.getActionStartDate());
+            values.put("actionDue", is_action.getActionDue());
+            values.put("actionDesc", is_action.getActionDesc());
+            values.put("comments", is_action.getComments());
+            values.put("priorityID", is_action.getPriorityID());
+            values.put("reminderID", is_action.getReminderID());
+            values.put("WorkHours", is_action.getWorkHours());
+            values.put("WorkEstHours", is_action.getWorkEstHours());
+            values.put("[Create]", is_action.getCreate());
+            values.put("LastUpdate", is_action.getLastUpdate());
+            values.put("actionLink", is_action.getActionLink());
+            values.put("actionRef", is_action.getActionRef());
+            values.put("userCfname", is_action.getUserCfname());
+            values.put("userClname", is_action.getUserClname());
+            values.put("userCemail", is_action.getUserCemail());
+            values.put("ownerCfname", is_action.getOwnerCfname());
+            values.put("ownerClname", is_action.getOwnerClname());
+            values.put("ownerCemail", is_action.getOwnerCemail());
+            values.put("statusName", is_action.getStatusName());
+            values.put("PriorityName", is_action.getPriorityName());
+            values.put("actionType", is_action.getActionType());
+            values.put("actionSdate", is_action.getActionSdate());
+            values.put("actionEdate", is_action.getActionEdate());
+            values.put("WorkHoursM", is_action.getWorkHoursM());
+            values.put("WorkEstHoursM", is_action.getWorkEstHoursM());
+            values.put("actionPrice", is_action.getActionPrice());
+            values.put("statusColor", is_action.getStatusColor());
+            values.put("taskSummery", is_action.getTaskSummery());
+            values.put("projectSummery", is_action.getProjectSummery());
+            values.put("projectType", is_action.getProjectType());
+            values.put("actionNum", is_action.getActionNum());
+            values.put("actionFrom", is_action.getActionFrom());
+            values.put("actionDays", is_action.getActionDays());
+            values.put("remindertime", is_action.getRemindertime());
+            values.put("Expr1", is_action.getExpr1());
+            values.put("projectDesc", is_action.getProjectDesc());
 
             db.insert("IS_Actions", null, values);
             flag = true;
             //Log.e("MYTAG","added!!" + is_action.toString());
             // Closing database connection
             //db.close();
-        }catch (Exception e){
+        } catch (Exception e) {
             //e.printStackTrace();
             Helper h = new Helper();
             h.LogPrintExStackTrace(e);
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
             //return flag;
         }
         return flag;
     }
+
     public boolean updateISAction(IS_Action is_action) {
         boolean flag = false;
 //        try{
@@ -2051,16 +2061,16 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
 //        }catch (Exception e){
 //            Log.e("mytag",e.getMessage());
 //        }
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
-            values.put("statusID",is_action.getStatusID());
-            values.put("statusName",is_action.getStatusName());
-            values.put("Expr1",is_action.getExpr1());
-            db.update("IS_Actions", values,"actionID = " + String.valueOf(is_action.getActionID()),null );
+            values.put("statusID", is_action.getStatusID());
+            values.put("statusName", is_action.getStatusName());
+            values.put("Expr1", is_action.getExpr1());
+            db.update("IS_Actions", values, "actionID = " + String.valueOf(is_action.getActionID()), null);
             flag = true;
             // Closing database connection
-        }catch (Exception e){
+        } catch (Exception e) {
             Helper h = new Helper();
             h.LogPrintExStackTrace(e);
             //return flag;
@@ -2078,7 +2088,7 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
         Cursor cursor = db.rawQuery(selectQuery, null);
         if (cursor.moveToFirst()) {
             do {
-                CallStatus cp= new CallStatus(
+                CallStatus cp = new CallStatus(
                         cursor.getInt(0),
                         cursor.getString(1),
                         cursor.getInt(2)
@@ -2090,6 +2100,7 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
         //db.close();
         return statusList;
     }
+
     //region CallStatus
     public String getCallsInWork() {
 
@@ -2098,69 +2109,70 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
 // Select All Query
         String selectQuery = "";
         selectQuery = "select callid from Calltime where ctq='-2'";
-        try{
+        try {
             SQLiteDatabase db = this.getReadableDatabase();
             Cursor cursor = db.rawQuery(selectQuery, null);
             if (cursor.moveToFirst()) {
                 do {
-                    callsList += String.valueOf(cursor.getInt(0)) +",";
+                    callsList += String.valueOf(cursor.getInt(0)) + ",";
                 } while (cursor.moveToNext());
             }
             callsList = callsList.substring(0, callsList.length() - 1);
             callsList = callsList.trim();
-            if (callsList.length() == 0){
+            if (callsList.length() == 0) {
                 callsList = "-1";
             }
             cursor.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             Helper h = new Helper();
             h.LogPrintExStackTrace(e);
             callsList = "-1";
         }
-        Log.e("mytag","callsList:" + callsList);
+        Log.e("mytag", "callsList:" + callsList);
         //db.close();
         return callsList;
     }
+
     public boolean deleteCallStatuses() {
         boolean flag = true;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
 
             db.delete(CallStatus, null, null);
             //db.close();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             flag = false;
             e.printStackTrace();
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
         return flag;
     }
     //endregion
 
-    public boolean isEmpty(String s){
+    public boolean isEmpty(String s) {
         SQLiteDatabase db = this.getWritableDatabase();
         String count = "SELECT count(*) FROM " + TABLE_CONTROL_PANEL;
         Cursor mcursor = db.rawQuery(count, null);
         mcursor.moveToFirst();
         int icount = mcursor.getInt(0);
         //db.close();
-        if(icount>0){
+        if (icount > 0) {
             return false;
-        }
-        else{
+        } else {
             return true;
         }
     }
-    public boolean mgnet_items_isEmpty(String parameter){
+
+    public boolean mgnet_items_isEmpty(String parameter) {
 
         boolean flag = false;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
             String count = "";
-            if (parameter.equals("all")){
+            if (parameter.equals("all")) {
                 count = "SELECT count(Pname) FROM mgnet_items";
-            }else{
+            } else {
                 count = "SELECT count(Pname) FROM mgnet_client_items";
 
             }
@@ -2168,34 +2180,34 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
             mcursor.moveToFirst();
             int icount = mcursor.getInt(0);
             //db.close();
-            if(icount>0){
+            if (icount > 0) {
                 flag = false;
-            }
-            else{
+            } else {
                 flag = true;
             }
             mcursor.close();
-        }catch(Exception ex){
-            Log.e("MYTAG",ex.getMessage());
+        } catch (Exception ex) {
+            Log.e("MYTAG", ex.getMessage());
         }
-        return  flag;
+        return flag;
     }
-    public List<Order> get_mgnet_items_by_Pname(String pname,String allORclient) {
+
+    public List<Order> get_mgnet_items_by_Pname(String pname, String allORclient) {
         List<Order> orderList = new ArrayList<Order>();
 // Select All Query
         String selectQuery = "";
         if (allORclient.equals("all")) {
             selectQuery = "SELECT * FROM mgnet_items where Pname like '%" + pname + "%' ";
 
-        } else{
-            selectQuery = "SELECT * FROM mgnet_client_items where Pname like '%" +pname+ "%' " ;
+        } else {
+            selectQuery = "SELECT * FROM mgnet_client_items where Pname like '%" + pname + "%' ";
         }
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                Order cp= new Order(
+                Order cp = new Order(
                         cursor.getString(0),
                         cursor.getString(1),
                         cursor.getString(2),
@@ -2210,24 +2222,25 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
         //db.close();
         return orderList;
     }
+
     public List<Order> get_mgnet_items(String allORclient) {
         Helper h = new Helper();
         List<Order> orderList = new ArrayList<Order>();
-        try{
+        try {
 
 // Select All Query
-            String selectQuery ="";
-            if (allORclient.equals("all")){
-                selectQuery = "SELECT * FROM mgnet_items " ;
-            }else{
-                selectQuery = "SELECT * FROM mgnet_client_items " ;
+            String selectQuery = "";
+            if (allORclient.equals("all")) {
+                selectQuery = "SELECT * FROM mgnet_items ";
+            } else {
+                selectQuery = "SELECT * FROM mgnet_client_items ";
             }
             SQLiteDatabase db = this.getReadableDatabase();
             Cursor cursor = db.rawQuery(selectQuery, null);
 // looping through all rows and adding to list
             if (cursor.moveToFirst()) {
                 do {
-                    Order cp= new Order(
+                    Order cp = new Order(
                             cursor.getString(0),
                             cursor.getString(1),
                             cursor.getString(2),
@@ -2241,7 +2254,7 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
             }
             //db.close();
             return orderList;
-        }catch (Exception e){
+        } catch (Exception e) {
 
             h.LogPrintExStackTrace(e);
         }
@@ -2251,17 +2264,17 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
     public Order get_mgnet_item_by_pmakat(String pmakat) {
         List<Order> orderList = new ArrayList<Order>();
 // Select All Query
-        String selectQuery = "SELECT top 1 * FROM mgnet_items where Pmakat like '%" + pmakat + "%'" ;
+        String selectQuery = "SELECT top 1 * FROM mgnet_items where Pmakat like '%" + pmakat + "%'";
         Order cp = null;
         try {
             SQLiteDatabase db = this.getReadableDatabase();
             Cursor cursor = db.rawQuery(selectQuery, null);
-            Log.e("MYTAG","db step 1 ");
+            Log.e("MYTAG", "db step 1 ");
 
 //
             if (cursor.getCount() > 0) {
                 cursor.moveToFirst();
-                Log.e("MYTAG","db step 2 ");
+                Log.e("MYTAG", "db step 2 ");
                 cp = new Order(
                         is_empty_cursor(cursor.getString(0)),
                         is_empty_cursor(cursor.getString(1)),
@@ -2269,43 +2282,45 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
                         is_empty_cursor(cursor.getString(3)));
             }
             db.close();
-        }catch(Exception e){
-            Log.e("MYTAG","db + "+e.getMessage());
+        } catch (Exception e) {
+            Log.e("MYTAG", "db + " + e.getMessage());
         }
         return cp;
     }
-    public String is_empty_cursor(String s){
+
+    public String is_empty_cursor(String s) {
         if (isEmpty(s)) {
             return "";
-        }else{
+        } else {
             return s;
 
         }
     }
+
     public boolean delete_from_mgnet_items(String allORclient) {
         boolean flag = true;
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
-            if (allORclient.equals("all")){
+            if (allORclient.equals("all")) {
                 db.delete("mgnet_items", null, null);
-            }else{
+            } else {
                 db.delete("mgnet_client_items", null, null);
 
             }
 
             //db.insert("mgnet_items", null, values);
             db.close(); // Closing database connection
-        }catch (Exception e){
+        } catch (Exception e) {
             flag = false;
             e.printStackTrace();
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
         return flag;
     }
 
 
-    public void add_mgnet_items(String pname,String Pmakat,String Pprice,String Poprice,String allORclient) {
-        try{
+    public void add_mgnet_items(String pname, String Pmakat, String Pprice, String Poprice, String allORclient) {
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
             values.put("Pname", pname);
@@ -2313,20 +2328,21 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
             values.put("Pprice", Pprice);
             values.put("Poprice", Poprice);
             // Inserting Row
-            if (allORclient.equals("all")){
+            if (allORclient.equals("all")) {
                 db.insert("mgnet_items", null, values);
-            }else{
+            } else {
                 db.insert("mgnet_client_items", null, values);
             }
 
             db.close(); // Closing database connection
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            Log.e("MYTAG",e.getMessage());
+            Log.e("MYTAG", e.getMessage());
         }
 
     }
-    public Call getCallDetailsByCallID(int callid){
+
+    public Call getCallDetailsByCallID(int callid) {
 
         //Call call = new Call(Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("AID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("CID"))), cursor.getString(cursor.getColumnIndex("CreateDate")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("statusID"))), cursor.getString(cursor.getColumnIndex("CallPriority")), cursor.getString(cursor.getColumnIndex("subject")), cursor.getString(cursor.getColumnIndex("comments")), cursor.getString(cursor.getColumnIndex("CallUpdate")), cursor.getString(cursor.getColumnIndex("cntrctDate")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("TechnicianID"))), cursor.getString(cursor.getColumnIndex("statusName")), cursor.getString(cursor.getColumnIndex("internalSN")), cursor.getString(cursor.getColumnIndex("Pmakat")), cursor.getString(cursor.getColumnIndex("Pname")), cursor.getString(cursor.getColumnIndex("contractID")), cursor.getString(cursor.getColumnIndex("Cphone")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("OriginID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("ProblemTypeID"))), Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallTypeID"))), cursor.getString(cursor.getColumnIndex("priorityID")), cursor.getString(cursor.getColumnIndex("OriginName")), cursor.getString(cursor.getColumnIndex("problemTypeName")), cursor.getString(cursor.getColumnIndex("CallTypeName")), cursor.getString(cursor.getColumnIndex("Cname")), cursor.getString(cursor.getColumnIndex("Cemail")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("contctCode"))), cursor.getString(cursor.getColumnIndex("callStartTime")), cursor.getString(cursor.getColumnIndex("callEndTime")), cursor.getString(cursor.getColumnIndex("Ccompany")), cursor.getString(cursor.getColumnIndex("Clocation")), Integer.valueOf(cursor.getString(cursor.getColumnIndex("callOrder"))), cursor.getString(cursor.getColumnIndex("Caddress")), cursor.getString(cursor.getColumnIndex("Ccity")), cursor.getString(cursor.getColumnIndex("Ccomments")), cursor.getString(cursor.getColumnIndex("Cfname")), cursor.getString(cursor.getColumnIndex("Clname")), cursor.getString(cursor.getColumnIndex("techName")), cursor.getString(cursor.getColumnIndex("Aname")), cursor.getString(cursor.getColumnIndex("ContctName")), cursor.getString(cursor.getColumnIndex("ContctAddress")), cursor.getString(cursor.getColumnIndex("ContctCity")), cursor.getString(cursor.getColumnIndex("ContctCell")), cursor.getString(cursor.getColumnIndex("ContctPhone")), cursor.getString(cursor.getColumnIndex("ContctCity")), cursor.getString(cursor.getColumnIndex("Ccell")), cursor.getString(cursor.getColumnIndex("techColor")), cursor.getString(cursor.getColumnIndex("ContctCemail")), cursor.getString(cursor.getColumnIndex("CallParentID")));
         Call call = new Call();
@@ -2336,73 +2352,72 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
 
 
         try {
-            Cursor cursor= db.rawQuery(selectQuery, null);
+            Cursor cursor = db.rawQuery(selectQuery, null);
 
             if (cursor.moveToFirst()) {
                 call.setCallID(Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallID"))));
-                call.setAID( Integer.valueOf(cursor.getString(cursor.getColumnIndex("AID"))));
-                call.setCID( Integer.valueOf(cursor.getString(cursor.getColumnIndex("CID"))));
-                call.setCreateDate( (cursor.getString(cursor.getColumnIndex("CreateDate"))));
-                call.setStatusID( Integer.valueOf(cursor.getString(cursor.getColumnIndex("statusID"))));
-                call.setCallPriority( (cursor.getString(cursor.getColumnIndex("CallPriority"))));
-                call.setSubject( (cursor.getString(cursor.getColumnIndex("subject"))));
-                call.setComments( (cursor.getString(cursor.getColumnIndex("comments"))));
-                call.setCallUpdate( (cursor.getString(cursor.getColumnIndex("CallUpdate"))));
-                call.setCntrctDate( (cursor.getString(cursor.getColumnIndex("cntrctDate"))));
-                call.setTechnicianID( Integer.valueOf(cursor.getString(cursor.getColumnIndex("TechnicianID"))));
-                call.setStatusName( (cursor.getString(cursor.getColumnIndex("statusName"))));
-                call.setInternalSN( (cursor.getString(cursor.getColumnIndex("internalSN"))));
-                call.setPmakat( (cursor.getString(cursor.getColumnIndex("Pmakat"))));
-                call.setPname( (cursor.getString(cursor.getColumnIndex("Pname"))));
-                call.setContractID( (cursor.getString(cursor.getColumnIndex("contractID"))));
-                call.setCphone( (cursor.getString(cursor.getColumnIndex("Cphone"))));
-                call.setOriginID( Integer.valueOf(cursor.getString(cursor.getColumnIndex("OriginID"))));
-                call.setProblemTypeID( Integer.valueOf(cursor.getString(cursor.getColumnIndex("ProblemTypeID"))));
-                call.setCallTypeID( Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallTypeID"))));
-                call.setPriorityID( (cursor.getString(cursor.getColumnIndex("priorityID"))));
-                call.setOriginName( (cursor.getString(cursor.getColumnIndex("OriginName"))));
-                call.setProblemTypeName( (cursor.getString(cursor.getColumnIndex("problemTypeName"))));
-                call.setCallTypeName( (cursor.getString(cursor.getColumnIndex("CallTypeName"))));
-                call.setCname( (cursor.getString(cursor.getColumnIndex("Cname"))));
+                call.setAID(Integer.valueOf(cursor.getString(cursor.getColumnIndex("AID"))));
+                call.setCID(Integer.valueOf(cursor.getString(cursor.getColumnIndex("CID"))));
+                call.setCreateDate((cursor.getString(cursor.getColumnIndex("CreateDate"))));
+                call.setStatusID(Integer.valueOf(cursor.getString(cursor.getColumnIndex("statusID"))));
+                call.setCallPriority((cursor.getString(cursor.getColumnIndex("CallPriority"))));
+                call.setSubject((cursor.getString(cursor.getColumnIndex("subject"))));
+                call.setComments((cursor.getString(cursor.getColumnIndex("comments"))));
+                call.setCallUpdate((cursor.getString(cursor.getColumnIndex("CallUpdate"))));
+                call.setCntrctDate((cursor.getString(cursor.getColumnIndex("cntrctDate"))));
+                call.setTechnicianID(Integer.valueOf(cursor.getString(cursor.getColumnIndex("TechnicianID"))));
+                call.setStatusName((cursor.getString(cursor.getColumnIndex("statusName"))));
+                call.setInternalSN((cursor.getString(cursor.getColumnIndex("internalSN"))));
+                call.setPmakat((cursor.getString(cursor.getColumnIndex("Pmakat"))));
+                call.setPname((cursor.getString(cursor.getColumnIndex("Pname"))));
+                call.setContractID((cursor.getString(cursor.getColumnIndex("contractID"))));
+                call.setCphone((cursor.getString(cursor.getColumnIndex("Cphone"))));
+                call.setOriginID(Integer.valueOf(cursor.getString(cursor.getColumnIndex("OriginID"))));
+                call.setProblemTypeID(Integer.valueOf(cursor.getString(cursor.getColumnIndex("ProblemTypeID"))));
+                call.setCallTypeID(Integer.valueOf(cursor.getString(cursor.getColumnIndex("CallTypeID"))));
+                call.setPriorityID((cursor.getString(cursor.getColumnIndex("priorityID"))));
+                call.setOriginName((cursor.getString(cursor.getColumnIndex("OriginName"))));
+                call.setProblemTypeName((cursor.getString(cursor.getColumnIndex("problemTypeName"))));
+                call.setCallTypeName((cursor.getString(cursor.getColumnIndex("CallTypeName"))));
+                call.setCname((cursor.getString(cursor.getColumnIndex("Cname"))));
 
-                call.setCemail( (cursor.getString(cursor.getColumnIndex("Cemail"))));
-                call.setContctCode( Integer.valueOf(cursor.getString(cursor.getColumnIndex("contctCode"))));
-                call.setCallStartTime( (cursor.getString(cursor.getColumnIndex("callStartTime"))));
-                call.setCallEndTime( (cursor.getString(cursor.getColumnIndex("callEndTime"))));
-                call.setCcompany( (cursor.getString(cursor.getColumnIndex("Ccompany"))));
-                call.setClocation( (cursor.getString(cursor.getColumnIndex("Clocation"))));
-                call.setCallOrder( Integer.valueOf(cursor.getString(cursor.getColumnIndex("callOrder"))));
+                call.setCemail((cursor.getString(cursor.getColumnIndex("Cemail"))));
+                call.setContctCode(Integer.valueOf(cursor.getString(cursor.getColumnIndex("contctCode"))));
+                call.setCallStartTime((cursor.getString(cursor.getColumnIndex("callStartTime"))));
+                call.setCallEndTime((cursor.getString(cursor.getColumnIndex("callEndTime"))));
+                call.setCcompany((cursor.getString(cursor.getColumnIndex("Ccompany"))));
+                call.setClocation((cursor.getString(cursor.getColumnIndex("Clocation"))));
+                call.setCallOrder(Integer.valueOf(cursor.getString(cursor.getColumnIndex("callOrder"))));
 
-                call.setCaddress( (cursor.getString(cursor.getColumnIndex("Caddress"))));
-                call.setCcity( (cursor.getString(cursor.getColumnIndex("Ccity"))));
-                call.setCcomments( (cursor.getString(cursor.getColumnIndex("Ccomments"))));
-                call.setCfname( (cursor.getString(cursor.getColumnIndex("Cfname"))));
-                call.setClname( (cursor.getString(cursor.getColumnIndex("Clname"))));
+                call.setCaddress((cursor.getString(cursor.getColumnIndex("Caddress"))));
+                call.setCcity((cursor.getString(cursor.getColumnIndex("Ccity"))));
+                call.setCcomments((cursor.getString(cursor.getColumnIndex("Ccomments"))));
+                call.setCfname((cursor.getString(cursor.getColumnIndex("Cfname"))));
+                call.setClname((cursor.getString(cursor.getColumnIndex("Clname"))));
 
-                call.setTechName( (cursor.getString(cursor.getColumnIndex("techName"))));
-                call.setAname( (cursor.getString(cursor.getColumnIndex("Aname"))));
-                call.setContctName( (cursor.getString(cursor.getColumnIndex("ContctName"))));
-                call.setContctAddress( (cursor.getString(cursor.getColumnIndex("ContctAddress"))));
-                call.setContctCity( (cursor.getString(cursor.getColumnIndex("ContctCity"))));
+                call.setTechName((cursor.getString(cursor.getColumnIndex("techName"))));
+                call.setAname((cursor.getString(cursor.getColumnIndex("Aname"))));
+                call.setContctName((cursor.getString(cursor.getColumnIndex("ContctName"))));
+                call.setContctAddress((cursor.getString(cursor.getColumnIndex("ContctAddress"))));
+                call.setContctCity((cursor.getString(cursor.getColumnIndex("ContctCity"))));
 
-                call.setContctCell( (cursor.getString(cursor.getColumnIndex("ContctCell"))));
-                call.setContctPhone( (cursor.getString(cursor.getColumnIndex("ContctPhone"))));
-                call.setContctCity( (cursor.getString(cursor.getColumnIndex("ContctCity"))));
-                call.setCcell( (cursor.getString(cursor.getColumnIndex("Ccell"))));
-                call.setTechColor( (cursor.getString(cursor.getColumnIndex("techColor"))));
-                call.setContctCemail( (cursor.getString(cursor.getColumnIndex("ContctCemail"))));
-                call.setCallParentID( (cursor.getString(cursor.getColumnIndex("CallParentID"))));
-                call.setState( (cursor.getString(cursor.getColumnIndex("state"))));
-                call.setSla( (cursor.getString(cursor.getColumnIndex("sla"))));
+                call.setContctCell((cursor.getString(cursor.getColumnIndex("ContctCell"))));
+                call.setContctPhone((cursor.getString(cursor.getColumnIndex("ContctPhone"))));
+                call.setContctCity((cursor.getString(cursor.getColumnIndex("ContctCity"))));
+                call.setCcell((cursor.getString(cursor.getColumnIndex("Ccell"))));
+                call.setTechColor((cursor.getString(cursor.getColumnIndex("techColor"))));
+                call.setContctCemail((cursor.getString(cursor.getColumnIndex("ContctCemail"))));
+                call.setCallParentID((cursor.getString(cursor.getColumnIndex("CallParentID"))));
+                call.setState((cursor.getString(cursor.getColumnIndex("state"))));
+                call.setSla((cursor.getString(cursor.getColumnIndex("sla"))));
             }
             cursor.close();
             return call;
-        }
-        finally {
-           // if (cursor != null) {
+        } finally {
+            // if (cursor != null) {
             //    cursor.close();
-                //db.close();
-                return call;
+            //db.close();
+            return call;
             //}
         }
 
@@ -2411,13 +2426,13 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
         //eturn call;
     }
 
-    public void addControlPanel(String key,String val) {
+    public void addControlPanel(String key, String val) {
 
-        try{
+        try {
             String count = "";
-            count = getScalarByCountQuery("SELECT count(*) from ControlPanel where _key='"+key+"'");
-            Log.e("mytag","key: "+key+ "-count:" +count);
-            if (Integer.valueOf(count)==0){
+            count = getScalarByCountQuery("SELECT count(*) from ControlPanel where _key='" + key + "'");
+            Log.e("mytag", "key: " + key + "-count:" + count);
+            if (Integer.valueOf(count) == 0) {
                 SQLiteDatabase db = this.getWritableDatabase();
                 ContentValues values = new ContentValues();
                 values.put(KEY, key);
@@ -2425,7 +2440,7 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
                 values.put(DESCRIPTION, "");
                 db.insert(TABLE_CONTROL_PANEL, null, values);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             Helper h = new Helper();
             h.LogPrintExStackTrace(e);
         }
@@ -2434,45 +2449,43 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
 
     public void addMessage(Message message) {
 
-        try{
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
-            values.put(MsgID , message.getMsgID());
+            values.put(MsgID, message.getMsgID());
             values.put(MsgSUBJECT, message.getMsgSubject());
             values.put(MsgCOMMENT, message.getMsgComment());
-            values.put(MsgURL , message.getMsgUrl());
-            values.put(MsgDATE  , message.getMsgDate());
-            values.put(MsgREAD  , message.getMsgRead());
-            values.put(MsgTYPE  , message.getMsgType());
+            values.put(MsgURL, message.getMsgUrl());
+            values.put(MsgDATE, message.getMsgDate());
+            values.put(MsgREAD, message.getMsgRead());
+            values.put(MsgTYPE, message.getMsgType());
 
             // Inserting Row
             db.insert(TABLE_MESSAGES, null, values);
-           // db.close(); // Closing database connection
-        }catch (Exception e){
+            // db.close(); // Closing database connection
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
 
-
     //if isEmpty
     public boolean verification(String _username) {
         Cursor c = null;
         try {
-        SQLiteDatabase db = this.getWritableDatabase();
-        int count = -1;
+            SQLiteDatabase db = this.getWritableDatabase();
+            int count = -1;
             String query = "SELECT COUNT(*) FROM "
                     + TABLE_CONTROL_PANEL + " WHERE " + KEY + " = ?";
-            c = db.rawQuery(query, new String[] {_username});
+            c = db.rawQuery(query, new String[]{_username});
             if (c.moveToFirst()) {
                 count = c.getInt(0);
             }
             return count > 0;
-        }catch (Exception e){
+        } catch (Exception e) {
             return true;
-        }
-        finally {
+        } finally {
             if (c != null) {
                 c.close();
                 //db.close();
@@ -2481,24 +2494,24 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
     }
 
     public boolean checkIfKeyExistsCP(String stringKey) {
-        try{
+        try {
             SQLiteDatabase db = this.getReadableDatabase();
             Cursor cursor = null;
-            String sql ="select count(*) as mycount from " + TABLE_CONTROL_PANEL + " WHERE " + KEY + " = '" + stringKey +"'";
-            cursor= db.rawQuery(sql,null);
+            String sql = "select count(*) as mycount from " + TABLE_CONTROL_PANEL + " WHERE " + KEY + " = '" + stringKey + "'";
+            cursor = db.rawQuery(sql, null);
             //Log("Cursor Count : " + cursor.getCount());
-            Log.e("mytag","cursor.getCount():" +(cursor.getColumnIndex("mycount")));
-            if(Integer.valueOf(cursor.getColumnIndex("mycount")) >0){
+            Log.e("mytag", "cursor.getCount():" + (cursor.getColumnIndex("mycount")));
+            if (Integer.valueOf(cursor.getColumnIndex("mycount")) > 0) {
                 //PID Found
 
                 cursor.close();
                 return true;
-            }else{
+            } else {
                 cursor.close();
                 //PID Not Found
                 return false;
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             return false;
         }
 
@@ -2510,7 +2523,7 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
         SQLiteDatabase db = this.getReadableDatabase();
 
         String query = "SELECT  * FROM " + TABLE_CONTROL_PANEL + " WHERE "
-               + KEY + " = '" + key+"'";
+                + KEY + " = '" + key + "'";
         Cursor c = db.rawQuery(query, null);
 
         if (c != null)
@@ -2529,7 +2542,7 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
         SQLiteDatabase db = this.getReadableDatabase();
 
         String query = "SELECT  * FROM " + TABLE_MESSAGES + " WHERE "
-                + MsgID + " = '" + msgID+"'";
+                + MsgID + " = '" + msgID + "'";
         Cursor c = db.rawQuery(query, null);
 
         if (c != null)
@@ -2537,24 +2550,24 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
 
         Message cp = new Message();
         //cp.setId(c.getInt(c.getColumnIndex(ID)));
-        cp.setMsgID     (c.getString(c.getColumnIndex(MsgID)));
+        cp.setMsgID(c.getString(c.getColumnIndex(MsgID)));
         cp.setMsgSubject(c.getString(c.getColumnIndex(MsgSUBJECT)));
         cp.setMsgComment(c.getString(c.getColumnIndex(MsgCOMMENT)));
-        cp.setMsgUrl    (c.getString(c.getColumnIndex(MsgURL)));
-        cp.setMsgDate   (c.getString(c.getColumnIndex(MsgDATE)));
-        cp.setMsgRead   (c.getString(c.getColumnIndex(MsgREAD)));
-        cp.setMsgType   (c.getString(c.getColumnIndex(MsgTYPE)));
+        cp.setMsgUrl(c.getString(c.getColumnIndex(MsgURL)));
+        cp.setMsgDate(c.getString(c.getColumnIndex(MsgDATE)));
+        cp.setMsgRead(c.getString(c.getColumnIndex(MsgREAD)));
+        cp.setMsgType(c.getString(c.getColumnIndex(MsgTYPE)));
 
         db.close();
         return cp;
     }
 
     public String getValueByKey(String key) {
-        try{
-        SQLiteDatabase db = this.getReadableDatabase();
-        ControlPanel cp = new ControlPanel();
-        String query = "SELECT  * FROM " + TABLE_CONTROL_PANEL + " WHERE "
-                + KEY + " = '" + key+"'";
+        try {
+            SQLiteDatabase db = this.getReadableDatabase();
+            ControlPanel cp = new ControlPanel();
+            String query = "SELECT  * FROM " + TABLE_CONTROL_PANEL + " WHERE "
+                    + KEY + " = '" + key + "'";
 
             Cursor c = db.rawQuery(query, null);
 
@@ -2568,15 +2581,15 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
                 c.close();
                 //db.close();
                 return cp.getValue();
-            } catch(Exception e) {
+            } catch (Exception e) {
                 Helper h = new Helper();
                 h.LogPrintExStackTrace(e);
                 //e.printStackTrace();
             }
             db.close();
-        }catch(Exception e){
-            Log.e("mytag",e.getMessage());
-            Log.e("mytag",e.getStackTrace().toString());
+        } catch (Exception e) {
+            Log.e("mytag", e.getMessage());
+            Log.e("mytag", e.getStackTrace().toString());
         }
 
 
@@ -2592,7 +2605,7 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
 // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                ControlPanel cp= new ControlPanel();
+                ControlPanel cp = new ControlPanel();
                 //cp.setId(Integer.parseInt(cursor.getString(0)));
                 cp.setKey(cursor.getString(0));
                 cp.setValue(cursor.getString(1));
@@ -2601,7 +2614,7 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
                 control_panel_list.add(cp);
             } while (cursor.moveToNext());
         }
-       // db.close();
+        // db.close();
         cursor.close();
         return control_panel_list;
     }
@@ -2616,7 +2629,7 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
 // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                Message cp= new Message();
+                Message cp = new Message();
                 cp.setMsgID(cursor.getString(0));
                 cp.setMsgSubject(cursor.getString(1));
                 cp.setMsgComment(cursor.getString(2));
@@ -2624,7 +2637,7 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
                 cp.setMsgDate(cursor.getString(4));
                 cp.setMsgRead(cursor.getString(5));
                 cp.setMsgType(cursor.getString(6));
-                        //cp.setValue(cursor.getString(1));
+                //cp.setValue(cursor.getString(1));
                 //cp.setDescription(cursor.getString(2));
 // Adding contact to list
                 messages_list.add(cp);
@@ -2635,22 +2648,21 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
         return messages_list;
     }
 
-    public void updateValue(String key,String val) {
-        try{
+    public void updateValue(String key, String val) {
+        try {
             SQLiteDatabase db = this.getWritableDatabase();
             ContentValues values = new ContentValues();
             values.put(VALUE, val);
             //values.put(DESCRIPTION, "");
-            db.update(TABLE_CONTROL_PANEL, values, KEY + " = '"+key+"'", null);
+            db.update(TABLE_CONTROL_PANEL, values, KEY + " = '" + key + "'", null);
             //db.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             Helper h = new Helper();
             h.LogPrintExStackTrace(e);
             Toast.makeText(mCtx, e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
     }
-
 
 
     public void resetURL(ControlPanel cp) {
@@ -2667,13 +2679,14 @@ public CallStatus getCallStatusByCallStatusName(String CallStatusName){
 
     public void deleteRowByKey(String key) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_CONTROL_PANEL, KEY + " = '" + key+"'", null);
+        db.delete(TABLE_CONTROL_PANEL, KEY + " = '" + key + "'", null);
         //db.execSQL("delete from "+ TABLE_CONTROL_PANEL);
         db.close();
     }
+
     public void deleteRowByMsgID(String id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_MESSAGES, MsgID + " = '" + id+"'", null);
+        db.delete(TABLE_MESSAGES, MsgID + " = '" + id + "'", null);
         //db.execSQL("delete from "+ TABLE_CONTROL_PANEL);
         db.close();
     }

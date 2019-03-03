@@ -2,9 +2,9 @@
 <resources>
     <!--Theme colors-->
 
-    <color name="colorPrimary">#31bacc</color>
-    <color name="colorPrimaryDark">#1f919f</color>
-    <color name="colorAccent">#4dd0e1</color>
+    <color name="colorPrimary">#E94E1B</color>
+    <color name="colorPrimaryDark">#de3a04</color>
+    <color name="colorAccent">#E94E1B</color>
 
 
     <!--***************-->

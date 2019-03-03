@@ -3,11 +3,11 @@ package com.Activities;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
@@ -19,7 +19,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,7 +29,6 @@ import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -39,6 +37,8 @@ import com.Adapters.CallsAdapter;
 import com.Classes.Call;
 import com.DatabaseHelper;
 import com.Helper;
+import com.studioidan.popapp.views.HeaderView;
+import com.studioidan.popapp.views.IconView;
 
 import org.json.JSONObject;
 
@@ -53,6 +53,9 @@ public class ActivityWebView extends FragmentActivity {
 
     Helper helper;
     Context ctx;
+    private HeaderView header;
+    private WebView mWebview;
+
 
     DatabaseHelper db;
     ListView myList;
@@ -65,6 +68,7 @@ public class ActivityWebView extends FragmentActivity {
     private ValueCallback<Uri> mUploadMessage;
     private ValueCallback<Uri[]> mUploadMessageandroid5;
     private final static int FILECHOOSER_RESULTCODE = 1;
+
 
    /* @Override
     protected void onActivityResult(int requestCode, int resultCode,
@@ -139,6 +143,40 @@ public class ActivityWebView extends FragmentActivity {
         setContentView(R.layout.fragment_webview);
         ctx = this;
 
+        this.header = findViewById(R.id.header);
+        header.setHeaderMode(HeaderView.HEADER_MODE.BACK);
+        header.getActionIconThree().setVisibility(View.VISIBLE);
+        header.getActionIconThree().setIcon(IconView.ICON_MATERIAL, "\uf326");
+        header.setCallback(new HeaderView.HeaderCallback() {
+            @Override
+            public void onHamburgerClicked() {
+
+            }
+
+            @Override
+            public void onActionOneClicked() {
+
+            }
+
+            @Override
+            public void onActionTwoClicked() {
+
+            }
+
+            @Override
+            public void onActionThreeClicked() {
+                String url = mWebview.getUrl();
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+            }
+
+            @Override
+            public void onBackClicked() {
+                onBackPressed();
+            }
+        });
+
         int callid = -1;
         int cid = -1;
         int technicianid = -1;
@@ -159,7 +197,7 @@ public class ActivityWebView extends FragmentActivity {
 
         }
 
-        ActionBar actionBar = getActionBar();
+        /*ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayUseLogoEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(false);
@@ -177,24 +215,26 @@ public class ActivityWebView extends FragmentActivity {
                 finish();
                 //Toast.makeText(getApplicationContext(),"clicked", Toast.LENGTH_LONG).show();
             }
-        });
+        });*/
 
 
-        final WebView mWebview = new WebView(this);
+        // final WebView mWebview = new WebView(this);
+        mWebview = findViewById(R.id.webview);
         final Activity activity = this;
         mWebview.getSettings().setJavaScriptEnabled(true); // enable javascript
         mWebview.getSettings().setAllowFileAccess(true);
         mWebview.getSettings().setAllowContentAccess(true);
         mWebview.getSettings().setAllowFileAccessFromFileURLs(true);
+        // mWebview.getSettings().setUseWideViewPort(true);
 
-        if (Build.VERSION.SDK_INT >= 21) {
+       /* if (Build.VERSION.SDK_INT >= 21) {
             mWebview.getSettings().setMixedContentMode(0);
             mWebview.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         } else if (Build.VERSION.SDK_INT >= 19) {
             mWebview.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         } else {
             mWebview.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        }
+        }*/
 
         mWebview.setWebViewClient(new WebViewClient() {
             @SuppressWarnings("deprecation")
@@ -210,6 +250,32 @@ public class ActivityWebView extends FragmentActivity {
                 onReceivedError(view, rerr.getErrorCode(), rerr.getDescription().toString(), req.getUrl().toString());
             }
 
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+            }
+
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                String url = request.getUrl().toString();
+
+                if (url.startsWith("tel:")) {
+                    Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(request.getUrl().toString()));
+                    startActivity(intent);
+                    return true;
+                }
+
+                if (url.endsWith(".pdf")) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    // if want to download pdf manually create AsyncTask here
+                    // and download file
+                    return true;
+                }
+
+                return super.shouldOverrideUrlLoading(view, request);
+
+            }
         });
 
         try {
@@ -436,9 +502,10 @@ public class ActivityWebView extends FragmentActivity {
         CookieManager.getInstance().setCookie(url, cookieString2);
 
 
-        mWebview.loadUrl(url);//"http://www.google.com");
+        mWebview.loadUrl(url);
+        // mWebview.loadUrl("tel://0777782800");
 
-        setContentView(mWebview);
+        // setContentView(mWebview);
 
     }
 

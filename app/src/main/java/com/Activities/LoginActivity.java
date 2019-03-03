@@ -1,7 +1,6 @@
 package com.Activities;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -28,13 +27,15 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.model.Model;
+import com.server.ServerManager;
 import com.squareup.picasso.Picasso;
+import com.util.FLogger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends BaseActivity {
 
     public static final String TAG = "Login Activity";
     private static final int REQUEST_PERMISSION_MULTIPLE = 300;
@@ -72,6 +73,7 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
         boolean flag = helper.isNetworkAvailable(ctx);
 
+        ServerManager.getCalls(getApplicationContext());
         if (db.getValueByKey("AUTO_LOGIN").equals("1")) {
             goToMenu();
         }
@@ -164,7 +166,7 @@ public class LoginActivity extends Activity {
             @Override
             public void onClick(View v) {
                 setTopLogoImage();
-                memail = email.getText().toString(); // test
+                memail = email.getText().toString();
                 mpass = pass.getText().toString();
 
                 if (!checkEmail(memail)) {
@@ -271,6 +273,8 @@ public class LoginActivity extends Activity {
             helper.LogPrintExStackTrace(e);
         }
 
+        String username = db.getValueByKey("username");
+        FLogger.username = username;
         Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         //startActivityForResult(intent, 1);
@@ -282,7 +286,8 @@ public class LoginActivity extends Activity {
         int storagePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         int readPhoneStatePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
         int gpsPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        int sms = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
+        // int sms = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
+        // int callPhone = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE);
 
         List<String> listPermissionsNeeded = new ArrayList<String>();
 
@@ -297,9 +302,12 @@ public class LoginActivity extends Activity {
         if (gpsPermission != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
-        if (sms != PackageManager.PERMISSION_GRANTED) {
+        /*if (sms != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.SEND_SMS);
-        }
+        }*/
+        /*if (callPhone != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.CALL_PHONE);
+        }*/
 
         if (!listPermissionsNeeded.isEmpty()) {
             ActivityCompat.requestPermissions(LoginActivity.this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_PERMISSION_MULTIPLE);

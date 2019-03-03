@@ -33,6 +33,7 @@ import com.Fragments.FragmentOrders;
 import com.Fragments.FragmentSecret;
 import com.Fragments.FragmentTools;
 import com.model.Model;
+import com.util.FLogger;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -266,10 +267,10 @@ public class Helper {
                 Toast.makeText(ctx, "internet invalid, cannot send calltime rows.", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
+            FLogger.log_e("transferJsonCallTime() sending failed, " + e.getMessage());
             h.LogPrintExStackTrace(e);
             Toast.makeText(ctx, e.getMessage(), Toast.LENGTH_LONG).show();
         }
-
 
     }
 
@@ -909,7 +910,6 @@ public class Helper {
         //    TelephonyManager tm = (TelephonyManager) ctx1.getSystemService(Context.TELEPHONY_SERVICE);
         //    String device_id = tm.getDeviceId();
         //    return device_id;
-        //}catch(Exception e){
         //    Helper h = new Helper();
         //    h.LogPrintExStackTrace(e);
         //    return "";

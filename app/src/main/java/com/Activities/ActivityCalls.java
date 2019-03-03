@@ -1,11 +1,16 @@
 package com.Activities;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -37,6 +42,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ActivityCalls extends FragmentActivity {
+
+    private static final int REQUEST_PERMISSION_MULTIPLE = 300;
 
     Helper helper;
     Context ctx;
@@ -92,7 +99,8 @@ public class ActivityCalls extends FragmentActivity {
         //-------------------------------------
         //spinner = dropdown
         final Spinner spinner = (Spinner) findViewById(R.id.spinner);
-        String[] items = {"מס' קריאה ↑", "מס' קריאה ↓", "פתיחת קריאה ↑", "פתיחת קריאה ↓", "עדיפות ↑", "עדיפות ↓", "עיר ↑", "עיר ↓", "חברה ↑", "חברה ↓", "מס סריאלי ↑", "מס סריאלי ↓", "שיבוץ ↑", "שיבוץ ↓"};
+        //String[] items = {"מס' קריאה ↑", "מס' קריאה ↓", "פתיחת קריאה ↑", "פתיחת קריאה ↓", "עדיפות ↑", "עדיפות ↓", "עיר ↑", "עיר ↓", "חברה ↑", "חברה ↓", "מס סריאלי ↑", "מס סריאלי ↓", "שיבוץ ↑", "שיבוץ ↓"};
+         String[] items = {"מיין לפי","מס' קריאה ↑", "מס' קריאה ↓", "פתיחת קריאה ↑", "פתיחת קריאה ↓", "עדיפות ↑", "עדיפות ↓", "עיר ↑", "עיר ↓", "חברה ↑", "חברה ↓", "מס סריאלי ↑", "מס סריאלי ↓", "שיבוץ ↑", "שיבוץ ↓"};
         spinner.setAdapter(new SpinnerAdapter(this, R.layout.simple_spinner_item, items));
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -128,7 +136,6 @@ public class ActivityCalls extends FragmentActivity {
                     getFilteredList(condition + "callStartTime asc");
                 } else if (s.equals("שיבוץ ↓")) {
                     getFilteredList(condition + "callStartTime desc");
-
                 }
             }
 
@@ -391,7 +398,8 @@ public class ActivityCalls extends FragmentActivity {
         Log.e("mytag", "2");
         Log.e("mytag", " myss1 :" + ss1.toString());
         if (ss1.contains("total")) {
-            ret = "  order by callid";
+            // ret = "  order by callid";
+            ret = "";
         } else if (ss1.contains("open")) {
             ret = " and CAST(sla AS INTEGER) >=0 order by callid";
         } else if (ss1.contains("sla")) {
@@ -478,4 +486,55 @@ public class ActivityCalls extends FragmentActivity {
 
         return calls;
     }
+
+    private boolean permissionCheck() {
+        int storagePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int readPhoneStatePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
+        int gpsPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        int sms = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
+        int callPhone = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE);
+
+        List<String> listPermissionsNeeded = new ArrayList<String>();
+
+        if (storagePermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+
+        if (readPhoneStatePermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.READ_PHONE_STATE);
+        }
+
+        if (gpsPermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (sms != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.SEND_SMS);
+        }
+        if (callPhone != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.CALL_PHONE);
+        }
+
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(ActivityCalls.this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_PERMISSION_MULTIPLE);
+            return false;
+        }
+
+        return true;
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if (requestCode == REQUEST_PERMISSION_MULTIPLE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("d", "Permission was granted!");
+            } else {
+                Log.e("dsxc", "Permission was not granted!");
+                ActivityCalls.this.finish();
+            }
+        }
+
+    }
+
 }

@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -43,7 +44,11 @@ import com.Icon_Manager;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 import com.model.Model;
+import com.server.ServerManager;
+import com.studioidan.popapp.interfaces.SuccessCallback;
 import com.uk.U;
+import com.util.FLogger;
+import com.util.LocationHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,7 +68,7 @@ public class ActivityCallDetails extends FragmentActivity {
     TextView mobile, sign, location;
     EditText txttechanswer;
     Button btnupdate;
-    TextView txtcallid, id1, id2, id3, parts;
+    TextView txtcallid, tvDrive, tvWork, tvStopWork, parts;
     TextView id1_text, id2_text, id3_text;
     TextView txtccompany, txtpriority, txtorigin, txtsubject, txtcomments, txtcreatedate, txtcallstarttime, txtccity, txtcalltypename;
     Icon_Manager icon_manager;
@@ -91,6 +96,7 @@ public class ActivityCallDetails extends FragmentActivity {
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             Toast.makeText(getApplicationContext(), "gps לא מופעל", Toast.LENGTH_LONG).show();
         }
+        LocationHelper.getInstance(this);
         //if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
         //Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         //startActivity(intent);
@@ -198,26 +204,26 @@ public class ActivityCallDetails extends FragmentActivity {
         txtccity.setText(isContainNull(call.getCcity().trim()) + " " + isContainNull(call.getCaddress().trim()));
         txtcalltypename.setText(isContainNull(call.getCallTypeName().trim()));
 
-        id1 = (TextView) findViewById(R.id.id1);
-        id2 = (TextView) findViewById(R.id.id2);
-        id3 = (TextView) findViewById(R.id.id3);
+        tvDrive = (TextView) findViewById(R.id.tvDrive);
+        tvWork = (TextView) findViewById(R.id.tvWork);
+        tvStopWork = (TextView) findViewById(R.id.tvStopWork);
         id1_text = (TextView) findViewById(R.id.id1_text);
         id2_text = (TextView) findViewById(R.id.id2_text);
         id3_text = (TextView) findViewById(R.id.id3_text);
         //id1.setBackgroundColor(Color.parseColor("#E94E1B"));
-        id1.setBackgroundResource(R.drawable.btn_circle4);
-        id2.setBackgroundResource(R.drawable.btn_circle4);
-        id3.setBackgroundResource(R.drawable.btn_circle4);
+        tvDrive.setBackgroundResource(R.drawable.btn_circle4);
+        tvWork.setBackgroundResource(R.drawable.btn_circle4);
+        tvStopWork.setBackgroundResource(R.drawable.btn_circle4);
 
-        id1.setTypeface(icon_manager.get_Icons("fonts/ionicons.ttf", this));
-        id2.setTypeface(icon_manager.get_Icons("fonts/ionicons.ttf", this));
-        id3.setTypeface(icon_manager.get_Icons("fonts/ionicons.ttf", this));
+        tvDrive.setTypeface(icon_manager.get_Icons("fonts/ionicons.ttf", this));
+        tvWork.setTypeface(icon_manager.get_Icons("fonts/ionicons.ttf", this));
+        tvStopWork.setTypeface(icon_manager.get_Icons("fonts/ionicons.ttf", this));
 
-        id1.setTextSize(40);
+        tvDrive.setTextSize(40);
         id1_text.setText("נסיעה");
-        id2.setTextSize(40);
+        tvWork.setTextSize(40);
         id2_text.setText("עבודה");
-        id3.setTextSize(40);
+        tvStopWork.setTextSize(40);
         id3_text.setText("סיום");
 
         TextView ccompany_telephone = (TextView) findViewById(R.id.ccompany_telephone);
@@ -314,19 +320,36 @@ public class ActivityCallDetails extends FragmentActivity {
         });
 
         getCurrState(callid);
-        id1.setOnClickListener(new View.OnClickListener() {
+        tvDrive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 rideChange(callid);
             }
         });
-        id2.setOnClickListener(new View.OnClickListener() {
+        tvWork.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                FLogger.log_d("Start Work Clicked");
                 workChange(callid);
+
+                LocationHelper.getInstance(ActivityCallDetails.this)
+                        .getOneShotLocation(ActivityCallDetails.this, new SuccessCallback() {
+                            @Override
+                            public void onDone(boolean success, Object data) {
+                                Location location = (Location) data;
+
+                                String lat = location == null ? "" : ("" + location.getLatitude());
+                                String lon = location == null ? "" : ("" + location.getLongitude());
+                                if (success) {
+                                    ServerManager.startWork(ActivityCallDetails.this, callid, lat, lon);
+                                } else {
+                                    ServerManager.startWork(ActivityCallDetails.this, callid, "", "");
+                                }
+                            }
+                        });
             }
         });
-        id3.setOnClickListener(new View.OnClickListener() {
+        tvStopWork.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 stopChange(callid);
@@ -476,11 +499,11 @@ public class ActivityCallDetails extends FragmentActivity {
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             //Toast.makeText(getApplicationContext(), "gps לא מופעל", Toast.LENGTH_LONG).show();
         }
-        if (id1.getCurrentTextColor() == Color.parseColor("#E94E1B") == true) {
+        if (tvDrive.getCurrentTextColor() == Color.parseColor("#E94E1B") == true) {
             Toast.makeText(getApplicationContext(), "הינך במצב נסיעה", Toast.LENGTH_LONG).show();
         } else {
             //draw color immediately
-            id1.setTextColor(Color.parseColor("#E94E1B"));
+            tvDrive.setTextColor(Color.parseColor("#E94E1B"));
             String s_longtitude = "";
             String s_latitude = "";
             try {
@@ -500,11 +523,11 @@ public class ActivityCallDetails extends FragmentActivity {
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             //Toast.makeText(getApplicationContext(), "gps לא מופעל", Toast.LENGTH_LONG).show();
         }
-        if (id2.getCurrentTextColor() == Color.parseColor("#E94E1B") == true) {
+        if (tvWork.getCurrentTextColor() == Color.parseColor("#E94E1B") == true) {
             Toast.makeText(getApplicationContext(), "הינך במצב עבודה", Toast.LENGTH_LONG).show();
         } else {
             //draw color immediately
-            id2.setTextColor(Color.parseColor("#E94E1B"));
+            tvWork.setTextColor(Color.parseColor("#E94E1B"));
             String s_longtitude = "";
             String s_latitude = "";
             try {
@@ -521,11 +544,12 @@ public class ActivityCallDetails extends FragmentActivity {
     }
 
     private void stopChange(String callid) {
-        if (id1.getCurrentTextColor() == Color.parseColor("#E94E1B") == true &&
-                id2.getCurrentTextColor() == Color.parseColor("#E94E1B") == true) {
+        FLogger.log_d("Stop Work Clicked");
+        if (tvDrive.getCurrentTextColor() == Color.parseColor("#E94E1B") == true &&
+                tvWork.getCurrentTextColor() == Color.parseColor("#E94E1B") == true) {
             //draw color immediately
             //id1.setTextColor(Color.parseColor("black"));
-            //id2.setTextColor(Color.parseColor("black"));
+            //tvWork.setTextColor(Color.parseColor("black"));
             Async(Integer.valueOf(callid), "stop", "", "");
             //Toast.makeText(getApplicationContext(), "stop", Toast.LENGTH_LONG).show();
         } else {
@@ -557,17 +581,17 @@ public class ActivityCallDetails extends FragmentActivity {
         ct2 = getCTID(String.valueOf(Integer.valueOf(callid)), "ride", "-2");
         //Log.e("mytag","ride chk:" +" ctid:"+ct2.getCTID()+" getCtq:"+ct2.getCtq());
         if (ct2.getCTID() != -1 && ct2.getCTcomment().equals("ride")) {
-            id1.setTextColor(Color.parseColor("#E94E1B"));
+            tvDrive.setTextColor(Color.parseColor("#E94E1B"));
         } else {
-            id1.setTextColor(Color.parseColor("black"));
+            tvDrive.setTextColor(Color.parseColor("black"));
         }
         ct2 = getCTID(String.valueOf(Integer.valueOf(callid)), "work", "-2");
         //Log.e("mytag","work chk:" +" ctid:"+ct2.getCTID()+" getCtq:"+ct2.getCtq());
         if (ct2.getCTID() != -1 && ct2.getCTcomment().equals("work")) {
-            id2.setTextColor(Color.parseColor("#E94E1B"));
-            id1.setTextColor(Color.parseColor("#E94E1B"));
+            tvWork.setTextColor(Color.parseColor("#E94E1B"));
+            tvDrive.setTextColor(Color.parseColor("#E94E1B"));
         } else {
-            id2.setTextColor(Color.parseColor("black"));
+            tvWork.setTextColor(Color.parseColor("black"));
         }
 
 //          if (isContain(call2.getState(), "ride")) {
@@ -576,10 +600,10 @@ public class ActivityCallDetails extends FragmentActivity {
 //              id1.setTextColor(Color.parseColor("black"));
 //          }
 //          if (isContain(call2.getState(), "work")) {
-//              id2.setTextColor(Color.parseColor("#E94E1B"));
+//              tvWork.setTextColor(Color.parseColor("#E94E1B"));
 //              id1.setTextColor(Color.parseColor("#E94E1B"));
 //          } else {
-//              id2.setTextColor(Color.parseColor("black"));
+//              tvWork.setTextColor(Color.parseColor("black"));
 //          }
     }
 
@@ -595,15 +619,15 @@ public class ActivityCallDetails extends FragmentActivity {
                     //Toast.makeText(getActivity(),"statuses: " + statuses, Toast.LENGTH_LONG).show();
 
                     if (isContain(statuses, "ride")) {
-                        id1.setTextColor(Color.parseColor("#E94E1B"));
+                        tvDrive.setTextColor(Color.parseColor("#E94E1B"));
                     } else {
-                        id1.setTextColor(Color.parseColor("black"));
+                        tvDrive.setTextColor(Color.parseColor("black"));
                     }
                     if (isContain(statuses, "work")) {
-                        id2.setTextColor(Color.parseColor("#E94E1B"));
-                        id1.setTextColor(Color.parseColor("#E94E1B"));
+                        tvWork.setTextColor(Color.parseColor("#E94E1B"));
+                        tvDrive.setTextColor(Color.parseColor("#E94E1B"));
                     } else {
-                        id2.setTextColor(Color.parseColor("black"));
+                        tvWork.setTextColor(Color.parseColor("black"));
                     }
 
                 } catch (JSONException e1) {
@@ -739,17 +763,22 @@ public class ActivityCallDetails extends FragmentActivity {
 
     public void Async(int callid, String action, String latitude, String longtitude) {
         if (action.contains("stop")) {
-            id1.setTextColor(Color.parseColor("black"));
-            id2.setTextColor(Color.parseColor("black"));
-            DatabaseHelper.getInstance(getApplicationContext()).updateSpecificValueInTable2("mgnet_calls", "CallID", String.valueOf(callid), "state", "'" + null + "'");
-            Calltime ct = new Calltime();
-            ct = getCTID(String.valueOf(Integer.valueOf(callid)), "work", "");
-            if (ct.getCTID() != -1 && ct.getCtq().contains("-2")) {
-                closeWorkRow(ct);
-                updateRideRow(ct.getCallID());
+            try {
+                tvDrive.setTextColor(Color.parseColor("black"));
+                tvWork.setTextColor(Color.parseColor("black"));
+                DatabaseHelper.getInstance(getApplicationContext()).updateSpecificValueInTable2("mgnet_calls", "CallID", String.valueOf(callid), "state", "'" + null + "'");
+                Calltime ct = new Calltime();
+                ct = getCTID(String.valueOf(Integer.valueOf(callid)), "work", "");
+                if (ct.getCTID() != -1 && ct.getCtq().contains("-2")) {
+                    closeWorkRow(ct);
+                    updateRideRow(ct.getCallID());
+                }
+                db.getJsonResultsFromTable("Calltime");
+                helper.transferJsonCallTime(getApplicationContext());
+            } catch (Exception e) {
+                FLogger.log_e("Error in Async() action=" + action + ", calId=" + callid + ": " + e.getMessage());
             }
-            db.getJsonResultsFromTable("Calltime");
-            helper.transferJsonCallTime(getApplicationContext());
+
         } else {
             DatabaseHelper.getInstance(getApplicationContext()).updateSpecificValueInTable2("mgnet_calls", "CallID", String.valueOf(callid), "state", "'" + action + "'");
             if (action.contains("ride")) {
@@ -757,10 +786,17 @@ public class ActivityCallDetails extends FragmentActivity {
                 db.getJsonResultsFromTable("Calltime");
             }
             if (action.contains("work")) {
-                //updateWork(callid);
-                addWorkRow(callid);
-                db.getJsonResultsFromTable("Calltime");
-                //check if we going to update work and we dont have line because it was online before
+                try {
+                    //updateWork(callid);
+                    FLogger.log_d("Adding work row");
+                    addWorkRow(callid);
+                    db.getJsonResultsFromTable("Calltime");
+                    // FLogger.log_d("Added work row");
+                    //check if we going to update work and we dont have line because it was online before
+                } catch (Exception e) {
+                    FLogger.log_e("Error in Async() action=" + action + ", calId=" + callid + ": " + e.getMessage());
+                }
+
             }
         }
         Log.e("mytag", DatabaseHelper.getInstance(getApplicationContext()).getJsonResultsFromTable("Calltime").toString());
@@ -802,6 +838,7 @@ public class ActivityCallDetails extends FragmentActivity {
         Calltime ct = new Calltime();
         ct = getCTID(String.valueOf(callid), "ride", "-2");
         if (ct.getCTID() == -1) {
+
         } else {
             String date1 = ct.getCallStartTime();
             String fromdateinmillis = String.valueOf(U.stringToDate(date1, "yyyy-MM-dd HH:mm:ss").getTime());
@@ -823,6 +860,7 @@ public class ActivityCallDetails extends FragmentActivity {
             return ct;
         } catch (Exception e) {
             helper.LogPrintExStackTrace(e);
+            FLogger.log_e("error in getCTID: " + e.getMessage());
             return new Calltime(-1, 1, "", "", "", "");
         }
     }
